@@ -34,6 +34,7 @@ public:
 	void AddBackGround(class BackGround* bg);
 	void IncreaseAsteroid();
 	int numAsteroids;
+	class ClearPict* mClearPict;	//ƒQ[ƒ€ƒNƒŠƒA‰æ‘œ
 
 private:
 	void ProcessInput();
@@ -76,5 +77,6 @@ private:
 	class Ship* mShip; // player ship
 	std::vector<class Asteroid*> mAsteroids; //asteroids
 	std::vector<class BackGround*> mBackGrounds;  //”wŒi
+	
 	
 };

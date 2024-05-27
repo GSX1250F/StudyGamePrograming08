@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "Random.h"
 #include "Laser.h"
+#include "ClearPict.h"
 #include "CircleComponent.h"
 #include "Asteroid.h"
 #include "Texture.h"
@@ -120,6 +121,11 @@ void Ship::UpdateActor(float deltaTime)
 	{
 		GetGame()->IncreaseAsteroid();
 		mAsteroidCooldown = 5.0f;
+	}
+	if (GetGame()->numAsteroids == 0)
+	{
+		GetGame()->mClearPict->SetState(EActive);
+		GetGame()->mClearPict->SetPosition(Vector2(0.0f , 0.0f));
 	}
 
 	if (crash == false)

@@ -144,6 +144,7 @@ xcopy "C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\studi
     <ClCompile Include="Asteroid.cpp" />
     <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="CircleComponent.cpp" />
+    <ClCompile Include="ClearPict.cpp" />
     <ClCompile Include="Componert.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="InputComponent.cpp" />
@@ -165,6 +166,7 @@ xcopy "C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\studi
     <ClInclude Include="Asteroid.h" />
     <ClInclude Include="BackGround.h" />
     <ClInclude Include="CircleComponent.h" />
+    <ClInclude Include="ClearPict.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="InputComponent.h" />

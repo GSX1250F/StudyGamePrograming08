@@ -9,6 +9,7 @@
 #include "Ship.h"
 #include "Asteroid.h"
 #include "BackGround.h"
+#include "ClearPict.h"
 #include "Random.h"
 #include "InputSystem.h"
 //#include <SDL.h>
@@ -252,6 +253,7 @@ void Game::LoadData()
 	new BackGround(this, 0, -20.0f, 15, "Assets/Stars.png");
 	new BackGround(this, 1, -20.0f, 15, "Assets/Stars.png");
 	
+	mClearPict = new ClearPict(this);
 }
 
 void Game::UnloadData()
