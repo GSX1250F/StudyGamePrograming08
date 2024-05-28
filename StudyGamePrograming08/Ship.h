@@ -25,5 +25,8 @@ private:
 	class CircleComponent* mCircle;
 	class AnimSpriteComponent* mAnimComponent;
 
+	Vector2 mVelocityDir;
+	Vector2 mRotationDir;
+	float mSpeed;
 };
 

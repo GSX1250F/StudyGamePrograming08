@@ -110,12 +110,8 @@ bool InputSystem::Initialize()
 	// コントローラが接続されていたらそれを取得
 	mController = SDL_GameControllerOpen(0);
 	mState.Controller.mIsConnected = (mController != nullptr);	// コントローラ状態を初期化
-	memset(mState.Controller.mCurrButtons,
-		   0,
-		   SDL_CONTROLLER_BUTTON_MAX);
-	memset(mState.Controller.mPrevButtons,
-		   0,
-		   SDL_CONTROLLER_BUTTON_MAX);
+	memset(mState.Controller.mCurrButtons, 0, SDL_CONTROLLER_BUTTON_MAX);
+	memset(mState.Controller.mPrevButtons, 0, SDL_CONTROLLER_BUTTON_MAX);
 
 	return true;
 }
@@ -129,7 +125,7 @@ void InputSystem::PrepareForUpdate()
 	// 現在の状態を１つ前の状態にコピーする。
 	// キーボード
 	memcpy(mState.Keyboard.mPrevState,
-		   mState.Keyboard.mCurrState,
+	       mState.Keyboard.mCurrState,
 		   SDL_NUM_SCANCODES);
 	// マウス
 	mState.Mouse.mPrevButtons = mState.Mouse.mCurrButtons;
@@ -166,21 +162,24 @@ void InputSystem::Update()
 	for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++)
 	{
 		mState.Controller.mCurrButtons[i] =
-			SDL_GameControllerGetButton(mController, SDL_GameControllerButton(i));
+			SDL_GameControllerGetButton(mController,SDL_GameControllerButton(i));
 	}
 
+
 	// トリガー
-	mState.Controller.mLeftTrigger = 
-		Filter1D(SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_TRIGGERLEFT));
+	mState.Controller.mLeftTrigger =
+		Filter1D(SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_TRIGGERLEFT));
 	mState.Controller.mRightTrigger =
-		Filter1D(SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_TRIGGERRIGHT));
+		Filter1D(SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_TRIGGERRIGHT));
+
 
 	// アナログスティック
-	x = SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_LEFTX);
-	y = -SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_LEFTY);
+	x = SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_LEFTX);
+	y = -SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_LEFTY);
 	mState.Controller.mLeftStick = Filter2D(x, y);
-	x = SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_RIGHTX);
-	y = -SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_RIGHTY);
+
+	x = SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_RIGHTX);
+	y = -SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_RIGHTY);
 	mState.Controller.mRightStick = Filter2D(x, y);
 }
 
