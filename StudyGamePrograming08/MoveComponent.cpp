@@ -15,8 +15,7 @@ MoveComponent::MoveComponent(Actor* owner, int updateOrder)
 	mRotResist(0.0f),				// 回転速度抵抗率(%)
 	mTorque(0.0f),					// トルク=回転方向の力 * 半径 = 慣性モーメント * 回転加速度
 	mImoment(0.0f)					// 慣性モーメント
-{
-	
+{	
 }
 
 MoveComponent::~MoveComponent()
@@ -55,6 +54,8 @@ void MoveComponent::Update(float deltatime)
 		mRotAccel -= rotdecel;
 	}
 	else { mRotAccel = 0.0f; }
+
+	// 速度と角速度を更新
 	mVelocity += mMoveAccel * deltatime;	//v = vo + at
 	mRotSpeed += mRotAccel * deltatime;		//ω = ωo + bt
 

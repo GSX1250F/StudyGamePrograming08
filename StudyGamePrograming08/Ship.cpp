@@ -40,7 +40,6 @@ Ship::Ship(Game* game)
 	asc->SetAnimTextures(anims,1,1,true);
 	mAnimComponent = asc;
 
-
 	//InputComponent作成
 	mInput = new InputComponent(this);
 	mInput->SetForwardKey(SDL_SCANCODE_UP);
@@ -52,7 +51,6 @@ Ship::Ship(Game* game)
 	mInput->SetMoveResist(30.0f);
 	mInput->SetRotResist(30.0f);
 	mInput->SetMass(1.0f);
-
 
 	//CircleComponent作成
 	mCircle = new CircleComponent(this);
@@ -66,7 +64,7 @@ void Ship::Init()
 	//float rot = Random::GetFloatRange(0.0f, Math::TwoPi);
 	//SetRotation(rot);
 	SetRotation(0.0f);
-	mInput->SetVelocity(Vector2(0.0f, 0.0f));
+	mInput->SetVelocity(Vector2::Zero);
 	mInput->SetRotSpeed(0.0f);
 
 }
@@ -98,7 +96,6 @@ void Ship::ActorInput(const struct InputState& state)
 			mAnimComponent->SetAnimNum(1, 1, true);
 		}
 
-
 		if (state.Keyboard.GetKeyValue(SDL_SCANCODE_SPACE) && mLaserCooldown <= 0.0f)
 		{
 			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
@@ -109,8 +106,7 @@ void Ship::ActorInput(const struct InputState& state)
 			// レーザー冷却期間リセット
 			mLaserCooldown = 0.5f;
 		}
-	}
-	
+	}	
 }
 
 void Ship::UpdateActor(float deltaTime)

@@ -8,8 +8,7 @@
 Asteroid::Asteroid(Game* game) : Actor(game)
 {
 	//ランダムな位置と向きと大きさと初速で初期化
-	Vector2 randPos;
-	randPos.x = 0.0f;	randPos.y = 0.0f;
+	Vector2 randPos = Vector2::Zero;
 	while (randPos.x > GetGame()->mWindowWidth * (-0.25f) && randPos.x < GetGame()->mWindowWidth *0.25f && randPos.y > GetGame()->mWindowHeight * (-0.25f) && randPos.y < GetGame()->mWindowHeight * 0.25f)
 	{
 		randPos = Random::GetVector(Vector2(GetGame()->mWindowWidth * (-0.5f), GetGame()->mWindowHeight * (-0.5f)), Vector2(GetGame()->mWindowWidth*0.5f, GetGame()->mWindowHeight*0.5f));
@@ -19,11 +18,10 @@ Asteroid::Asteroid(Game* game) : Actor(game)
 	SetRotation(randRot);
 	float randScale = Random::GetFloatRange(0.5f, 2.5f);
 	SetScale(randScale);
-	float mSpinSpeed = Random::GetFloatRange(-0.5f * Math::TwoPi, 0.5f * Math::TwoPi);
+	float rotSpeed = Random::GetFloatRange(-0.5f * Math::TwoPi, 0.5f * Math::TwoPi);
 	float randSpeed = Random::GetFloatRange(50.0f, 200.0f);
 	Vector2 randVel = Vector2(Math::Cos(randRot), Math::Sin(randRot)) * randSpeed;		//初期速度
 	
-
 	//スプライトコンポーネント作成、テクスチャ設定
 	SpriteComponent* sc = new SpriteComponent(this);
 	sc->SetTexture(game->GetTexture("Assets/Asteroid.png"));
@@ -31,7 +29,7 @@ Asteroid::Asteroid(Game* game) : Actor(game)
 	//MoveComponent作成
 	MoveComponent* mc = new MoveComponent(this);
 	mc->SetVelocity(randVel);
-	mc->SetRotSpeed(mSpinSpeed);
+	mc->SetRotSpeed(rotSpeed);
 
 	//CircleComponent作成
 	mCircle = new CircleComponent(this);
