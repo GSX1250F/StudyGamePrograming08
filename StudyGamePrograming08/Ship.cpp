@@ -19,7 +19,8 @@ Ship::Ship(Game* game)
 	  mShipCooldown(0.0f),
 	  mAsteroidCooldown(3.0f),
 	  crashPos(Vector2(0.0f,0.0f)),
-	  crash(false)
+	  crash(false),
+	  mSpeed(300.0f)
 {
 	SetScale(0.8f);
 	/*
@@ -72,7 +73,7 @@ void Ship::Init()
 //void Ship::ActorInput(const uint8_t* keyState)
 void Ship::ActorInput(const struct InputState& state)
 {
-	if (crash == false) 
+	if (crash != true) 
 	{
 		if (state.Keyboard.GetKeyValue(SDL_SCANCODE_LEFT))
 		{
@@ -106,12 +107,50 @@ void Ship::ActorInput(const struct InputState& state)
 			// レーザー冷却期間リセット
 			mLaserCooldown = 0.5f;
 		}
-	}	
+
+		// ジョイスティック機能追加
+		if (state.Controller.GetRightTrigger() > 0.25f
+			&& mLaserCooldown <= 0.0f)
+		{
+			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
+			Laser* laser = new Laser(GetGame());
+			laser->SetPosition(GetPosition() + 35.0f * GetScale() * Vector2(Math::Cos(GetRotation()), Math::Sin(GetRotation())));
+			laser->SetRotation(GetRotation());
+			laser->Shot();
+			// レーザー冷却期間リセット
+			mLaserCooldown = 0.5f;
+		}
+
+		if (state.Controller.GetIsConnected())
+		{
+			mVelocityDir = state.Controller.GetLeftStick();
+			if (!Math::NearZero(state.Controller.GetRightStick().Length()))
+			{
+				mRotationDir = state.Controller.GetRightStick();
+			}
+			
+		}
+
+
+	}
+	
 }
 
 void Ship::UpdateActor(float deltaTime)
 {
 	mLaserCooldown -= deltaTime;	//レーザーを次に撃てるまでの時間
+
+	// ジョイスティック機能追加
+	// Update position based on velocity
+	Vector2 pos = GetPosition();
+	pos += mVelocityDir * mSpeed * deltaTime;
+	SetPosition(pos);
+
+	// Update rotation
+	float angle = Math::Atan2(mRotationDir.y, mRotationDir.x);
+	SetRotation(angle);
+
+
 	mAsteroidCooldown -= deltaTime;
 	if (mAsteroidCooldown < 0.0f && GetGame()->numAsteroids > 0)
 	{
