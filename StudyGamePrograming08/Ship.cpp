@@ -75,7 +75,8 @@ void Ship::ActorInput(const struct InputState& state)
 {
 	if (crash != true) 
 	{
-		if (state.Keyboard.GetKeyValue(SDL_SCANCODE_LEFT))
+		//if (state.Keyboard.GetKeyValue(SDL_SCANCODE_LEFT))
+		if (state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == (EPressed || EHeld))
 		{
 			mAnimComponent->SetAnimNum(2, 2, false); 
 		}
