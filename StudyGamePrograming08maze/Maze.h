@@ -52,7 +52,7 @@ private:
 	class Tile* mTile;
 	std::vector<std::vector<class Tile*>> mTiles;
 	class Brave* mBrave;
-	class Shadow* mShadow;
+	//class Shadow* mShadow;
 	class ClearPict* mClearPict;
 	class Treasure* mTreasure;
 

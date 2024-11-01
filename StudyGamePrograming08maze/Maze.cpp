@@ -7,7 +7,7 @@
 #include "Floor.h"
 #include "CircleComponent.h"
 #include "SpriteComponent.h"
-#include "SomeSpriteComponent.h"
+#include "MeshComponent.h"
 #include <queue>
 #include <unordered_map>
 #include <algorithm>
@@ -76,7 +76,8 @@ void Maze::UpdateActor(float deltaTime){
 		mBrave->SetState(EPaused);
 		mBrave->GetSprite()->SetVisible(false);
 		mTreasure->SetState(EPaused);
-		mTreasure->GetSprite()->SetVisible(false);
+		//mTreasure->GetSprite()->SetVisible(false);
+		mTreasure->GetMeshComp()->SetVisible(false);
 		for (int i = 0; i < mTiles.size(); i++)
 		{
 			mTiles[i].resize(mMapHeight);
@@ -85,7 +86,8 @@ void Maze::UpdateActor(float deltaTime){
 			for (int j = 0; j < mTiles[i].size(); j++)
 			{
 				mTiles[i][j]->SetState(EPaused);
-				mTiles[i][j]->GetSprite()->SetVisible(false);
+				//mTiles[i][j]->GetSprite()->SetVisible(false);
+				mTiles[i][j]->GetMeshComp()->SetVisible(false);
 				mTiles[i][j]->ClearAdjacent();
 				mTiles[i][j]->SetParent(nullptr);
 				mMapIndex[i][j] = 0;
@@ -107,14 +109,16 @@ void Maze::UpdateActor(float deltaTime){
 		mBrave->SetState(EActive);
 		mBrave->SetPosition(GetTilePos(starti, startj));
 		mTreasure->SetState(EActive);
-		mTreasure->GetSprite()->SetVisible(true);
+		//mTreasure->GetSprite()->SetVisible(true);
+		mTreasure->GetMeshComp()->SetVisible(true);
 		mTreasure->SetPosition(GetTilePos(goali, goalj));
 		for (auto ctiles : mTiles) {
 			for (auto tile : ctiles) {
 				if (tile->GetTileState() == Tile::EWall)
 				{	
 					tile->SetState(EActive);
-					tile->GetSprite()->SetVisible(true);
+					//tile->GetSprite()->SetVisible(true);
+					tile->GetMeshComp()->SetVisible(true);
 				}				
 			}
 		}
