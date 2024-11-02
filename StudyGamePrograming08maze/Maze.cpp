@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Brave.h"
 #include "Treasure.h"
+#include "ClearPict.h"
 #include "Tile.h"
 #include "Floor.h"
 #include "CircleComponent.h"
@@ -40,10 +41,12 @@ Maze::Maze(Game* game, int mapWidth, int mapHeight)
 			mTiles[i][j] = new Tile(game);
 		}
 	}
-	mTileSize = mTiles[0][0]->GetTexSize();
+	//mTileSize = mTiles[0][0]->GetTexSize();
+	mTileSize = 150.0f;
 
 	mBrave = new Brave(game);			//プレイヤー
 	mTreasure = new Treasure(game);		//ゴール
+	mClearPict = new ClearPict(game);	//ゲームクリア画像
 
 	//床
 	for (int i = 0; i < mMapWidth; i++) 
@@ -70,14 +73,17 @@ void Maze::ActorInput(const SDL_Event& event)
 
 void Maze::UpdateActor(float deltaTime){
 	if (gameClear == true) 
-	{	}
+	{
+		mClearPict->GetSprite()->SetVisible(true);
+	}
 	if (resetStart == true)
 	{
 		mBrave->SetState(EPaused);
-		mBrave->GetSprite()->SetVisible(false);
+		mBrave->GetSprite()->SetVisible(true);
 		mTreasure->SetState(EPaused);
 		//mTreasure->GetSprite()->SetVisible(false);
 		mTreasure->GetMeshComp()->SetVisible(false);
+		mClearPict->GetSprite()->SetVisible(false);
 		for (int i = 0; i < mTiles.size(); i++)
 		{
 			mTiles[i].resize(mMapHeight);
@@ -111,7 +117,8 @@ void Maze::UpdateActor(float deltaTime){
 		mTreasure->SetState(EActive);
 		//mTreasure->GetSprite()->SetVisible(true);
 		mTreasure->GetMeshComp()->SetVisible(true);
-		mTreasure->SetPosition(GetTilePos(goali, goalj));
+		Vector3 v = GetTilePos(goali, goalj);
+		mTreasure->SetPosition(Vector3(v.x, v.y, 30.0f));
 		for (auto ctiles : mTiles) {
 			for (auto tile : ctiles) {
 				if (tile->GetTileState() == Tile::EWall)

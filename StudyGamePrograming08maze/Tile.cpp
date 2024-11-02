@@ -1,5 +1,5 @@
 #include "Tile.h"
-//#include "SpriteComponent.h"
+#include "SpriteComponent.h"
 #include "MeshComponent.h"
 #include "Game.h"
 #include "Renderer.h"
@@ -12,12 +12,15 @@ Tile::Tile(class Game* game)
 {
 	/*
 	//スプライトコンポーネントを作成
-	sc = new SpriteComponent(this, 10);
+	SpriteComponent* sc = new SpriteComponent(this, 10);
 	sc->SetTexture(game->GetRenderer()->GetTexture("Assets/Wall.png"));
+	sc->SetVisible(false);
 	mTexSize = sc->GetTexWidth();
 	*/
 	mc = new MeshComponent(this);
 	mc->SetMesh(game->GetRenderer()->GetMesh("Assets/Wall.gpmesh"));
+	
+	SetScale(150.0f);
 
 	//CircleComponent作成
 	cc = new CircleComponent(this);	

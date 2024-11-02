@@ -7,7 +7,7 @@ ClearPict::ClearPict(Game* game) : Actor(game)
 {
 	SetState(EPaused);
 	SetPosition(Vector3::Zero);
-	SetScale(0.008f);
+	SetScale(0.1f);
 
 	//スプライトコンポーネント作成、テクスチャ設定
 	sc = new SpriteComponent(this, 100);

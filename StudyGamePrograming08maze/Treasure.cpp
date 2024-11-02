@@ -11,6 +11,7 @@ Treasure::Treasure(Game* game) : Actor(game){
 	sc = new SpriteComponent(this, 20);
 	sc->SetTexture(game->GetRenderer()->GetTexture("Assets/Treasure.png"));
 	*/
+	SetScale(100.0f);
 	mc = new MeshComponent(this);
 	mc->SetMesh(game->GetRenderer()->GetMesh("Assets/Treasure.gpmesh"));
 	//CircleComponentì¬

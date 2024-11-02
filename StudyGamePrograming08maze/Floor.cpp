@@ -8,6 +8,7 @@
 Floor::Floor(Game* game)
 	: Actor(game)
 {
+	SetScale(150.0f);
 	MeshComponent* mc = new MeshComponent(this);
 	mc->SetMesh(game->GetRenderer()->GetMesh("Assets/Floor.gpmesh"));
 	Quaternion q = Quaternion(Vector3::UnitX, Math::PiOver2);

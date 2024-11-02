@@ -193,6 +193,10 @@ xcopy "..\..\external\GLEW\lib\$(PlatformTarget)\*.dll" "$(OutDir)" /i/s/y
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\MeshShader.frag" />
+    <None Include="Shaders\MeshShader.vert" />
+    <None Include="Shaders\SpriteShader.frag" />
+    <None Include="Shaders\SpriteShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

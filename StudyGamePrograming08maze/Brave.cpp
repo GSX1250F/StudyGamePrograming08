@@ -12,11 +12,7 @@ Brave::Brave(Game* game)
 	: Actor(game)
 	, speed(1000.0f)	
 {	
-	SetScale(0.85f);
-	//スプライトコンポーネント作成、テクスチャ設定
-	sc = new SpriteComponent(this, 100);
-	sc->SetTexture(game->GetRenderer()->GetTexture("Assets/ClearPict.png"));
-	sc->SetVisible(false);	
+	SetScale(0.85f);	
 
 	//CircleComponent作成
 	cc = new CircleComponent(this);
@@ -57,7 +53,6 @@ void Brave::UpdateActor(float deltaTime){
 		if (Intersect(*cc, *GetGame()->GetMaze()->GetTreasure()->GetCircle())) {
 			// ゴール
 			GetGame()->GetMaze()->SetGameClear(true);
-			sc->SetVisible(true);
 		}
 
 		for (auto tilecol : GetGame()->GetMaze()->GetTiles())
@@ -77,7 +72,7 @@ void Brave::UpdateActor(float deltaTime){
 
 		// Compute new camera from this actor
 		Vector3 cameraPos = GetPosition();
-		Vector3 cameraTarget = GetPosition() + GetForward() * 300.0f;
+		Vector3 cameraTarget = GetPosition() + GetForward() * 1.0f;
 		Vector3 cameraUp = -1.0 * Vector3::UnitZ;
 		
 		Matrix4 view = Matrix4::CreateLookAt(cameraPos, cameraTarget, cameraUp);
