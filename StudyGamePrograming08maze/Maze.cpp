@@ -79,7 +79,7 @@ void Maze::UpdateActor(float deltaTime){
 	if (resetStart == true)
 	{
 		mBrave->SetState(EPaused);
-		mBrave->GetSprite()->SetVisible(true);
+		//mBrave->GetSprite()->SetVisible(true);
 		mTreasure->SetState(EPaused);
 		//mTreasure->GetSprite()->SetVisible(false);
 		mTreasure->GetMeshComp()->SetVisible(false);

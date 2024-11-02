@@ -13,7 +13,7 @@ Brave::Brave(Game* game)
 	, speed(1000.0f)	
 {	
 	SetScale(0.85f);	
-
+	SetRadius(150.0f);
 	//CircleComponentçÏê¨
 	cc = new CircleComponent(this);
 
