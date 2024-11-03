@@ -150,7 +150,7 @@ xcopy "..\..\external\GLEW\lib\$(PlatformTarget)\*.dll" "$(OutDir)" /i/s/y
     <ClCompile Include="CircleComponent.cpp" />
     <ClCompile Include="ClearPict.cpp" />
     <ClCompile Include="Component.cpp" />
-    <ClCompile Include="Floor.cpp" />
+    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Math.cpp" />
@@ -174,7 +174,7 @@ xcopy "..\..\external\GLEW\lib\$(PlatformTarget)\*.dll" "$(OutDir)" /i/s/y
     <ClInclude Include="CircleComponent.h" />
     <ClInclude Include="ClearPict.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="Floor.h" />
+    <ClInclude Include="Plane.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Maze.h" />

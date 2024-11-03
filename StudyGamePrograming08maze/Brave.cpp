@@ -63,8 +63,8 @@ void Brave::UpdateActor(float deltaTime){
 					//•Ç‚ÉÕ“Ë‚µ‚Ä‚¢‚½‚ç—£‚·B
 					if (Intersect(*cc, *tile->GetCircle())) {
 						//‚Q‚Â‚Ì’†S‚ğŒ‹‚Ôü•ªã‚ÅA‚Q‚Â‚Ì”¼Œa‚¾‚¯—£‚·
-						Vector3 diff = Vector3::Normalize(this->GetPosition() - tile->GetPosition());
-						this->SetPosition(tile->GetPosition() + diff * (this->GetRadius() + tile->GetRadius()));
+						//Vector3 diff = Vector3::Normalize(this->GetPosition() - tile->GetPosition());
+						//this->SetPosition(tile->GetPosition() + diff * (this->GetRadius() + tile->GetRadius()));
 					}
 				}
 			}
