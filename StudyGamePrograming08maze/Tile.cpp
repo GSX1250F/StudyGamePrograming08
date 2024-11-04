@@ -12,9 +12,8 @@ Tile::Tile(class Game* game)
 {
 	/*
 	//スプライトコンポーネントを作成
-	SpriteComponent* sc = new SpriteComponent(this, 10);
+	new SpriteComponent(this, 10);
 	sc->SetTexture(game->GetRenderer()->GetTexture("Assets/Wall.png"));
-	sc->SetVisible(false);
 	mTexSize = sc->GetTexWidth();
 	*/
 	mc = new MeshComponent(this);

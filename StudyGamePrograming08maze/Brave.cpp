@@ -44,7 +44,7 @@ void Brave::ActorInput(const SDL_Event& event){
 			}
 		}
 		mc->SetVelocity(forwardSpeed * GetForward());
-		mc->SetRotSpeed(angularSpeed * Vector3::UnitZ);	
+		mc->SetRotSpeed(angularSpeed * GetUpward());	
 	}	
 }
 
@@ -63,17 +63,16 @@ void Brave::UpdateActor(float deltaTime){
 					//•Ç‚ÉÕ“Ë‚µ‚Ä‚¢‚½‚ç—£‚·B
 					if (Intersect(*cc, *tile->GetCircle())) {
 						//‚Q‚Â‚Ì’†S‚ðŒ‹‚Ôü•ªã‚ÅA‚Q‚Â‚Ì”¼Œa‚¾‚¯—£‚·
-						//Vector3 diff = Vector3::Normalize(this->GetPosition() - tile->GetPosition());
-						//this->SetPosition(tile->GetPosition() + diff * (this->GetRadius() + tile->GetRadius()));
+						Vector3 diff = Vector3::Normalize(this->GetPosition() - tile->GetPosition());
+						this->SetPosition(tile->GetPosition() + diff * (this->GetRadius() + tile->GetRadius()));
 					}
 				}
 			}
 		}
 
-		// Compute new camera from this actor
 		Vector3 cameraPos = GetPosition();
-		Vector3 cameraTarget = GetPosition() + GetForward() * 1.0f;
-		Vector3 cameraUp = -1.0 * Vector3::UnitZ;
+		Vector3 cameraTarget = GetPosition() + GetForward() * 300.0f;
+		Vector3 cameraUp = -1.0 * GetUpward();
 		
 		Matrix4 view = Matrix4::CreateLookAt(cameraPos, cameraTarget, cameraUp);
 		GetGame()->GetRenderer()->SetViewMatrix(view);

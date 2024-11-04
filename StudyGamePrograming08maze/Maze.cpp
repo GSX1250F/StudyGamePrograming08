@@ -54,7 +54,7 @@ Maze::Maze(Game* game, int mapWidth, int mapHeight)
 		for (int j = 0; j < mMapHeight; j++) 
 		{
 			Actor* floor = new Plane(game);
-			floor->SetPosition(Vector3(GetTilePos(i, j).x, GetTilePos(i,j).y, 75.0f));
+			floor->SetPosition(Vector3(GetTilePos(i, j).x, GetTilePos(i,j).y, mTileSize * 0.5f));
 		}
 	}
 }

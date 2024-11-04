@@ -138,6 +138,10 @@ void Game::LoadData()
 {
 	//mMaze = new Maze(this, 51, 29);		//迷路クラス
 	mMaze = new Maze(this, 7, 7);		//テスト用
+
+	// 光源
+	// 環境光	
+	mRenderer->SetAmbientLight(Vector3(0.7f, 0.7f, 0.7f));
 }
 
 void Game::UnloadData()

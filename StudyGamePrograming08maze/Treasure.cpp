@@ -14,6 +14,7 @@ Treasure::Treasure(Game* game) : Actor(game){
 	SetScale(100.0f);
 	mc = new MeshComponent(this);
 	mc->SetMesh(game->GetRenderer()->GetMesh("Assets/Treasure.gpmesh"));
+
 	//CircleComponentì¬
 	cc = new CircleComponent(this);
 }
