@@ -9,7 +9,7 @@ public:
 	InputComponent(class Actor* owner, int updateOrder = 10);
 
 	// 入力処理（オーバーライド）
-	void ProcessInput(const uint8_t* keyState) override;
+	void ProcessInput(const int keyState) override;
 		
 	// セッター・ゲッター
 	void SetMaxForwardVelocity(float value) { mMaxForwardVelocity = value; }

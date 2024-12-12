@@ -10,28 +10,28 @@ InputComponent::InputComponent(Actor* owner, int updateOrder)
 	,mMaxRotForce(0.0f)
 {}
 
-void InputComponent::ProcessInput(const uint8_t* keyState)
+void InputComponent::ProcessInput(const int keyState)
 {
 	float fwd = 0.0f;
 	float rot = 0.0f;
 
 	//古典物理学でMoveComponentのための計算
-	if (keyState[mFwdKey])
+	if (keyState == mFwdKey)
 	{
 		// fwd = mMaxForwardVelocity;	//単純移動の場合
 		fwd = mMaxForwardForce;
 	}
-	if (keyState[mBwdKey])
+	if (keyState == mBwdKey)
 	{
 		// fwd = -mMaxForwardVelocity;       //単純移動の場合
 		fwd = -mMaxForwardForce;
 	}
-	if (keyState[mCwsKey])
+	if (keyState == mCwsKey)
 	{
 		// rot = mMaxRotSpeed;       //単純移動の場合
 		rot = -mMaxRotForce;		//角度の＋方向はCCW
 	}
-	if (keyState[mCCwsKey])
+	if (keyState == mCCwsKey)
 	{
 		// rot = -mMaxRotSpeed;       //単純移動の場合
 		rot = mMaxRotForce;		//角度の＋方向はCCW

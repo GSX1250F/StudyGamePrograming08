@@ -41,6 +41,7 @@ private:
 
 	class Renderer* mRenderer;
 	class SoundPlayer* mSoundPlayer;
+	class InputSystem* mInputSystem;
 	Uint32 mTicksCount;
 	bool mIsRunning;
 	bool mUpdatingActors;

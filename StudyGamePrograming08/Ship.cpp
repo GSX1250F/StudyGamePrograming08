@@ -31,10 +31,10 @@ Ship::Ship(Game* game):Actor(game)
 	mIC->SetMoveResist(20.0f);
 	mIC->SetRotResist(15.0f);
 	mIC->SetMass(1.0f);
-	mIC->SetForwardKey(SDL_SCANCODE_UP);
-	mIC->SetBackwardKey(SDL_SCANCODE_DOWN);
-	mIC->SetClockwiseKey(SDL_SCANCODE_RIGHT);
-	mIC->SetCounterClockwiseKey(SDL_SCANCODE_LEFT);
+	mIC->SetForwardKey(SDLK_UP);
+	mIC->SetBackwardKey(SDLK_DOWN);
+	mIC->SetClockwiseKey(SDLK_RIGHT);
+	mIC->SetCounterClockwiseKey(SDLK_LEFT);
 
 	//CircleComponent生成
 	mCircle = new CircleComponent(this);
@@ -70,26 +70,26 @@ void Ship::Init()
 	mCrash = false;
 }
 
-void Ship::ActorInput(const uint8_t* keyState)
+void Ship::ActorInput(const int keyState)
 {
 	if (mCrash == false) 
 	{
-		if (keyState[mIC->GetCounterClockwiseKey()])
+		if (keyState == mIC->GetCounterClockwiseKey())
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[1]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(0,mChunkFiles[0],"play",0);
 		}
-		else if (keyState[mIC->GetClockwiseKey()])
+		else if (keyState == mIC->GetClockwiseKey())
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[2]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
 		}
-		else if (keyState[mIC->GetForwardKey()])
+		else if (keyState == mIC->GetForwardKey())
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[3]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
 		}
-		else if (keyState[mIC->GetBackwardKey()])
+		else if (keyState == mIC->GetBackwardKey())
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[4]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
@@ -99,7 +99,7 @@ void Ship::ActorInput(const uint8_t* keyState)
 			mSSC->SelectTexture(mSSC->TextureFiles[0]);
 		}
 		
-		if (keyState[SDL_SCANCODE_SPACE] && mLaserCooldown <= 0.0f)
+		if (keyState == SDLK_SPACE && mLaserCooldown <= 0.0f)
 		{
 			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
 			Laser* laser = new Laser(GetGame());

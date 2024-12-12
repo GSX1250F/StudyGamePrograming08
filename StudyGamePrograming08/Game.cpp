@@ -6,6 +6,7 @@
 #include "Actor.h"
 #include "Renderer.h"
 #include "SoundPlayer.h"
+#include "InputSystem.h"
 #include "SpriteComponent.h"
 #include "Ship.h"
 #include "Asteroid.h"
@@ -21,7 +22,6 @@ Game::Game()
 	,mSoundPlayer(nullptr)
 	,mIsRunning(true)
 	,mUpdatingActors(false)
-	,mTicksCount(0)
 	,mWindowWidth(1024)
 	,mWindowHeight(768)
 {}
@@ -57,6 +57,8 @@ bool Game::Initialize()
 
 	LoadData();
 
+	mTicksCount = SDL_GetTicks();	//TicksCount初期化
+
 	return true;
 }
 
@@ -72,6 +74,8 @@ void Game::RunLoop()
 
 void Game::ProcessInput()
 {
+	//mInputSystem->PrepareForUpdate();
+
 	SDL_Event event;
 	// キューにイベントがあれば繰り返す
 	while (SDL_PollEvent(&event))
@@ -80,19 +84,30 @@ void Game::ProcessInput()
 		{
 			mIsRunning = false;
 		}
-		const Uint8* keyState = SDL_GetKeyboardState(NULL);
-		if (keyState[SDL_SCANCODE_ESCAPE])
+		if (event.type == SDL_KEYDOWN) 
 		{
-			mIsRunning = false;
+			//キーダウンイベント
+			int keyState = event.key.keysym.sym;
+			mUpdatingActors = true;
+			for (auto actor : mActors)
+			{
+				actor->ProcessInput(keyState);
+			}
+			mUpdatingActors = false;
 		}
-
-		mUpdatingActors = true;
-		for (auto actor : mActors)
+		else
 		{
-			actor->ProcessInput(keyState);
+			//何もしてないとき
 		}
-		mUpdatingActors = false;
-
+		if (event.type == SDL_KEYUP)
+		{
+			//キーアップイベント
+			int keyState = event.key.keysym.sym;
+			if (keyState == SDLK_ESCAPE)
+			{
+				mIsRunning = false;
+			}
+		}
 	}	
 }
 
