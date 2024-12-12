@@ -1,15 +1,14 @@
 #pragma once
 #include "Actor.h"
-#include <string>
+#include <vector>
 
 class BackGround : public Actor
 {
 public:
-	BackGround(Game* game , int id, float scrollspeed , int updateorder, std::string filename);
+	BackGround(class Game* game);
 	void UpdateActor(float deltaTime) override;
 
 private:
-	int offset;
+	std::vector<Actor*> mBGs;
 
 };
-

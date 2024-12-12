@@ -1,13 +1,8 @@
-// OpenGL3.3に対応するGLSLバージョンの指定
-
 #version 330
 
-// 入力変数（３次元）の位置情報の宣言
-// 今は位置座標だけ
-in vec3 inPosition;
+in vec2 inVertPos;
 
 void main()
 {
-	// inPositionをgl_Positionに、そのまま渡す
-	gl_Position = vec4(inPosition, 1.0);
+	gl_Position = vec4(inVertPos, 0.0, 1.0);
 }

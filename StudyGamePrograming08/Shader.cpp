@@ -1,5 +1,4 @@
 #include "Shader.h"
-#include "Texture.h"
 #include <SDL.h>
 #include <fstream>
 #include <sstream>
@@ -9,27 +8,21 @@ Shader::Shader()
 	: mShaderProgram(0)
 	, mVertexShader(0)
 	, mFragShader(0)
-{
-}
+{}
 
 Shader::~Shader()
-{
-}
+{}
 
 bool Shader::Load(const std::string& vertName, const std::string& fragName)
 {
-	// 頂点シェーダーとフラグメントシェーダーをコンパイルする
-	if (!CompileShader(vertName,
-		GL_VERTEX_SHADER,
-		mVertexShader) ||
-		!CompileShader(fragName,
-			GL_FRAGMENT_SHADER,
-			mFragShader))
+	// バーテックスシェーダーとフラグメントシェーダーをコンパイルする
+	if (!CompileShader(vertName, GL_VERTEX_SHADER, mVertexShader) ||
+		!CompileShader(fragName, GL_FRAGMENT_SHADER, mFragShader))
 	{
 		return false;
 	}
 
-	// 頂点/フラグメントシェーダーをリンクして
+	// バーテックス,フラグメントシェーダーをリンクして
 	// シェーダープログラムを作る
 	mShaderProgram = glCreateProgram();
 	glAttachShader(mShaderProgram, mVertexShader);
@@ -56,19 +49,6 @@ void Shader::Unload()
 void Shader::SetActive()
 {
 	glUseProgram(mShaderProgram);
-}
-
-void Shader::SetMatrixUniform(const char* name, const Matrix4& matrix)
-{
-	// この名前のuniformを検索
-	GLuint loc = glGetUniformLocation(mShaderProgram, name);
-	// 行列データをuniformに送る
-	glUniformMatrix4fv(
-		loc,						// uniform ID
-		1,							// 行列の数（この場合は１個だけ）
-		GL_TRUE,					// 行ベクトルを使うのならTRUE
-		matrix.GetAsFloatPtr()		// 行列データへのポインタ
-	);
 }
 
 bool Shader::CompileShader(const std::string& fileName, GLenum shaderType, GLuint& outShader)
@@ -138,4 +118,17 @@ bool Shader::IsValidProgram()
 
 	return true;
 
+}
+
+void Shader::SetMatrixUniform(const char* name, const Matrix4& matrix)
+{
+	//nameと同じuniform変数をシェーダープログラムから探し、そのIDを受け取る。
+	GLuint uniformId = glGetUniformLocation(mShaderProgram, name);
+	//matrixで上書き
+	glUniformMatrix4fv(
+		uniformId,					// uniform変数のID
+		1,							// 行列の数
+		GL_TRUE,					// 行ベクトルはTRUE
+		matrix.GetAsFloatPtr()		// 上書きする行列のポインタ
+	);
 }

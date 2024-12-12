@@ -1,31 +1,27 @@
 #pragma once
 #include "Actor.h"
+#include <string>
+#include <vector>
 
 class Ship : public Actor
 {
 public:
 	Ship(Game* game);
 	
+	void ActorInput(const uint8_t* keyState) override;
 	void UpdateActor(float deltaTime) override;
-	//void ActorInput(const uint8_t* keyState) override;
-	void ActorInput(const struct InputState& state) override;
+
 	void Init();
 
 private:
 	float mLaserCooldown;
-	Vector2 crashPos;		//衝突したときの位置
-	float crashRot;			//衝突したときの向き
-	bool crash;				//衝突検知
-	float mCrashCooldown;		//衝突演出時間
-	float mShipCooldown;		//衝突演出後、リセットされるまでスプライトを消す時間
-	float mAsteroidCooldown;		//小惑星増殖までの待機時間
-
-	class InputComponent* mInput;
-	class CircleComponent* mCircle;
-	class AnimSpriteComponent* mAnimComponent;
-
-	Vector2 mVelocityDir;
-	Vector2 mRotationDir;
-	float mSpeed;
+	bool mCrash;				//衝突検知
+	float mCrashingTime;		//衝突演出時間
+	float mCrashCooldown;		//衝突演出後、リセットされるまでスプライトを消す時間
+	Vector3 mCrashPos;		//衝突したときの位置
+	Quaternion mCrashRot;			//衝突したときの向き
+	class CircleComponent* mCircle; 
+	class SomeSpriteComponent* mSSC;
+	class InputComponent* mIC;
+	std::vector<std::string> mChunkFiles;
 };
-

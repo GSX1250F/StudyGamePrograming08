@@ -2,30 +2,67 @@
 #include "Game.h"
 #include "SpriteComponent.h"
 #include "MoveComponent.h"
+#include "Renderer.h"
 
-BackGround::BackGround(Game* game, int id, float scrollspeed, int updateorder, std::string filename) : Actor(game)
+BackGround::BackGround(Game* game) :Actor(game)
 {
-	//MoveComponent作成
-	MoveComponent* mc = new MoveComponent(this);
-	mc->SetVelocity(Vector2(scrollspeed, 0.0f));
+	//1つ目の背景
+	Actor* bgactor = new Actor(game);
+	bgactor->SetPosition(Vector3::Zero);
+	SpriteComponent* sc = new SpriteComponent(bgactor, 5);
+	sc->SetTexture(game->GetRenderer()->GetTexture("Assets/Farback01.png"));
+	MoveComponent* mc = new MoveComponent(bgactor);
+	mc->SetVelocity(-10.0f * Vector3::UnitX);
+	mBGs.emplace_back(bgactor);
 
-	//スプライトコンポーネント作成、テクスチャ設定
-	SpriteComponent* sc = new SpriteComponent(this, updateorder);
-	sc->SetTexture(game->GetTexture(filename));
-	offset = sc->GetTexWidth();
+	//2つ目の背景
+	bgactor = new Actor(game);
+	bgactor->SetPosition(game->mWindowWidth * Vector3::UnitX);
+	sc = new SpriteComponent(bgactor, 5);
+	sc->SetTexture(game->GetRenderer()->GetTexture("Assets/Farback02.png"));
+	mc = new MoveComponent(bgactor);
+	mc->SetVelocity(-10.0f * Vector3::UnitX);
+	mBGs.emplace_back(bgactor);
 
-	SetPosition(Vector2(0.0f + id * (offset - 1.0f), 0.0f));
+	//3つ目の背景
+	bgactor = new Actor(game);
+	bgactor->SetPosition(Vector3::Zero);
+	sc = new SpriteComponent(bgactor, 10);
+	sc->SetTexture(game->GetRenderer()->GetTexture("Assets/Stars.png"));
+	mc = new MoveComponent(bgactor);
+	mc->SetVelocity(-20.0f * Vector3::UnitX);
+	mBGs.emplace_back(bgactor);
 
-	//背景をゲームに追加
-	game->AddBackGround(this);
+	//4つ目の背景
+	bgactor = new Actor(game);
+	bgactor->SetPosition(game->mWindowWidth * Vector3::UnitX);
+	sc = new SpriteComponent(bgactor, 10);
+	sc->SetTexture(game->GetRenderer()->GetTexture("Assets/Stars.png"));
+	mc = new MoveComponent(bgactor);
+	mc->SetVelocity(-20.0f * Vector3::UnitX);
+	mBGs.emplace_back(bgactor);
 }
 
 void BackGround::UpdateActor(float deltaTime)
 {
-	// ラッピング処理する場合
-	if(GetPosition().x <= -offset ||
-	   GetPosition().x >= offset)
+	//ラッピング処理
+	for (auto bg : mBGs)
 	{
-		 SetPosition(Vector2(-GetPosition().x, GetPosition().y));
+		if (bg->GetPosition().x < -GetGame()->mWindowWidth)
+		{
+			bg->SetPosition(bg->GetPosition() + 2.0f * GetGame()->mWindowWidth * Vector3::UnitX);
+		}
+		else if (bg->GetPosition().x > GetGame()->mWindowWidth)
+		{
+			bg->SetPosition(bg->GetPosition() - 2.0f * GetGame()->mWindowWidth * Vector3::UnitX);
+		}
+		if (bg->GetPosition().y < -GetGame()->mWindowHeight)
+		{
+			bg->SetPosition(bg->GetPosition() + 2.0f * GetGame()->mWindowHeight * Vector3::UnitY);
+		}
+		else if (bg->GetPosition().y > GetGame()->mWindowHeight)
+		{
+			bg->SetPosition(bg->GetPosition() - 2.0f * GetGame()->mWindowHeight * Vector3::UnitY);
+		}
 	}
 }

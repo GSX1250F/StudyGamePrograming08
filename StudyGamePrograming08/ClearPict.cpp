@@ -1,11 +1,25 @@
 #include "ClearPict.h"
 #include "SpriteComponent.h"
 #include "Game.h"
+#include "Renderer.h"
 
 ClearPict::ClearPict(Game* game) : Actor(game)
 {
 	SetState(EPaused);
+	SetPosition(-50.0f * Vector3::UnitZ);
+
 	//スプライトコンポーネント作成、テクスチャ設定
-	SpriteComponent* sc = new SpriteComponent(this, 100);
-	sc->SetTexture(game->GetTexture("Assets/ClearPict.png"));
+	sc = new SpriteComponent(this, 100);
+	sc->SetTexture(game->GetRenderer()->GetTexture("Assets/ClearPict.png"));
+	sc->SetVisible(false);
+}
+
+void ClearPict::UpdateActor(float deltaTime)
+{
+	int numAsteroids = GetGame()->GetAsteroids().size();
+	if (numAsteroids <= 0)
+	{
+		SetState(EActive);
+		sc->SetVisible(true);
+	}
 }

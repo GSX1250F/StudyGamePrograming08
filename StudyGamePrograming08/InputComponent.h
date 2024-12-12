@@ -1,44 +1,39 @@
 #pragma once
 #include "MoveComponent.h"
-#include <cstdint>
+#include <SDL.h>
 
 class InputComponent : public MoveComponent
 {
 public:
 	//コンストラクタ。Update Orderは早め。
-	InputComponent(class Actor* owner);
-	~InputComponent();
+	InputComponent(class Actor* owner, int updateOrder = 10);
 
 	// 入力処理（オーバーライド）
-	//void ProcessInput(const uint8_t* keyState) override;
-	void ProcessInput(const struct InputState& state) override;
-
-	// プライベート関数のゲッター・セッター
-	int GetForwardKey() const { return mForwardKey; }
-	int GetBackwardKey() const { return mBackwardKey; }
-	int GetClockwiseKey() const { return mClockwiseKey; }
-	int GetCounterClockwiseKey() const { return mCounterClockwiseKey; }
-	float GetMaxForwardForce() const { return mMaxForwardForce; }
-	float GetMaxRotForce() const { return mMaxRotForce; }
-
-	void SetForwardKey(int key) { mForwardKey = key; }
-	void SetBackwardKey(int key) { mBackwardKey = key; }
-	void SetClockwiseKey(int key) { mClockwiseKey = key; }
-	void SetCounterClockwiseKey(int key) { mCounterClockwiseKey = key; }
-	void SetMaxForwardForce(float power) { mMaxForwardForce = power; }
-	void SetMaxRotForce(float power) { mMaxRotForce = power; }
+	void ProcessInput(const uint8_t* keyState) override;
+		
+	// セッター・ゲッター
+	void SetMaxForwardVelocity(float value) { mMaxForwardVelocity = value; }
+	void SetMaxRotSpeed(float value) { mMaxRotSpeed = value; }
+	void SetMaxForwardForce(float value) { mMaxForwardForce = value; }
+	void SetMaxRotForce(float value) { mMaxRotForce = value; }
 	
+	int GetForwardKey() const { return mFwdKey; }
+	void SetForwardKey(int key) { mFwdKey = key; }
+	int GetBackwardKey() const { return mBwdKey; }
+	void SetBackwardKey(int key) { mBwdKey = key; }
+	int GetClockwiseKey() const { return mCwsKey; }
+	void SetClockwiseKey(int key) { mCwsKey = key; }
+	int GetCounterClockwiseKey() const { return mCCwsKey; }
+	void SetCounterClockwiseKey(int key) { mCCwsKey = key; }
+
 private:
-	// 前進・後退のためのキー
-	int mForwardKey;
-	int mBackwardKey;
-
-	//回転運動のキー
-	int mClockwiseKey;
-	int mCounterClockwiseKey;
-	
 	// 前進・回転方向の力の最大値
 	float mMaxForwardForce;
 	float mMaxRotForce;
+	float mMaxForwardVelocity;
+	float mMaxRotSpeed;
+	int mFwdKey;
+	int mBwdKey;
+	int mCwsKey;
+	int mCCwsKey;
 };
-

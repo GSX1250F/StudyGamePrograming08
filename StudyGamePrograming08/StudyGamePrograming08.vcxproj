@@ -120,6 +120,8 @@ xcopy "C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\studi
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2test.lib;SDL2_ttf.lib;SDL2_mixer.lib;glew32.lib;SOIL.lib;opengl32.lib;fmodL_vc.lib;fmodstudioL_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\external\SDL2\lib\$(PlatformTarget);..\..\external\SOIL\lib\$(PlatformTarget);..\..\external\GLEW\lib\$(PlatformTarget);C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\studio\lib;C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\lowlevel\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,55 +141,9 @@ xcopy "C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\studi
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="AnimSpriteComponent.cpp" />
-    <ClCompile Include="Asteroid.cpp" />
-    <ClCompile Include="BackGround.cpp" />
-    <ClCompile Include="CircleComponent.cpp" />
-    <ClCompile Include="ClearPict.cpp" />
-    <ClCompile Include="Componert.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="InputComponent.cpp" />
-    <ClCompile Include="InputSystem.cpp" />
-    <ClCompile Include="Laser.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Math.cpp" />
-    <ClCompile Include="MoveComponent.cpp" />
-    <ClCompile Include="Random.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Ship.cpp" />
-    <ClCompile Include="SpriteComponent.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VertexArray.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Actor.h" />
-    <ClInclude Include="AnimSpriteComponent.h" />
-    <ClInclude Include="Asteroid.h" />
-    <ClInclude Include="BackGround.h" />
-    <ClInclude Include="CircleComponent.h" />
-    <ClInclude Include="ClearPict.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="InputComponent.h" />
-    <ClInclude Include="InputSystem.h" />
-    <ClInclude Include="Laser.h" />
-    <ClInclude Include="Math.h" />
-    <ClInclude Include="MoveComponent.h" />
-    <ClInclude Include="Random.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="Ship.h" />
-    <ClInclude Include="SpriteComponent.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="VertexArray.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Shaders\Basic.frag" />
-    <None Include="Shaders\Basic.vert" />
-    <None Include="Shaders\Sprite.frag" />
-    <None Include="Shaders\Sprite.vert" />
-    <None Include="Shaders\Transform.vert" />
+    <None Include="Shaders\shader.frag" />
+    <None Include="Shaders\shader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Asteroid.png" />
@@ -201,6 +157,55 @@ xcopy "C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\studi
     <Image Include="Assets\Ship04.png" />
     <Image Include="Assets\Ship05.png" />
     <Image Include="Assets\Stars.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="Asteroid.cpp" />
+    <ClCompile Include="AsteroidControl.cpp" />
+    <ClCompile Include="BackGround.cpp" />
+    <ClCompile Include="CircleComponent.cpp" />
+    <ClCompile Include="ClearPict.cpp" />
+    <ClCompile Include="Componert.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="InputComponent.cpp" />
+    <ClCompile Include="InputSystem.cpp" />
+    <ClCompile Include="Laser.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="MoveComponent.cpp" />
+    <ClCompile Include="Random.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Ship.cpp" />
+    <ClCompile Include="SomeSpriteComponent.cpp" />
+    <ClCompile Include="SoundPlayer.cpp" />
+    <ClCompile Include="SpriteComponent.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="VertexInfo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Actor.h" />
+    <ClInclude Include="Asteroid.h" />
+    <ClInclude Include="AsteroidControl.h" />
+    <ClInclude Include="BackGround.h" />
+    <ClInclude Include="CircleComponent.h" />
+    <ClInclude Include="ClearPict.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="InputComponent.h" />
+    <ClInclude Include="InputSystem.h" />
+    <ClInclude Include="Laser.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="MoveComponent.h" />
+    <ClInclude Include="Random.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Ship.h" />
+    <ClInclude Include="SomeSpriteComponent.h" />
+    <ClInclude Include="SoundPlayer.h" />
+    <ClInclude Include="SpriteComponent.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="VertexInfo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,27 +1,21 @@
 #include "Texture.h"
 #include <SDL.h>
-#include <gl/glew.h>
+#include <glew.h>
 #include <SOIL2.h>
 
-Texture::Texture()
-	:mTextureID(0)
-	, mWidth(0)
-	, mHeight(0)
-{
-}
+Texture::Texture()	
+{}
 
 Texture::~Texture()
-{
-}
+{}
 
 bool Texture::Load(const std::string& fileName)
 {
 	int channels = 0;
-
 	unsigned char* image = SOIL_load_image(
 		fileName.c_str(),			// ファイル名
-		&mWidth,					// 幅が記録される
-		&mHeight,					// 高さが記録される
+		&mTexWidth,					// 幅が記録される
+		&mTexHeight,				// 高さが記録される
 		&channels,					// チャネル数が記録される
 		SOIL_LOAD_AUTO				// 画像ファイルの種類（またはauto）
 	);
@@ -37,7 +31,7 @@ bool Texture::Load(const std::string& fileName)
 	{
 		format = GL_RGBA;
 	}
-
+	// テクスチャをOpenGLに生成し、そのIDをメンバ変数mTextureIDに保存する。
 	glGenTextures(1, &mTextureID);
 	glBindTexture(GL_TEXTURE_2D, mTextureID);
 
@@ -45,14 +39,14 @@ bool Texture::Load(const std::string& fileName)
 		GL_TEXTURE_2D,				// テクスチャターゲット
 		0,							// Level of Detail:詳細レベル（今は0とする）
 		format,						// OpenGLが使うべきカラーフォーマット
-		mWidth,						// テクスチャの幅
-		mHeight,					// テクスチャの高さ
+		mTexWidth,						// テクスチャの幅
+		mTexHeight,					// テクスチャの高さ
 		0,							// 境界色（この値は0にする）
 		format,						// 入力データのカラーフォーマット
 		GL_UNSIGNED_BYTE,			// 入力データのビット深度。unsigned byteで８ビットチャネルを指定
 		image						// 画像データへのポインタ
 	);
-
+	// OpenGLに登録が完了したらSOILの画像データを開放する。
 	SOIL_free_image_data(image);
 
 	// バイリニアフィルタリングを有効化

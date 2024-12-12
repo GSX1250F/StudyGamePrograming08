@@ -40,6 +40,7 @@ private:
 	Uint32 mTicksCount;
 	bool mIsRunning;
 	bool mUpdatingActors;
+	class InputSystem* mInputSystem;
 
 	//Game-specific	
 	class Maze* mMaze;

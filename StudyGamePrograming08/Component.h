@@ -1,5 +1,5 @@
 #pragma once
-#include <cstdint>
+#include <SDL.h>
 
 class Component
 {
@@ -11,18 +11,18 @@ public:
 	// デストラクタ
 	virtual ~Component();
 
-	// 各コンポーネント更新（オーバーライド可能）
-	virtual void Update(float deltaTime) {};
-
 	// 各コンポーネント入力処理（オーバーライド可能）
-	//virtual void ProcessInput(const uint8_t* keyState) {}
-	virtual void ProcessInput(const struct InputState& state) {}
+	virtual void ProcessInput(const uint8_t* keyState) {}
 
-	// ワールド変換が変更されたときに呼び出される
-	virtual void OnUpdateWorldTransform() {}
+	// 各コンポーネント更新（オーバーライド可能）
+	virtual void Update(float deltaTime) {}
 
 	// 更新順ゲッター
 	int GetUpdateOrder() const { return mUpdateOrder; }
+
+	// ワールド変換の通知を受け取る。
+	virtual void OnUpdateWorldTransform() {}
+
 
 protected:
 	// 所有アクター

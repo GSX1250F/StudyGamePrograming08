@@ -1,48 +1,47 @@
 #include "InputComponent.h"
 #include "Actor.h"
-#include "InputSystem.h"
 
-//OpenGL—p‚ÌÀ•WŒn‚ÉC³
 
-InputComponent::InputComponent(class Actor* owner) 
+InputComponent::InputComponent(Actor* owner, int updateOrder) 
 	: MoveComponent(owner)
-	, mForwardKey(0)
-	, mBackwardKey(0)
-	, mClockwiseKey(0)
-	, mCounterClockwiseKey(0)
-{
-}
+	,mMaxForwardVelocity(0.0f)
+	,mMaxRotSpeed(0.0f)
+	,mMaxForwardForce(0.0f)
+	,mMaxRotForce(0.0f)
+{}
 
-InputComponent::~InputComponent()
+void InputComponent::ProcessInput(const uint8_t* keyState)
 {
-}
+	float fwd = 0.0f;
+	float rot = 0.0f;
 
-//void InputComponent::ProcessInput(const uint8_t* keyState)
-void InputComponent::ProcessInput(const struct InputState& state)
-{
 	//ŒÃ“T•¨—Šw‚ÅMoveComponent‚Ì‚½‚ß‚ÌŒvŽZ
-	//MoveComponent‚É‚Í‘Oi‚©‰ñ“]•ûŒü‚Ì—Í‚ÌÅ‘å’l‚¾‚¯‚ð“n‚·
-	float forwardforce = 0.0f;
-	if (state.Keyboard.GetKeyValue(SDL_Scancode(mForwardKey)))
+	if (keyState[mFwdKey])
 	{
-		forwardforce += mMaxForwardForce;
+		// fwd = mMaxForwardVelocity;	//’PƒˆÚ“®‚Ìê‡
+		fwd = mMaxForwardForce;
 	}
-	if (state.Keyboard.GetKeyValue(SDL_Scancode(mBackwardKey)))
+	if (keyState[mBwdKey])
 	{
-		forwardforce -= mMaxForwardForce;
+		// fwd = -mMaxForwardVelocity;       //’PƒˆÚ“®‚Ìê‡
+		fwd = -mMaxForwardForce;
 	}
-	SetMoveForce(forwardforce * mOwner->GetForward());
+	if (keyState[mCwsKey])
+	{
+		// rot = mMaxRotSpeed;       //’PƒˆÚ“®‚Ìê‡
+		rot = -mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
+	}
+	if (keyState[mCCwsKey])
+	{
+		// rot = -mMaxRotSpeed;       //’PƒˆÚ“®‚Ìê‡
+		rot = mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
+	}
 	
-	float rotforce = 0.0f;
-	if (state.Keyboard.GetKeyValue(SDL_Scancode(mClockwiseKey)))
-	{
-		rotforce -= mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
-	}
-	if (state.Keyboard.GetKeyValue(SDL_Scancode(mCounterClockwiseKey)))
-	{
-		rotforce += mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
-	}
-	SetRotForce(rotforce);
-
+	// ’PƒˆÚ“®‚Ìê‡
+	// SetVelocity(fwd * mOwner->GetForward());
+	// SetRotSpeed(rot);
+	
+	// ƒjƒ…[ƒgƒ“—ÍŠw‚ðŽg‚¤ê‡
+	SetForce(fwd * mOwner -> GetForward());
+	SetRotForce(rot * Vector3::UnitZ);
 }
-

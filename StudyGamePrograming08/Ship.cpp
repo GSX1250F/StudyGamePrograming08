@@ -1,233 +1,182 @@
-#include "Ship.h"
-#include "AnimSpriteComponent.h"
-#include "InputComponent.h"
 #include "Game.h"
-#include "Random.h"
+#include "Renderer.h"
+#include "Ship.h"
 #include "Laser.h"
-#include "ClearPict.h"
-#include "CircleComponent.h"
 #include "Asteroid.h"
-#include "Texture.h"
-#include "InputSystem.h"
+#include "SomeSpriteComponent.h"
+#include "InputComponent.h"
+#include "Random.h"
+#include "CircleComponent.h"
+#include "SoundPlayer.h"
 
-//OpenGL用に、画面中央が(0,0)、上方向に+,右方向に+の座標系に修正
-
-Ship::Ship(Game* game)
-	: Actor(game) ,
-	  mLaserCooldown(0.0f),
-	  mCrashCooldown(0.0f),
-	  mShipCooldown(0.0f),
-	  mAsteroidCooldown(3.0f),
-	  crashPos(Vector2(0.0f,0.0f)),
-	  crash(false),
-	  mSpeed(300.0f)
+Ship::Ship(Game* game):Actor(game)
 {
-	SetScale(0.8f);
-	/*
-	//スプライトコンポーネント作成、テクスチャ設定
-	SpriteComponent* sc = new SpriteComponent(this);
-	sc->SetTexture(game->GetTexture("Assets/Ship.png"));
-	*/
-
-	// アニメーションのスプライトコンポーネントを作成
-	AnimSpriteComponent* asc = new AnimSpriteComponent(this);
-	std::vector<Texture*> anims = {
-		game->GetTexture("Assets/Ship01.png"),
-		game->GetTexture("Assets/Ship02.png"),
-		game->GetTexture("Assets/Ship03.png"),
-		game->GetTexture("Assets/Ship04.png"),
-		game->GetTexture("Assets/Ship05.png")
-	};
-	asc->SetAnimTextures(anims,1,1,true);
-	mAnimComponent = asc;
-
-	//InputComponent作成
-	mInput = new InputComponent(this);
-	mInput->SetForwardKey(SDL_SCANCODE_UP);
-	mInput->SetBackwardKey(SDL_SCANCODE_DOWN);
-	mInput->SetClockwiseKey(SDL_SCANCODE_RIGHT);
-	mInput->SetCounterClockwiseKey(SDL_SCANCODE_LEFT);
-	mInput->SetMaxForwardForce(300.0f);
-	mInput->SetMaxRotForce(150.0f);
-	mInput->SetMoveResist(30.0f);
-	mInput->SetRotResist(30.0f);
-	mInput->SetMass(1.0f);
-
-	//CircleComponent作成
-	mCircle = new CircleComponent(this);
+	//SomeSpriteComponent生成
+	mSSC = new SomeSpriteComponent(this,30);
+	mSSC->TextureFiles = {
+			"Assets/Ship01.png",
+			"Assets/Ship02.png",
+			"Assets/Ship03.png",
+			"Assets/Ship04.png",
+			"Assets/Ship05.png" };
 	
+	mSSC->SetSomeTextures(mSSC->TextureFiles);
+	
+	//InputComponent生成
+	mIC = new InputComponent(this);	
+	//mIC->SetMaxForwardVelocity(200.0f);
+	//mIC->SetMaxRotSpeed(5.0f);
+	mIC->SetMaxForwardForce(300.0f);
+	mIC->SetMaxRotForce(150.0f);
+	mIC->SetMoveResist(20.0f);
+	mIC->SetRotResist(15.0f);
+	mIC->SetMass(1.0f);
+	mIC->SetForwardKey(SDL_SCANCODE_UP);
+	mIC->SetBackwardKey(SDL_SCANCODE_DOWN);
+	mIC->SetClockwiseKey(SDL_SCANCODE_RIGHT);
+	mIC->SetCounterClockwiseKey(SDL_SCANCODE_LEFT);
+
+	//CircleComponent生成
+	mCircle = new CircleComponent(this);
+
+	//効果音生成
+	mChunkFiles = {
+		"Assets/thruster.mp3",
+		"Assets/beam.mp3",
+		"Assets/explosion.mp3"
+	};
+	for (auto file : mChunkFiles)
+	{
+		game->GetSoundPlayer()->AddChunk(file);
+	}
+
 	Init();
 }
 
 void Ship::Init()
 {
-	SetPosition(Vector2(0.0f, 0.0f));
-	//float rot = Random::GetFloatRange(0.0f, Math::TwoPi);
-	//SetRotation(rot);
-	SetRotation(0.0f);
-	mInput->SetVelocity(Vector2::Zero);
-	mInput->SetRotSpeed(0.0f);
+	SetScale(0.8f);
+	SetPosition(Vector3::Zero);
+	//ランダムな向きで初期化
+	SetRotation(Quaternion(-1.0f * Vector3::UnitZ, Random::GetFloatRange(0.0f, Math::TwoPi)));
+	mIC->SetVelocity(Vector3::Zero);
+	mIC->SetRotSpeed(Vector3::Zero);
+	SetState(EActive);
+	mSSC->SetVisible(true);
 
+	mLaserCooldown = 0.0f;
+	mCrashCooldown = 0.0f;
+	mCrashingTime = 0.0f;
+	mCrash = false;
 }
 
-//void Ship::ActorInput(const uint8_t* keyState)
-void Ship::ActorInput(const struct InputState& state)
+void Ship::ActorInput(const uint8_t* keyState)
 {
-	if (crash != true) 
+	if (mCrash == false) 
 	{
-		//if (state.Keyboard.GetKeyValue(SDL_SCANCODE_LEFT))
-		if (state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == (EPressed || EHeld))
+		if (keyState[mIC->GetCounterClockwiseKey()])
 		{
-			mAnimComponent->SetAnimNum(2, 2, false); 
+			mSSC->SelectTexture(mSSC->TextureFiles[1]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(0,mChunkFiles[0],"play",0);
 		}
-		else if (state.Keyboard.GetKeyValue(SDL_SCANCODE_RIGHT))
+		else if (keyState[mIC->GetClockwiseKey()])
 		{
-			mAnimComponent->SetAnimNum(3, 3, false); 
+			mSSC->SelectTexture(mSSC->TextureFiles[2]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyValue(SDL_SCANCODE_UP))
+		else if (keyState[mIC->GetForwardKey()])
 		{
-			mAnimComponent->SetAnimNum(4, 4, false); 
+			mSSC->SelectTexture(mSSC->TextureFiles[3]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyValue(SDL_SCANCODE_DOWN))
+		else if (keyState[mIC->GetBackwardKey()])
 		{
-			mAnimComponent->SetAnimNum(5, 5, false); 
+			mSSC->SelectTexture(mSSC->TextureFiles[4]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
 		}
-		else if (mAnimComponent->mIsAnimating == false)
+		else
 		{
-			// アニメーション中が終わっていたら元のループに戻る。
-			mAnimComponent->SetAnimNum(1, 1, true);
+			mSSC->SelectTexture(mSSC->TextureFiles[0]);
 		}
-
-		if (state.Keyboard.GetKeyValue(SDL_SCANCODE_SPACE) && mLaserCooldown <= 0.0f)
-		{
-			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
-			Laser* laser = new Laser(GetGame());
-			laser->SetPosition(GetPosition() + 35.0f * GetScale() * Vector2(Math::Cos(GetRotation()), Math::Sin(GetRotation())));
-			laser->SetRotation(GetRotation());
-			laser->Shot();
-			// レーザー冷却期間リセット
-			mLaserCooldown = 0.5f;
-		}
-
-		// ジョイスティック機能追加
-		if (state.Controller.GetRightTrigger() > 0.25f
-			&& mLaserCooldown <= 0.0f)
+		
+		if (keyState[SDL_SCANCODE_SPACE] && mLaserCooldown <= 0.0f)
 		{
 			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
 			Laser* laser = new Laser(GetGame());
-			laser->SetPosition(GetPosition() + 35.0f * GetScale() * Vector2(Math::Cos(GetRotation()), Math::Sin(GetRotation())));
+			laser->SetPosition(GetPosition() + GetRadius() * GetForward());
 			laser->SetRotation(GetRotation());
 			laser->Shot();
 			// レーザー冷却期間リセット
-			mLaserCooldown = 0.5f;
-		}
-
-		if (state.Controller.GetIsConnected())
-		{
-			mVelocityDir = state.Controller.GetLeftStick();
-			if (!Math::NearZero(state.Controller.GetRightStick().Length()))
-			{
-				mRotationDir = state.Controller.GetRightStick();
-			}
-			
-		}
-
-
-	}
-	
+			mLaserCooldown = 0.7f;
+			GetGame()->GetSoundPlayer()->SetChunkControl(4, mChunkFiles[1], "replay", 0);
+		}		
+	}	
 }
 
 void Ship::UpdateActor(float deltaTime)
 {
-	mLaserCooldown -= deltaTime;	//レーザーを次に撃てるまでの時間
+	mLaserCooldown -= deltaTime;
+	mCrashCooldown -= deltaTime;
+	mCrashingTime -= deltaTime;
 
-	// ジョイスティック機能追加
-	// Update position based on velocity
-	Vector2 pos = GetPosition();
-	pos += mVelocityDir * mSpeed * deltaTime;
-	SetPosition(pos);
-
-	// Update rotation
-	float angle = Math::Atan2(mRotationDir.y, mRotationDir.x);
-	SetRotation(angle);
-
-
-	mAsteroidCooldown -= deltaTime;
-	if (mAsteroidCooldown < 0.0f && GetGame()->numAsteroids > 0)
+	if (mCrash == false)
 	{
-		GetGame()->IncreaseAsteroid();
-		mAsteroidCooldown = 5.0f;
-	}
-	if (GetGame()->numAsteroids == 0)
-	{
-		GetGame()->mClearPict->SetState(EActive);
-		GetGame()->mClearPict->SetPosition(Vector2(0.0f , 0.0f));
-	}
-
-	if (crash == false)
-	{
-		//小惑星と衝突していないとき
 		//画面外にでたら反対の位置に移動（ラッピング処理）
-		if (GetPosition().x < GetGame()->mWindowWidth * (-0.5f) - 1.0f * GetRadius() ||
-			GetPosition().x > GetGame()->mWindowWidth * 0.5f + 1.0f * GetRadius())
+		if (GetPosition().x < GetGame()->mWindowWidth * (-0.5f) - GetRadius() ||
+			GetPosition().x > GetGame()->mWindowWidth * 0.5f + GetRadius())
 		{
-			SetPosition(Vector2(-1.0f * GetPosition().x, GetPosition().y));
+			SetPosition(Vector3(- GetPosition().x, GetPosition().y, GetPosition().z));
 		}
-		if (GetPosition().y < GetGame()->mWindowHeight * (-0.5f) - 1 * GetRadius() ||
-			GetPosition().y > GetGame()->mWindowHeight * 0.5f + 1 * GetRadius())
+		if (GetPosition().y < GetGame()->mWindowHeight * (-0.5f) - GetRadius() ||
+			GetPosition().y > GetGame()->mWindowHeight * 0.5f + GetRadius())
 		{
-			SetPosition(Vector2(GetPosition().x, -1.0f * GetPosition().y));
+			SetPosition(Vector3(GetPosition().x, - GetPosition().y, GetPosition().z));
 		}
 		//小惑星と衝突したかを判定
 		for (auto ast : GetGame()->GetAsteroids())
 		{
 			if (Intersect(*mCircle, *(ast->GetCircle())) && ast->GetState() == EActive)
 			{
-				//小惑星と衝突
-				crashPos = GetPosition();
-				crashRot = GetRotation();
-				crash = true;
-				mCrashCooldown = 2.0f;
-				mShipCooldown = 2.0f;
-
-				//ゲーム自体を終了する場合
-				//GetGame()->SetRunning(false);
-
+				mCrashPos = GetPosition();
+				mCrashRot = GetRotation();
+				mCrash = true;
+				mCrashCooldown = 4.0f;
+				mCrashingTime = 2.0f;
+				GetGame()->GetSoundPlayer()->SetChunkControl(5, mChunkFiles[2], "replay", 0);
 				break;
 			}
 		}
 	}
 	else
 	{
-		// 小惑星と衝突したとき
-		if (GetState() == EPaused)
+		if (mCrashingTime > 0.0f)
 		{
-			// 状態がEPausedのとき、リスポーンするまでの時間を計算
-			mShipCooldown -= deltaTime;
-			// リスポーンするまでの時間になったら、初期位置・角度にリスポーン
-			if (mShipCooldown <= 0.0f)
-			{
-				Init();
-				SetState(EActive);
-				mShipCooldown = 0.0f;
-				crash = false;
-			}
+			SetPosition(mCrashPos);		// MoveComponentが更新されても衝突したときの位置に置きなおし
+			Quaternion inc(Vector3::UnitZ, -3.0f * Math::TwoPi * deltaTime);
+			mCrashRot = Quaternion::Concatenate(mCrashRot, inc);
+			SetRotation(mCrashRot);		// MoveComponentが更新されても衝突してからの回転角度に置きなおし
+			SetScale(GetScale() * 0.98f);
 		}
 		else
 		{
-			// 衝突演出中
-			SetPosition(crashPos);		// MoveComponentが更新されても衝突したときの位置に置きなおし
-			crashRot -= 3.0f * Math::TwoPi * deltaTime;
-			SetRotation(crashRot);		// MoveComponentが更新されても衝突してからの回転角度に置きなおし
-			mCrashCooldown -= deltaTime;
-			if (mCrashCooldown <= 0.0f)
+			if (mCrashCooldown > 0.0f)
 			{
+				//衝突演出後、リスポーンするまで表示停止
 				SetState(EPaused);
-				mCrashCooldown = 0.0f;
+				mSSC->SetVisible(false);
+			}
+			else
+			{
+				Init();
 			}
 		}
 	}
+	
+	// Compute new camera from this actor
+	Vector3 cameraPos = -500.0f * Vector3::UnitZ;
+	Vector3 cameraTarget = Vector3::Zero;
+	Vector3 cameraUp = Vector3::UnitY;
+	Matrix4 view = Matrix4::CreateLookAt(cameraPos, cameraTarget, cameraUp);
+	GetGame()->GetRenderer()->SetViewMatrix(view);
+	
 }
-
-
-

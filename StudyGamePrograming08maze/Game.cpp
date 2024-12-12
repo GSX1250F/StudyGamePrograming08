@@ -2,14 +2,15 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <algorithm>
+#include <thread>
+#include <chrono>
 #include "Actor.h"
 #include "Renderer.h"
 #include "Random.h"
 #include "Maze.h"
 #include "MeshActors.h"
 #include "SpriteActors.h"
-#include <thread>
-#include <chrono>
+#include "InputSystem.h"
 
 Game::Game()
 	: mRenderer(nullptr)
@@ -23,7 +24,7 @@ Game::Game()
 bool Game::Initialize()
 {
 	// SDL‰Šú‰»
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0)
 	{
 		SDL_Log("SDL‚ð‰Šú‰»‚Å‚«‚Ü‚¹‚ñ: %s", SDL_GetError());
 		return false;
@@ -38,9 +39,19 @@ bool Game::Initialize()
 		return false;
 	}
 
-	Random::Init();		//—”Ý’è‚Ì‰Šú‰»?
+	Random::Init();		//—”Ý’è‚Ì‰Šú‰»
+
+	// InputSystem‚ð¶¬E‰Šú‰»
+	mInputSystem = new InputSystem();
+	if (!mInputSystem->Initialize())
+	{
+		SDL_Log("Input System‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½B");
+		return false;
+	}
 
 	LoadData();
+
+	mTicksCount = SDL_GetTicks();
 
 	return true;
 }
@@ -57,6 +68,8 @@ void Game::RunLoop()
 
 void Game::ProcessInput()
 {
+	mInputSystem->PrepareForUpdate();
+
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{

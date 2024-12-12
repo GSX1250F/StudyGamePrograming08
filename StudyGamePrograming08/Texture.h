@@ -12,15 +12,14 @@ public:
 
 	void SetActive();
 
-	int GetWidth() const { return mWidth; }
-	int GetHeight() const { return mHeight; }
+	int GetTexWidth() const { return mTexWidth; }
+	int GetTexHeight() const { return mTexHeight; }
 
 private:
 	// このテクスチャのOpenGL ID
 	unsigned int mTextureID;
 
 	// テクスチャの幅と高さ
-	int mWidth;
-	int mHeight;
+	int mTexWidth;
+	int mTexHeight;
 };
-

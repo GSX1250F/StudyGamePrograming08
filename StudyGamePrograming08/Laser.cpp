@@ -1,24 +1,33 @@
-#include "Laser.h"
-#include "SpriteComponent.h"
 #include "Game.h"
+#include "Renderer.h"
+#include "Laser.h"
 #include "Asteroid.h"
+#include "SpriteComponent.h"
+#include "MoveComponent.h"	
 #include "CircleComponent.h"
-#include "Texture.h"
-#include "MoveComponent.h"
 
-Laser::Laser(Game* game) : Actor(game),mDeathTime(1.0f),mLaserSpeed(900.0f)
+Laser::Laser(Game* game)
+	: Actor(game)
+	,mDeathTime(2.0f)
+	,mLaserSpeed(900.0f)
 {
-	//初期位置,角度はShipで設定
 	//スプライトコンポーネント作成、テクスチャ設定
 	SpriteComponent* sc = new SpriteComponent(this);
-	sc->SetTexture(game->GetTexture("Assets/Laser.png"));
+	sc->SetTexture(game->GetRenderer()->GetTexture("Assets/Laser.png"));
+	
+	//CircleComponent作成
+	mCircle = new CircleComponent(this);
 }
 
 void Laser::UpdateActor(float deltaTime)
 {
-	//DeathTimeが0になったら消去する。
+	//画面外にでるか、DeathTimeが0になったら消去する。
 	mDeathTime -= deltaTime;
-	if(mDeathTime <= 0.0f) 
+	if(mDeathTime <= 0.0f ||
+	   GetPosition().x < GetGame()->mWindowWidth * (-0.5f) - 2.0f * GetRadius() ||
+	   GetPosition().x > GetGame()->mWindowWidth * 0.5f + 2.0f * GetRadius() ||
+	   GetPosition().y < GetGame()->mWindowHeight * (-0.5f) - 2.0f * GetRadius() ||
+	   GetPosition().y > GetGame()->mWindowHeight * 0.5f + 2.0f * GetRadius())
 	{
 		SetState(EDead);
 	}
@@ -44,8 +53,5 @@ void Laser::Shot()
 {
 	//MoveComponent作成
 	MoveComponent* mc = new MoveComponent(this);
-	mc->SetVelocity(mLaserSpeed * Vector2(Math::Cos(GetRotation()), Math::Sin(GetRotation())));
-
-	//CircleComponent作成
-	mCircle = new CircleComponent(this);
+	mc->SetVelocity(mLaserSpeed * GetForward());
 }
