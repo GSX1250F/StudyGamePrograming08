@@ -21,17 +21,17 @@ void InputComponent::ProcessInput(const int keyState)
 		// fwd = mMaxForwardVelocity;	//単純移動の場合
 		fwd = mMaxForwardForce;
 	}
-	if (keyState == mBwdKey)
+	else if (keyState == mBwdKey)
 	{
 		// fwd = -mMaxForwardVelocity;       //単純移動の場合
 		fwd = -mMaxForwardForce;
 	}
-	if (keyState == mCwsKey)
+	else if (keyState == mCwsKey)
 	{
 		// rot = mMaxRotSpeed;       //単純移動の場合
 		rot = -mMaxRotForce;		//角度の＋方向はCCW
 	}
-	if (keyState == mCCwsKey)
+	else if (keyState == mCCwsKey)
 	{
 		// rot = -mMaxRotSpeed;       //単純移動の場合
 		rot = mMaxRotForce;		//角度の＋方向はCCW
@@ -42,6 +42,7 @@ void InputComponent::ProcessInput(const int keyState)
 	// SetRotSpeed(rot);
 	
 	// ニュートン力学を使う場合
-	SetForce(fwd * mOwner -> GetForward());
+	SetForce(fwd * mOwner->GetForward()); 
 	SetRotForce(rot * Vector3::UnitZ);
+	
 }

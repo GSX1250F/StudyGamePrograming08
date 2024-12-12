@@ -75,6 +75,7 @@ void Game::RunLoop()
 void Game::ProcessInput()
 {
 	//mInputSystem->PrepareForUpdate();
+	int keyState = 0;
 
 	SDL_Event event;
 	// キューにイベントがあれば繰り返す
@@ -86,29 +87,36 @@ void Game::ProcessInput()
 		}
 		if (event.type == SDL_KEYDOWN) 
 		{
-			//キーダウンイベント
-			int keyState = event.key.keysym.sym;
-			mUpdatingActors = true;
-			for (auto actor : mActors)
+			if (!event.key.repeat)
 			{
-				actor->ProcessInput(keyState);
-			}
-			mUpdatingActors = false;
+				//キーダウンイベント
+				keyState = event.key.keysym.sym;
+			}			
 		}
 		else
 		{
 			//何もしてないとき
+			keyState = 0;
 		}
 		if (event.type == SDL_KEYUP)
 		{
 			//キーアップイベント
-			int keyState = event.key.keysym.sym;
+			keyState = event.key.keysym.sym;
 			if (keyState == SDLK_ESCAPE)
 			{
 				mIsRunning = false;
 			}
 		}
-	}	
+		mUpdatingActors = true;
+		for (auto actor : mActors)
+		{
+			actor->ProcessInput(keyState);
+		}
+		mUpdatingActors = false;
+	}
+	
+
+	
 }
 
 void Game::UpdateGame()
@@ -183,7 +191,7 @@ void Game::LoadData()
 	mShip = new Ship(this);
 	
 	// 小惑星を最初に複数生成
-	int initialNumAsteroids = 20;		//初期値
+	int initialNumAsteroids = 0;		//初期値
 	for (int i = 0; i < initialNumAsteroids; i++)
 	{
 		AddAsteroid();
