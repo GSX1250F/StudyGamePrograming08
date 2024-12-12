@@ -145,60 +145,59 @@ xcopy "..\..\external\GLEW\lib\$(PlatformTarget)\*.dll" "$(OutDir)" /i/s/y
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Shaders\BasicMesh.frag" />
+    <None Include="Shaders\BasicMesh.vert" />
+    <None Include="Shaders\LambertMesh.frag" />
+    <None Include="Shaders\LambertMesh.vert" />
+    <None Include="Shaders\MeshShader.frag" />
+    <None Include="Shaders\MeshShader.vert" />
+    <None Include="Shaders\PhongMesh.frag" />
+    <None Include="Shaders\PhongMesh.vert" />
+    <None Include="Shaders\SpriteShader.frag" />
+    <None Include="Shaders\SpriteShader.vert" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="Brave.cpp" />
     <ClCompile Include="CircleComponent.cpp" />
-    <ClCompile Include="ClearPict.cpp" />
     <ClCompile Include="Component.cpp" />
-    <ClCompile Include="InputSystem.cpp" />
-    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Maze.cpp" />
     <ClCompile Include="MazeCreator.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshActors.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SpriteActors.cpp" />
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="Tile.cpp" />
-    <ClCompile Include="Treasure.cpp" />
     <ClCompile Include="VertexInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
-    <ClInclude Include="Brave.h" />
     <ClInclude Include="CircleComponent.h" />
-    <ClInclude Include="ClearPict.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="InputSystem.h" />
-    <ClInclude Include="Plane.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Maze.h" />
     <ClInclude Include="MazeCreator.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshActors.h" />
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SpriteActors.h" />
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Tile.h" />
-    <ClInclude Include="Treasure.h" />
     <ClInclude Include="VertexInfo.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="Shaders\MeshShader.frag" />
-    <None Include="Shaders\MeshShader.vert" />
-    <None Include="Shaders\SpriteShader.frag" />
-    <None Include="Shaders\SpriteShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

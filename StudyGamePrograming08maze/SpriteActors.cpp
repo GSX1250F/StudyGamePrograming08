@@ -1,7 +1,16 @@
-#include "ClearPict.h"
+#include "SpriteActors.h"
 #include "SpriteComponent.h"
 #include "Game.h"
 #include "Renderer.h"
+
+SpriteActors::SpriteActors(Game* game) : Actor(game)
+{
+	Actor* a;
+	std::string filename;
+
+	//ClearPict
+	a = new ClearPict(game);	
+}
 
 ClearPict::ClearPict(Game* game) : Actor(game)
 {

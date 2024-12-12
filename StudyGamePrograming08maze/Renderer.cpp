@@ -14,12 +14,14 @@ Renderer::Renderer(Game* game)
 	: mGame(game)
 	, mWindow(nullptr)
 	, mSpriteShader(nullptr)
-	, mMeshShader(nullptr)
+	//, mMeshShader(nullptr)
 	, mVertexInfo(nullptr)
-{}
+{
+}
 
 Renderer::~Renderer()
-{}
+{
+}
 
 bool Renderer::Initialize(float screenWidth, float screenHeight)
 {
@@ -58,7 +60,7 @@ bool Renderer::Initialize(float screenWidth, float screenHeight)
 		SDL_Log("ウィンドウの作成に失敗しました: %s", SDL_GetError());
 		return false;
 	}
-	
+
 	// OpenGLコンテクストを生成（すべてのOpenGL機能にアクセスする）
 	mContext = SDL_GL_CreateContext(mWindow);
 
@@ -109,8 +111,13 @@ void Renderer::Shutdown()
 	delete mVertexInfo;
 	mSpriteShader->Unload();
 	delete mSpriteShader;
-	mMeshShader->Unload();
-	delete mMeshShader;
+	//mMeshShader->Unload();
+	//delete mMeshShader;
+	for (auto sh : mShaders)
+	{
+		sh.first->Unload();
+		delete sh.first;
+	}
 	SDL_GL_DeleteContext(mContext);
 	SDL_DestroyWindow(mWindow);
 }
@@ -124,16 +131,27 @@ void Renderer::Draw()
 	// 深度有効化、アルファブレンディング無効化
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
-	// メッシュを描画
-	mMeshShader->SetActive();
-	mMeshShader->SetMatrixUniform("uViewProj", mView * mProj);
 
-	// 光源のUniform変数を更新
-	SetLightUniforms(mMeshShader);
-
-	for (auto mc : mMeshComps)
+	// シェーダー毎に描画
+	for (auto sh : mShaders)
 	{
-		mc->Draw(mMeshShader);
+		// メッシュを描画
+		//mMeshShader->SetActive();
+		//mMeshShader->SetMatrixUniform("uViewProj", mView * mProj);
+		sh.first->SetActive();
+		sh.first->SetMatrixUniform("uViewProj", mView * mProj);
+		// 光源のUniform変数を更新
+		//SetLightUniforms(mMeshShader);
+		SetLightUniforms(sh.first);
+
+		for (auto mc : mMeshComps)
+		{
+			std::string shaderName = mc->GetMesh()->GetShaderName();
+			if (shaderName == sh.second)
+			{
+				mc->Draw(sh.first);
+			}
+		}
 	}
 
 	// 深度無効化、アルファブレンディング有効化
@@ -262,21 +280,50 @@ bool Renderer::LoadShaders()
 	mView = Matrix4::Identity;
 	mProj = Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight);
 	mSpriteShader->SetMatrixUniform("uViewProj", mView * mProj);
-	
+
 	// メッシュ用シェーダーを生成
-	mMeshShader = new Shader();
-	if (!mMeshShader->Load("Shaders/MeshShader.vert", "Shaders/MeshShader.frag"))
-	{
-		return false;
-	}
-	mMeshShader->SetActive();
 	// メッシュの描画には、透視射影を行う。
 	Vector3 cameraPos = Vector3::Zero;
 	Vector3 cameraTarget = Vector3::UnitX;
 	Vector3 cameraUp = Vector3::UnitZ;
 	mView = Matrix4::CreateLookAt(cameraPos, cameraTarget, cameraUp);
 	mProj = Matrix4::CreatePerspectiveFOV(Math::ToRadians(70.0f), mScreenWidth, mScreenHeight, 0.01f, 10000.0f);
+	//BasicShader
+	class Shader* mMeshShader = new Shader();
+	if (!mMeshShader->Load("Shaders/BasicMesh.vert", "Shaders/BasicMesh.frag"))
+	{
+		return false;
+	}
+	mMeshShader->SetActive();
 	mMeshShader->SetMatrixUniform("uViewProj", mView * mProj);
+	mShaders.emplace(mMeshShader, "BasicMesh");
+	//LambertShader
+	mMeshShader = new Shader();
+	if (!mMeshShader->Load("Shaders/LambertMesh.vert", "Shaders/LambertMesh.frag"))
+	{
+		return false;
+	}
+	mMeshShader->SetActive();
+	mMeshShader->SetMatrixUniform("uViewProj", mView * mProj);
+	mShaders.emplace(mMeshShader, "LambertMesh");
+	//PhongShader
+	mMeshShader = new Shader();
+	if (!mMeshShader->Load("Shaders/PhongMesh.vert", "Shaders/PhongMesh.frag"))
+	{
+		return false;
+	}
+	mMeshShader->SetActive();
+	mMeshShader->SetMatrixUniform("uViewProj", mView * mProj);
+	mShaders.emplace(mMeshShader, "PhongMesh");
+
+	/*
+	mMeshShader = new Shader();
+	if (!mMeshShader->Load("Shaders/MeshShader.vert", "Shaders/MeshShader.frag"))
+	{
+		return false;
+	}
+	mMeshShader->SetActive();
+	*/
 
 	return true;
 }
@@ -290,7 +337,50 @@ void Renderer::SetLightUniforms(Shader* shader)
 	// 環境光
 	shader->SetVectorUniform("uAmbientLight", mAmbientLight);
 	// 平行光源
+	/*
 	shader->SetVectorUniform("uDirLight.mDirection", mDirLight.mDirection);
 	shader->SetVectorUniform("uDirLight.mDiffuseColor", mDirLight.mDiffuseColor);
 	shader->SetVectorUniform("uDirLight.mSpecColor", mDirLight.mSpecColor);
+	*/
+	std::string str;
+	for (int i = 0; i < mDirLights.size(); i++)
+	{
+		str = "uDirLights[" + std::to_string(i) + "].mDirection";
+		shader->SetVectorUniform(str.c_str(), mDirLights[i].mDirection);
+		str = "uDirLights[" + std::to_string(i) + "].mDiffuseColor";
+		shader->SetVectorUniform(str.c_str(), mDirLights[i].mDiffuseColor);
+		str = "uDirLights[" + std::to_string(i) + "].mSpecColor";
+		shader->SetVectorUniform(str.c_str(), mDirLights[i].mSpecColor);
+	}
+	// 点光源
+	for (int i = 0; i < mPointLights.size(); i++)
+	{
+		str = "uPointLights[" + std::to_string(i) + "].mPosition";
+		shader->SetVectorUniform(str.c_str(), mPointLights[i].mPosition);
+		str = "uPointLights[" + std::to_string(i) + "].mDiffuseColor";
+		shader->SetVectorUniform(str.c_str(), mPointLights[i].mDiffuseColor);
+		str = "uPointLights[" + std::to_string(i) + "].mSpecColor";
+		shader->SetVectorUniform(str.c_str(), mPointLights[i].mSpecColor);
+		str = "uPointLights[" + std::to_string(i) + "].mAttenuation";
+		shader->SetFloatUniform(str.c_str(), mPointLights[i].mAttenuation);
+	}
+
+	// スポットライト
+	for (int i = 0; i < mSpotLights.size(); i++)
+	{
+		str = "uSpotLights[" + std::to_string(i) + "].mPosition";
+		shader->SetVectorUniform(str.c_str(), mSpotLights[i].mPosition);
+		str = "uSpotLights[" + std::to_string(i) + "].mDirection";
+		shader->SetVectorUniform(str.c_str(), mSpotLights[i].mDirection);
+		str = "uSpotLights[" + std::to_string(i) + "].mDiffuseColor";
+		shader->SetVectorUniform(str.c_str(), mSpotLights[i].mDiffuseColor);
+		str = "uSpotLights[" + std::to_string(i) + "].mSpecColor";
+		shader->SetVectorUniform(str.c_str(), mSpotLights[i].mSpecColor);
+		str = "uSpotLights[" + std::to_string(i) + "].mAttenuation";
+		shader->SetFloatUniform(str.c_str(), mSpotLights[i].mAttenuation);
+		str = "uSpotLights[" + std::to_string(i) + "].mCornAngle";
+		shader->SetFloatUniform(str.c_str(), mSpotLights[i].mCornAngle);
+		str = "uSpotLights[" + std::to_string(i) + "].mFalloff";
+		shader->SetFloatUniform(str.c_str(), mSpotLights[i].mFalloff);
+	}
 }

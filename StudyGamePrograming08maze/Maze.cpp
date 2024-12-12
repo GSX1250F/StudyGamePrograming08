@@ -1,14 +1,12 @@
 #include "Maze.h"
 #include "MazeCreator.h"
 #include "Game.h"
-#include "Brave.h"
-#include "Treasure.h"
-#include "ClearPict.h"
-#include "Tile.h"
-#include "Plane.h"
+#include "Renderer.h"
 #include "CircleComponent.h"
 #include "SpriteComponent.h"
 #include "MeshComponent.h"
+#include "MeshActors.h"
+#include "SpriteActors.h"
 #include <queue>
 #include <unordered_map>
 #include <algorithm>
@@ -44,6 +42,7 @@ Maze::Maze(Game* game, int mapWidth, int mapHeight)
 	//mTileSize = mTiles[0][0]->GetTexSize();
 	mTileSize = 150.0f;
 
+	//メッシュアクター
 	mBrave = new Brave(game);			//プレイヤー
 	mTreasure = new Treasure(game);		//ゴール
 	mClearPict = new ClearPict(game);	//ゲームクリア画像
@@ -55,8 +54,16 @@ Maze::Maze(Game* game, int mapWidth, int mapHeight)
 		{
 			Actor* floor = new Plane(game);
 			floor->SetPosition(Vector3(GetTilePos(i, j).x, GetTilePos(i,j).y, mTileSize * 0.5f));
+			Quaternion q = Quaternion(Vector3::UnitX, Math::Pi);
+			floor->SetRotation(q);
+			floor = new Plane(game);
+			floor->SetPosition(Vector3(GetTilePos(i, j).x, GetTilePos(i, j).y, -mTileSize * 0.5f));
 		}
 	}
+
+	// 光源
+	// 環境光	
+	game->GetRenderer()->SetAmbientLight(Vector3(0.01f, 0.01f, 0.01f));
 }
 
 void Maze::ActorInput(const SDL_Event& event)
