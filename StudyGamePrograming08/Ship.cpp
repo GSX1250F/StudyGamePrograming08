@@ -62,6 +62,7 @@ void Ship::Init()
 	mIC->SetVelocity(Vector3::Zero);
 	mIC->SetRotSpeed(Vector3::Zero);
 	SetState(EActive);
+	mSSC->SelectTexture(mSSC->TextureFiles[0]);
 	mSSC->SetVisible(true);
 
 	mLaserCooldown = 0.0f;
@@ -70,46 +71,49 @@ void Ship::Init()
 	mCrash = false;
 }
 
-void Ship::ActorInput(const int keyState)
+void Ship::ActorInput(const SDL_Event& event)
 {
 	if (mCrash == false) 
 	{
-		if (keyState == mIC->GetCounterClockwiseKey())
+		if (event.type == SDL_KEYDOWN)
 		{
-			mSSC->SelectTexture(mSSC->TextureFiles[1]);
-			GetGame()->GetSoundPlayer()->SetChunkControl(0,mChunkFiles[0],"play",0);
-		}
-		else if (keyState == mIC->GetClockwiseKey())
-		{
-			mSSC->SelectTexture(mSSC->TextureFiles[2]);
-			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
-		}
-		else if (keyState == mIC->GetForwardKey())
-		{
-			mSSC->SelectTexture(mSSC->TextureFiles[3]);
-			GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
-		}
-		else if (keyState == mIC->GetBackwardKey())
-		{
-			mSSC->SelectTexture(mSSC->TextureFiles[4]);
-			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
+			if (event.key.keysym.sym == mIC->GetCounterClockwiseKey())
+			{
+				mSSC->SelectTexture(mSSC->TextureFiles[1]);
+				GetGame()->GetSoundPlayer()->SetChunkControl(0, mChunkFiles[0], "play", 0);
+			}
+			else if (event.key.keysym.sym == mIC->GetClockwiseKey())
+			{
+				mSSC->SelectTexture(mSSC->TextureFiles[2]);
+				GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
+			}
+			else if (event.key.keysym.sym == mIC->GetForwardKey())
+			{
+				mSSC->SelectTexture(mSSC->TextureFiles[3]);
+				GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
+			}
+			else if (event.key.keysym.sym == mIC->GetBackwardKey())
+			{
+				mSSC->SelectTexture(mSSC->TextureFiles[4]);
+				GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
+			}
+			else if (event.key.keysym.sym == SDLK_SPACE && mLaserCooldown <= 0.0f)
+			{
+				// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
+				Laser* laser = new Laser(GetGame());
+				laser->SetPosition(GetPosition() + GetRadius() * GetForward());
+				laser->SetRotation(GetRotation());
+				laser->Shot();
+				// レーザー冷却期間リセット
+				mLaserCooldown = 0.7f;
+				GetGame()->GetSoundPlayer()->SetChunkControl(4, mChunkFiles[1], "replay", 0);
+			}
+
 		}
 		else
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[0]);
 		}
-		
-		if (keyState == SDLK_SPACE && mLaserCooldown <= 0.0f)
-		{
-			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
-			Laser* laser = new Laser(GetGame());
-			laser->SetPosition(GetPosition() + GetRadius() * GetForward());
-			laser->SetRotation(GetRotation());
-			laser->Shot();
-			// レーザー冷却期間リセット
-			mLaserCooldown = 0.7f;
-			GetGame()->GetSoundPlayer()->SetChunkControl(4, mChunkFiles[1], "replay", 0);
-		}		
 	}	
 }
 

@@ -10,32 +10,36 @@ InputComponent::InputComponent(Actor* owner, int updateOrder)
 	,mMaxRotForce(0.0f)
 {}
 
-void InputComponent::ProcessInput(const int keyState)
+void InputComponent::ProcessInput(const SDL_Event& event)
 {
 	float fwd = 0.0f;
 	float rot = 0.0f;
 
 	//ŒÃ“T•¨—Šw‚ÅMoveComponent‚Ì‚½‚ß‚ÌŒvŽZ
-	if (keyState == mFwdKey)
+	if (event.type == SDL_KEYDOWN)
 	{
-		// fwd = mMaxForwardVelocity;	//’PƒˆÚ“®‚Ìê‡
-		fwd = mMaxForwardForce;
+		if (event.key.keysym.sym == mFwdKey)
+		{
+			// fwd = mMaxForwardVelocity;	//’PƒˆÚ“®‚Ìê‡
+			fwd = mMaxForwardForce;
+		}
+		else if (event.key.keysym.sym == mBwdKey)
+		{
+			// fwd = -mMaxForwardVelocity;       //’PƒˆÚ“®‚Ìê‡
+			fwd = -mMaxForwardForce;
+		}
+		else if (event.key.keysym.sym == mCwsKey)
+		{
+			// rot = mMaxRotSpeed;       //’PƒˆÚ“®‚Ìê‡
+			rot = -mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
+		}
+		else if (event.key.keysym.sym == mCCwsKey)
+		{
+			// rot = -mMaxRotSpeed;       //’PƒˆÚ“®‚Ìê‡
+			rot = mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
+		}
 	}
-	else if (keyState == mBwdKey)
-	{
-		// fwd = -mMaxForwardVelocity;       //’PƒˆÚ“®‚Ìê‡
-		fwd = -mMaxForwardForce;
-	}
-	else if (keyState == mCwsKey)
-	{
-		// rot = mMaxRotSpeed;       //’PƒˆÚ“®‚Ìê‡
-		rot = -mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
-	}
-	else if (keyState == mCCwsKey)
-	{
-		// rot = -mMaxRotSpeed;       //’PƒˆÚ“®‚Ìê‡
-		rot = mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
-	}
+		
 	
 	// ’PƒˆÚ“®‚Ìê‡
 	// SetVelocity(fwd * mOwner->GetForward());

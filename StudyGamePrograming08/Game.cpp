@@ -52,6 +52,8 @@ bool Game::Initialize()
 		mSoundPlayer = nullptr;
 		return false;
 	}
+
+	
 		
 	Random::Init();		//乱数設定の初期化?
 
@@ -74,56 +76,43 @@ void Game::RunLoop()
 
 void Game::ProcessInput()
 {
-	//mInputSystem->PrepareForUpdate();
-	int keyState = 0;
-
 	SDL_Event event;
-	// キューにイベントがあれば繰り返す
+	SDL_Event keyEvent;
+	bool keyFlag = false;
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT)
 		{
 			mIsRunning = false;
 		}
-		if (event.type == SDL_KEYDOWN) 
+		if (event.type == SDL_KEYDOWN)
 		{
-			if (!event.key.repeat)
-			{
-				//キーダウンイベント
-				keyState = event.key.keysym.sym;
-			}			
-		}
-		else
-		{
-			//何もしてないとき
-			keyState = 0;
-		}
-		if (event.type == SDL_KEYUP)
-		{
-			//キーアップイベント
-			keyState = event.key.keysym.sym;
-			if (keyState == SDLK_ESCAPE)
+			if (event.key.keysym.sym == SDLK_ESCAPE)
 			{
 				mIsRunning = false;
 			}
+			else
+			{
+				keyEvent = event;
+				keyFlag = true;
+			}
 		}
-		mUpdatingActors = true;
-		for (auto actor : mActors)
-		{
-			actor->ProcessInput(keyState);
-		}
-		mUpdatingActors = false;
+		if (!keyFlag) { keyEvent = event; }
 	}
 	
-
-	
+	mUpdatingActors = true;
+	for (auto actor : mActors)
+	{
+		actor->ProcessInput(keyEvent);
+	}
+	mUpdatingActors = false;
 }
 
 void Game::UpdateGame()
 {
 	// フレームレート調整（62.5fps)
-	if (SDL_GetTicks() - mTicksCount < 16) {
-		int sleep = 16 - (SDL_GetTicks() - mTicksCount);
+	if (SDL_GetTicks() - mTicksCount < 100) {
+		int sleep = 100 - (SDL_GetTicks() - mTicksCount);
 		std::this_thread::sleep_for(std::chrono::milliseconds(sleep));    // sleepミリ秒処理を止める
 	}
 	

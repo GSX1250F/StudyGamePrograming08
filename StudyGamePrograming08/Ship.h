@@ -8,7 +8,7 @@ class Ship : public Actor
 public:
 	Ship(Game* game);
 	
-	void ActorInput(const int keyState) override;
+	void ActorInput(const SDL_Event& event) override;
 	void UpdateActor(float deltaTime) override;
 
 	void Init();

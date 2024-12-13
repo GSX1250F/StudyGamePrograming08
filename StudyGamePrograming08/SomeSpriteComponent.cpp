@@ -12,8 +12,7 @@ void SomeSpriteComponent::SetSomeTextures(std::vector<std::string> texturefiles)
 	for (auto file : texturefiles)
 	{
 		SetTexture(mOwner->GetGame()->GetRenderer()->GetTexture(file));
-	}
-	
+	}	
 }
 
 void SomeSpriteComponent::SelectTexture(std::string filename)
