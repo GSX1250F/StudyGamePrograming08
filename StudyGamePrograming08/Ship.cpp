@@ -31,10 +31,10 @@ Ship::Ship(Game* game):Actor(game)
 	mIC->SetMoveResist(20.0f);
 	mIC->SetRotResist(15.0f);
 	mIC->SetMass(1.0f);
-	mIC->SetForwardKey(SDLK_UP);
-	mIC->SetBackwardKey(SDLK_DOWN);
-	mIC->SetClockwiseKey(SDLK_RIGHT);
-	mIC->SetCounterClockwiseKey(SDLK_LEFT);
+	mIC->SetForwardKey(SDL_SCANCODE_UP);
+	mIC->SetBackwardKey(SDL_SCANCODE_DOWN);
+	mIC->SetClockwiseKey(SDL_SCANCODE_RIGHT);
+	mIC->SetCounterClockwiseKey(SDL_SCANCODE_LEFT);
 
 	//CircleComponentê∂ê¨
 	mCircle = new CircleComponent(this);
@@ -71,7 +71,7 @@ void Ship::Init()
 	mCrash = false;
 }
 
-void Ship::ActorInput(const uint8_t* keyState)
+void Ship::ActorInput(const Uint8* keyState)
 {
 	if (mCrash == false) 
 	{

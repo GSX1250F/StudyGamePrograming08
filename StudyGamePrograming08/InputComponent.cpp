@@ -10,7 +10,7 @@ InputComponent::InputComponent(Actor* owner, int updateOrder)
 	,mMaxRotForce(0.0f)
 {}
 
-void InputComponent::ProcessInput(const uint8_t* keyState)
+void InputComponent::ProcessInput(const Uint8* keyState)
 {
 	float fwd = 0.0f;
 	float rot = 0.0f;
