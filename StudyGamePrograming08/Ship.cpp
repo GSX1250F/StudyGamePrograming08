@@ -8,6 +8,7 @@
 #include "Random.h"
 #include "CircleComponent.h"
 #include "SoundPlayer.h"
+#include "InputSystem.h"
 
 Ship::Ship(Game* game):Actor(game)
 {
@@ -71,26 +72,26 @@ void Ship::Init()
 	mCrash = false;
 }
 
-void Ship::ActorInput(const Uint8* keyState)
+void Ship::ActorInput(const InputState& state)
 {
 	if (mCrash == false) 
 	{
-		if (keyState[mIC->GetCounterClockwiseKey()])
+		if (state.Keyboard.GetKeyState(mIC->GetCounterClockwiseKey()) == EPressed)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[1]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(0, mChunkFiles[0], "play", 0);
 		}
-		else if (keyState[mIC->GetClockwiseKey()])
+		else if (state.Keyboard.GetKeyState(mIC->GetClockwiseKey()) == EPressed)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[2]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
 		}
-		else if (keyState[mIC->GetForwardKey()])
+		else if (state.Keyboard.GetKeyState(mIC->GetForwardKey()) == EPressed)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[3]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
 		}
-		else if (keyState[mIC->GetBackwardKey()])
+		else if (state.Keyboard.GetkeyState(mIC->GetBackwardKey()) == EPressed)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[4]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);

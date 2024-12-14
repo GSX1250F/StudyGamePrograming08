@@ -4,11 +4,25 @@
 
 bool KeyboardState::GetKeyValue(SDL_Scancode keyCode) const
 {
-	return mCurrState[keyCode] == 1;
+	if (mCurrState[keyCode] == 1) 
+	{
+		return true; 
+	}
+	else 
+	{
+		return false; 
+	}
+	//return mCurrState[keyCode] == 1;
 }
 
 ButtonState KeyboardState::GetKeyState(SDL_Scancode keyCode) const
 {
+	// prev		curr
+	// 0		0		-> ENone
+	// 0		1		-> EPressed
+	// 1		0		-> EReleased
+	// 1		1		-> EHeld		
+
 	if (mPrevState[keyCode] == 0)
 	{
 		if (mCurrState[keyCode] == 0)
@@ -31,7 +45,6 @@ ButtonState KeyboardState::GetKeyState(SDL_Scancode keyCode) const
 			return EHeld;
 		}
 	}
-
 }
 
 bool MouseState::GetButtonValue(int button) const
@@ -124,9 +137,7 @@ void InputSystem::PrepareForUpdate()
 {
 	// 現在の状態を１つ前の状態にコピーする。
 	// キーボード
-	memcpy(mState.Keyboard.mPrevState,
-	       mState.Keyboard.mCurrState,
-		   SDL_NUM_SCANCODES);
+	memcpy(mState.Keyboard.mPrevState, mState.Keyboard.mCurrState, SDL_NUM_SCANCODES);
 	// マウス
 	mState.Mouse.mPrevButtons = mState.Mouse.mCurrButtons;
 	mState.Mouse.mIsRelative = false;

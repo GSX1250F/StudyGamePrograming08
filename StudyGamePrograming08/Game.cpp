@@ -53,7 +53,8 @@ bool Game::Initialize()
 		return false;
 	}
 
-	
+	// インプットシステム作成
+	mInputSystem = new InputSystem;
 		
 	Random::Init();		//乱数設定の初期化?
 
@@ -76,29 +77,26 @@ void Game::RunLoop()
 
 void Game::ProcessInput()
 {
+	mInputSystem->PrepareForUpdate();
+
 	SDL_Event event;
-	const Uint8* keyState = NULL;
 	while (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_QUIT)
+		if (event.type == SDL_QUIT || event.key.keysym.scancode == SDLK_ESCAPE)
 		{
 			mIsRunning = false;
 		}
-		keyState = SDL_GetKeyboardState(NULL);
-		if (keyState[SDL_SCANCODE_ESCAPE])
-		{
-			mIsRunning = false;
-		}		
 	}
-	if (keyState) 
+	
+	mInputSystem->Update();
+	const InputState& state = mInputSystem->GetState();
+
+	mUpdatingActors = true;
+	for (auto actor : mActors)
 	{
-		mUpdatingActors = true;
-		for (auto actor : mActors)
-		{
-			actor->ProcessInput(keyState);
-		}
-		mUpdatingActors = false;
+		actor->ProcessInput(state);
 	}
+	mUpdatingActors = false;
 	
 }
 
@@ -164,6 +162,10 @@ void Game::Shutdown()
 	if (mSoundPlayer)
 	{
 		mSoundPlayer->Shutdown();
+	}
+	if (mInputSystem)
+	{
+		mInputSystem->Shutdown();
 	}
 	SDL_Quit();
 }
