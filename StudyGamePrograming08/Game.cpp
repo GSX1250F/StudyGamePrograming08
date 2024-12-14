@@ -77,24 +77,29 @@ void Game::RunLoop()
 void Game::ProcessInput()
 {
 	SDL_Event event;
+	const Uint8* keyState = NULL;
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT)
 		{
 			mIsRunning = false;
 		}
-		const Uint8* keyState = SDL_GetKeyboardState(NULL);
+		keyState = SDL_GetKeyboardState(NULL);
 		if (keyState[SDL_SCANCODE_ESCAPE])
 		{
 			mIsRunning = false;
-		}
+		}		
+	}
+	if (keyState) 
+	{
 		mUpdatingActors = true;
 		for (auto actor : mActors)
 		{
-			actor->ProcessInput(keyState); 
+			actor->ProcessInput(keyState);
 		}
 		mUpdatingActors = false;
-	}	
+	}
+	
 }
 
 void Game::UpdateGame()
