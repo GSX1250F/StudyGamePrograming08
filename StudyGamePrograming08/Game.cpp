@@ -174,7 +174,7 @@ void Game::LoadData()
 	mShip = new Ship(this);
 	
 	// ¬˜f¯‚ğÅ‰‚É•¡”¶¬
-	int initialNumAsteroids = 1;		//‰Šú’l
+	int initialNumAsteroids = 20;		//‰Šú’l
 	for (int i = 0; i < initialNumAsteroids; i++)
 	{
 		AddAsteroid();
