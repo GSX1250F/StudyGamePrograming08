@@ -71,44 +71,40 @@ void Ship::Init()
 	mCrash = false;
 }
 
-void Ship::ActorInput(const SDL_Event& event)
+void Ship::ActorInput(const uint8_t* keyState)
 {
 	if (mCrash == false) 
 	{
-		if (event.type == SDL_KEYDOWN)
+		if (keyState[mIC->GetCounterClockwiseKey()])
 		{
-			if (event.key.keysym.sym == mIC->GetCounterClockwiseKey())
-			{
-				mSSC->SelectTexture(mSSC->TextureFiles[1]);
-				GetGame()->GetSoundPlayer()->SetChunkControl(0, mChunkFiles[0], "play", 0);
-			}
-			else if (event.key.keysym.sym == mIC->GetClockwiseKey())
-			{
-				mSSC->SelectTexture(mSSC->TextureFiles[2]);
-				GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
-			}
-			else if (event.key.keysym.sym == mIC->GetForwardKey())
-			{
-				mSSC->SelectTexture(mSSC->TextureFiles[3]);
-				GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
-			}
-			else if (event.key.keysym.sym == mIC->GetBackwardKey())
-			{
-				mSSC->SelectTexture(mSSC->TextureFiles[4]);
-				GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
-			}
-			else if (event.key.keysym.sym == SDLK_SPACE && mLaserCooldown <= 0.0f)
-			{
-				// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
-				Laser* laser = new Laser(GetGame());
-				laser->SetPosition(GetPosition() + GetRadius() * GetForward());
-				laser->SetRotation(GetRotation());
-				laser->Shot();
-				// レーザー冷却期間リセット
-				mLaserCooldown = 0.7f;
-				GetGame()->GetSoundPlayer()->SetChunkControl(4, mChunkFiles[1], "replay", 0);
-			}
-
+			mSSC->SelectTexture(mSSC->TextureFiles[1]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(0, mChunkFiles[0], "play", 0);
+		}
+		else if (keyState[mIC->GetClockwiseKey()])
+		{
+			mSSC->SelectTexture(mSSC->TextureFiles[2]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
+		}
+		else if (keyState[mIC->GetForwardKey()])
+		{
+			mSSC->SelectTexture(mSSC->TextureFiles[3]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
+		}
+		else if (keyState[mIC->GetBackwardKey()])
+		{
+			mSSC->SelectTexture(mSSC->TextureFiles[4]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
+		}
+		else if (keyState[SDL_SCANCODE_SPACE] && mLaserCooldown <= 0.0f)
+		{
+			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
+			Laser* laser = new Laser(GetGame());
+			laser->SetPosition(GetPosition() + GetRadius() * GetForward());
+			laser->SetRotation(GetRotation());
+			laser->Shot();
+			// レーザー冷却期間リセット
+			mLaserCooldown = 0.7f;
+			GetGame()->GetSoundPlayer()->SetChunkControl(4, mChunkFiles[1], "replay", 0);
 		}
 		else
 		{

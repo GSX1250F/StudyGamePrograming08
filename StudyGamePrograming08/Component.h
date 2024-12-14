@@ -12,7 +12,7 @@ public:
 	virtual ~Component();
 
 	// 各コンポーネント入力処理（オーバーライド可能）
-	virtual void ProcessInput(const SDL_Event& event) {}
+	virtual void ProcessInput(const uint8_t* keyState) {}
 
 	// 各コンポーネント更新（オーバーライド可能）
 	virtual void Update(float deltaTime) {}

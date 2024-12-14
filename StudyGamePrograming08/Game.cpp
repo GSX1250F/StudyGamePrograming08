@@ -77,42 +77,31 @@ void Game::RunLoop()
 void Game::ProcessInput()
 {
 	SDL_Event event;
-	SDL_Event keyEvent;
-	bool keyFlag = false;
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT)
 		{
 			mIsRunning = false;
 		}
-		if (event.type == SDL_KEYDOWN)
+		const Uint8* keyState = SDL_GetKeyboardState(NULL);
+		if (keyState[SDL_SCANCODE_ESCAPE])
 		{
-			if (event.key.keysym.sym == SDLK_ESCAPE)
-			{
-				mIsRunning = false;
-			}
-			else
-			{
-				keyEvent = event;
-				keyFlag = true;
-			}
+			mIsRunning = false;
 		}
-		if (!keyFlag) { keyEvent = event; }
-	}
-	
-	mUpdatingActors = true;
-	for (auto actor : mActors)
-	{
-		actor->ProcessInput(keyEvent);
-	}
-	mUpdatingActors = false;
+		mUpdatingActors = true;
+		for (auto actor : mActors)
+		{
+			actor->ProcessInput(keyState); 
+		}
+		mUpdatingActors = false;
+	}	
 }
 
 void Game::UpdateGame()
 {
 	// フレームレート調整（62.5fps)
-	if (SDL_GetTicks() - mTicksCount < 100) {
-		int sleep = 100 - (SDL_GetTicks() - mTicksCount);
+	if (SDL_GetTicks() - mTicksCount < 16) {
+		int sleep = 16 - (SDL_GetTicks() - mTicksCount);
 		std::this_thread::sleep_for(std::chrono::milliseconds(sleep));    // sleepミリ秒処理を止める
 	}
 	
@@ -180,7 +169,7 @@ void Game::LoadData()
 	mShip = new Ship(this);
 	
 	// 小惑星を最初に複数生成
-	int initialNumAsteroids = 0;		//初期値
+	int initialNumAsteroids = 1;		//初期値
 	for (int i = 0; i < initialNumAsteroids; i++)
 	{
 		AddAsteroid();
