@@ -1,6 +1,5 @@
 #pragma once
 #include <SDL.h>
-#include "InputSystem.h"
 
 class Component
 {
@@ -13,7 +12,7 @@ public:
 	virtual ~Component();
 
 	// 各コンポーネント入力処理（オーバーライド可能）
-	virtual void ProcessInput(const InputState& state) {}
+	virtual void ProcessInput(const struct InputState& state) {}
 
 	// 各コンポーネント更新（オーバーライド可能）
 	virtual void Update(float deltaTime) {}

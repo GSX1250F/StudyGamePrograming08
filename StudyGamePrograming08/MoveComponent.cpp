@@ -1,6 +1,7 @@
 #include "MoveComponent.h"
 #include "Actor.h"
 #include "Math.h"
+#include "InputSystem.h"
 
 MoveComponent::MoveComponent(Actor* owner, int updateOrder) 
 	: Component(owner) 

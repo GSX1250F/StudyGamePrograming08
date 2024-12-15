@@ -90,7 +90,7 @@ void Game::ProcessInput()
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
+		if (event.type == SDL_QUIT)
 		{
 			mIsRunning = false;
 		}
@@ -98,6 +98,10 @@ void Game::ProcessInput()
 	
 	mInputSystem->Update();
 	const InputState& state = mInputSystem->GetState();
+	if (state.Keyboard.GetKeyState(SDL_SCANCODE_ESCAPE) == EReleased)
+	{
+		mIsRunning = false;
+	}
 
 	mUpdatingActors = true;
 	for (auto actor : mActors)
@@ -184,7 +188,7 @@ void Game::LoadData()
 	mShip = new Ship(this);
 	
 	// ¬˜f¯‚ğÅ‰‚É•¡”¶¬
-	int initialNumAsteroids = 0;		//‰Šú’l
+	int initialNumAsteroids = 20;		//‰Šú’l
 	for (int i = 0; i < initialNumAsteroids; i++)
 	{
 		AddAsteroid();

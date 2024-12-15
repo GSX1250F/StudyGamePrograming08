@@ -2,7 +2,6 @@
 #include <vector>
 #include "Math.h"
 #include <SDL.h>
-#include "InputSystem.h"
 
 class Actor
 {
@@ -18,9 +17,9 @@ public:
 	virtual ~Actor();
 
 	// ゲームから呼び出されるProcess Input(オーバーライド不可)
-	void ProcessInput(const InputState& state);
+	void ProcessInput(const struct InputState& state);
 	// アクター独自の入力処理(オーバーライド可能)
-	virtual void ActorInput(const InputState& state);
+	virtual void ActorInput(const struct InputState& state);
 
 	// ゲームから呼び出される更新関数(オーバーライド不可)
 	void Update(float deltaTime);
