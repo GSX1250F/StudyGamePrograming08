@@ -2,6 +2,7 @@
 #include <vector>
 #include "Math.h"
 #include <SDL.h>
+#include "InputSystem.h"
 
 class Actor
 {

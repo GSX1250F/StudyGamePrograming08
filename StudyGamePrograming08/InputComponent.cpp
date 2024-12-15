@@ -1,5 +1,6 @@
 #include "InputComponent.h"
 #include "Actor.h"
+#include "InputSystem.h"
 
 
 InputComponent::InputComponent(Actor* owner, int updateOrder) 
@@ -10,28 +11,28 @@ InputComponent::InputComponent(Actor* owner, int updateOrder)
 	,mMaxRotForce(0.0f)
 {}
 
-void InputComponent::ProcessInput(const Uint8* keyState)
+void InputComponent::ProcessInput(const InputState& state)
 {
 	float fwd = 0.0f;
 	float rot = 0.0f;
 
 	//古典物理学でMoveComponentのための計算
-	if (keyState[mFwdKey])
+	if (state.Keyboard.GetKeyValue(mFwdKey))
 	{
 		// fwd = mMaxForwardVelocity;	//単純移動の場合
 		fwd = mMaxForwardForce;
 	}
-	else if (keyState[mBwdKey])
+	else if (state.Keyboard.GetKeyValue(mBwdKey))
 	{
 		// fwd = -mMaxForwardVelocity;       //単純移動の場合
 		fwd = -mMaxForwardForce;
 	}
-	else if (keyState[mCwsKey])
+	else if (state.Keyboard.GetKeyValue(mCwsKey))
 	{
 		// rot = mMaxRotSpeed;       //単純移動の場合
 		rot = -mMaxRotForce;		//角度の＋方向はCCW
 	}
-	else if (keyState[mCCwsKey])
+	else if (state.Keyboard.GetKeyValue(mCCwsKey))
 	{
 		// rot = -mMaxRotSpeed;       //単純移動の場合
 		rot = mMaxRotForce;		//角度の＋方向はCCW

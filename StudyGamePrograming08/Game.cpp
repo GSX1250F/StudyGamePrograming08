@@ -55,6 +55,14 @@ bool Game::Initialize()
 
 	// インプットシステム作成
 	mInputSystem = new InputSystem;
+	if (!mInputSystem->Initialize())
+	{
+		SDL_Log("入力システムの初期化に失敗しました");
+		delete mInputSystem;
+		mInputSystem = nullptr;
+		return false;
+	}
+
 		
 	Random::Init();		//乱数設定の初期化?
 
@@ -82,7 +90,7 @@ void Game::ProcessInput()
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_QUIT || event.key.keysym.scancode == SDLK_ESCAPE)
+		if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
 		{
 			mIsRunning = false;
 		}
@@ -176,7 +184,7 @@ void Game::LoadData()
 	mShip = new Ship(this);
 	
 	// 小惑星を最初に複数生成
-	int initialNumAsteroids = 20;		//初期値
+	int initialNumAsteroids = 0;		//初期値
 	for (int i = 0; i < initialNumAsteroids; i++)
 	{
 		AddAsteroid();

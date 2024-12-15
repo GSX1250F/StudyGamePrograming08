@@ -76,27 +76,27 @@ void Ship::ActorInput(const InputState& state)
 {
 	if (mCrash == false) 
 	{
-		if (state.Keyboard.GetKeyState(mIC->GetCounterClockwiseKey()) == EPressed)
+		if (state.Keyboard.GetKeyValue(mIC->GetCounterClockwiseKey()))
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[1]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(0, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyState(mIC->GetClockwiseKey()) == EPressed)
+		else if (state.Keyboard.GetKeyValue(mIC->GetClockwiseKey()))
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[2]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyState(mIC->GetForwardKey()) == EPressed)
+		else if (state.Keyboard.GetKeyValue(mIC->GetForwardKey()))
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[3]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetkeyState(mIC->GetBackwardKey()) == EPressed)
+		else if (state.Keyboard.GetKeyValue(mIC->GetBackwardKey()))
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[4]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
 		}
-		else if (keyState[SDL_SCANCODE_SPACE] && mLaserCooldown <= 0.0f)
+		else if (state.Keyboard.GetKeyState(SDL_SCANCODE_SPACE) == EPressed && mLaserCooldown <= 0.0f)
 		{
 			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
 			Laser* laser = new Laser(GetGame());
