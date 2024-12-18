@@ -38,8 +38,8 @@ void InputComponent::ProcessInput(const InputState& state)
 		rot = mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
 	}
 
-	if (state.Mouse.GetPosition().Length() > mMouseMaxRange) {  }
-
+	
+	
 		
 	
 	// ’PƒˆÚ“®‚Ìê‡
