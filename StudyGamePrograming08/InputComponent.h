@@ -26,6 +26,9 @@ public:
 	SDL_Scancode GetCounterClockwiseKey() const { return mCCwsKey; }
 	void SetCounterClockwiseKey(SDL_Scancode key) { mCCwsKey = key; }
 
+	void SetMouseMaxRange(int value) { mMouseMaxRange = value; }
+
+
 private:
 	// 前進・回転方向の力の最大値
 	float mMaxForwardForce;
@@ -36,4 +39,6 @@ private:
 	SDL_Scancode mBwdKey;
 	SDL_Scancode mCwsKey;
 	SDL_Scancode mCCwsKey;
+
+	float mMouseMaxRange;
 };

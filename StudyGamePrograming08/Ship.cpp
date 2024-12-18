@@ -96,7 +96,9 @@ void Ship::ActorInput(const InputState& state)
 			mSSC->SelectTexture(mSSC->TextureFiles[4]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyState(SDL_SCANCODE_SPACE) == EPressed && mLaserCooldown <= 0.0f)
+		else if (((state.Keyboard.GetKeyState(SDL_SCANCODE_SPACE) == EPressed) ||
+				 state.Mouse.GetButtonState(SDL_BUTTON_LEFT) == EPressed)
+				&& mLaserCooldown <= 0.0f)
 		{
 			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
 			Laser* laser = new Laser(GetGame());

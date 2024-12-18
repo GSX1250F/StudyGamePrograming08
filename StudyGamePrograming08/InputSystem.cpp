@@ -47,6 +47,14 @@ ButtonState KeyboardState::GetKeyState(SDL_Scancode keyCode) const
 	}
 }
 
+void MouseState::SetRelativeMouseMode(bool value)
+{
+	SDL_bool set = value ? SDL_TRUE : SDL_FALSE;
+	SDL_SetRelativeMouseMode(set);
+
+	mIsRelative = value;
+}
+
 bool MouseState::GetButtonValue(int button) const
 {
 	return (SDL_BUTTON(button) & mCurrButtons);
@@ -209,13 +217,7 @@ void InputSystem::ProcessEvent(SDL_Event& event)
 
 }
 
-void InputSystem::SetRelativeMouseMode(bool value)
-{
-	SDL_bool set = value ? SDL_TRUE : SDL_FALSE;
-	SDL_SetRelativeMouseMode(set);
 
-	mState.Mouse.mIsRelative = value;
-}
 
 float InputSystem::Filter1D(int input)
 {

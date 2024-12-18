@@ -40,6 +40,8 @@ public:
 	const Vector2& GetScrollWheel() const { return mScrollWheel; }
 	// 相対マウスモードかどうかを取得
 	bool IsRelative() const { return mIsRelative; }
+	// マウスの相対モードを設定(true:オン, false:オフ)
+	void SetRelativeMouseMode(bool value);
 
 	// マウスボタン状態
 	bool GetButtonValue(int button) const;
@@ -110,9 +112,7 @@ public:
 
 	const InputState& GetState() const { return mState; }
 
-	// マウスの相対モードを設定(true:オン, false:オフ)
-	void SetRelativeMouseMode(bool value);
-
+	
 private:
 	InputState mState;
 	// アナログスティックデッドゾーン設定（１次元）
