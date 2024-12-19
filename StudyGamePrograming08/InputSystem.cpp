@@ -127,7 +127,7 @@ bool InputSystem::Initialize()
 	// マウス
 	mState.Mouse.mCurrButtons = 0;
 	mState.Mouse.mPrevButtons = 0;
-
+	
 	// コントローラが接続されていたらそれを取得
 	mController = SDL_GameControllerOpen(0);
 	mState.Controller.mIsConnected = (mController != nullptr);	// コントローラ状態を初期化
@@ -149,6 +149,7 @@ void InputSystem::PrepareForUpdate()
 	// マウス
 	mState.Mouse.mPrevButtons = mState.Mouse.mCurrButtons;
 	mState.Mouse.mIsRelative = false;
+	mState.Mouse.mPrevMousePos = mState.Mouse.mCurrMousePos;
 	// マウスホイールイベントはホイールが動いたフレームだけでトリガーされるので、クリアしておく
 	mState.Mouse.mScrollWheel = Vector2::Zero;
 
@@ -173,8 +174,8 @@ void InputSystem::Update()
 		// 絶対モードのとき
 		mState.Mouse.mCurrButtons =	SDL_GetMouseState(&x, &y);
 	}
-	mState.Mouse.mMousePos.x = static_cast<float>(x);
-	mState.Mouse.mMousePos.y = static_cast<float>(y);
+	mState.Mouse.mCurrMousePos.x = static_cast<float>(x);
+	mState.Mouse.mCurrMousePos.y = static_cast<float>(y);
 
 	// コントローラ
 	// ボタン

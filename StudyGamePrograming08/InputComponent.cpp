@@ -38,7 +38,7 @@ void InputComponent::ProcessInput(const InputState& state)
 		rot = mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
 	}
 
-	
+	if (state.Mouse.GetScrollWheel())
 	
 		
 	

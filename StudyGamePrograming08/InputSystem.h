@@ -35,7 +35,7 @@ public:
 	friend class InputSystem;
 
 	// マウスの位置
-	const Vector2& GetPosition() const { return mMousePos; }
+	const Vector2& GetPosition() const { return mCurrMousePos; }
 	// スクロールホイールの位置
 	const Vector2& GetScrollWheel() const { return mScrollWheel; }
 	// 相対マウスモードかどうかを取得
@@ -47,8 +47,9 @@ public:
 	bool GetButtonValue(int button) const;
 	ButtonState GetButtonState(int button) const;
 private:
-	// 現在のマウス位置を保存
-	Vector2 mMousePos;
+	// マウス位置を保存
+	Vector2 mCurrMousePos;
+	Vector2 mPrevMousePos;
 	// スクロールホイールの位置を保存
 	Vector2 mScrollWheel;
 	// ボタンの状態を保存
