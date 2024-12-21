@@ -47,17 +47,34 @@ ButtonState KeyboardState::GetKeyState(SDL_Scancode keyCode) const
 	}
 }
 
-void MouseState::SetRelativeMouseMode(bool value)
+void InputSystem::SetRelativeMouseMode(bool value)
 {
-	SDL_bool set = value ? SDL_TRUE : SDL_FALSE;
+	SDL_bool set;
+	if (value)
+	{
+		set = SDL_TRUE;
+	}
+	else
+	{
+		set = SDL_FALSE;
+	}
 	SDL_SetRelativeMouseMode(set);
 
-	mIsRelative = value;
+	mState.Mouse.mIsRelative = value;
 }
 
 bool MouseState::GetButtonValue(int button) const
 {
-	return (SDL_BUTTON(button) & mCurrButtons);
+	if (SDL_BUTTON(button) & mCurrButtons)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	
+	//return (SDL_BUTTON(button) & mCurrButtons);
 }
 
 ButtonState MouseState::GetButtonState(int button) const
@@ -127,6 +144,7 @@ bool InputSystem::Initialize()
 	// マウス
 	mState.Mouse.mCurrButtons = 0;
 	mState.Mouse.mPrevButtons = 0;
+	mState.Mouse.mIsRelative = false;
 	
 	// コントローラが接続されていたらそれを取得
 	mController = SDL_GameControllerOpen(0);
@@ -148,8 +166,6 @@ void InputSystem::PrepareForUpdate()
 	memcpy(mState.Keyboard.mPrevState, mState.Keyboard.mCurrState, SDL_NUM_SCANCODES);
 	// マウス
 	mState.Mouse.mPrevButtons = mState.Mouse.mCurrButtons;
-	mState.Mouse.mIsRelative = false;
-	mState.Mouse.mPrevMousePos = mState.Mouse.mCurrMousePos;
 	// マウスホイールイベントはホイールが動いたフレームだけでトリガーされるので、クリアしておく
 	mState.Mouse.mScrollWheel = Vector2::Zero;
 
@@ -174,8 +190,8 @@ void InputSystem::Update()
 		// 絶対モードのとき
 		mState.Mouse.mCurrButtons =	SDL_GetMouseState(&x, &y);
 	}
-	mState.Mouse.mCurrMousePos.x = static_cast<float>(x);
-	mState.Mouse.mCurrMousePos.y = static_cast<float>(y);
+	mState.Mouse.mMousePos.x = static_cast<float>(x);
+	mState.Mouse.mMousePos.y = static_cast<float>(y);
 
 	// コントローラ
 	// ボタン

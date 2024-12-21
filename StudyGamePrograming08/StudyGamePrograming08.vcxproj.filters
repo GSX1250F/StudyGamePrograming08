@@ -27,41 +27,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\Asteroid.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-    <Image Include="Assets\Farback01.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-    <Image Include="Assets\Farback02.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-    <Image Include="Assets\Laser.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-    <Image Include="Assets\Laser_.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-    <Image Include="Assets\Ship01.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-    <Image Include="Assets\Ship02.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-    <Image Include="Assets\Ship03.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-    <Image Include="Assets\Ship04.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-    <Image Include="Assets\Ship05.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-    <Image Include="Assets\Stars.png">
-      <Filter>リソース ファイル</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Actor.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>

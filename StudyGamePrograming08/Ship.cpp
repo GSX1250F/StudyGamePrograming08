@@ -36,6 +36,7 @@ Ship::Ship(Game* game):Actor(game)
 	mIC->SetBackwardKey(SDL_SCANCODE_DOWN);
 	mIC->SetClockwiseKey(SDL_SCANCODE_RIGHT);
 	mIC->SetCounterClockwiseKey(SDL_SCANCODE_LEFT);
+	
 
 	//CircleComponent¶¬
 	mCircle = new CircleComponent(this);
@@ -76,22 +77,26 @@ void Ship::ActorInput(const InputState& state)
 {
 	if (mCrash == false) 
 	{
-		if (state.Keyboard.GetKeyValue(mIC->GetCounterClockwiseKey()))
+		if (state.Keyboard.GetKeyValue(mIC->GetCounterClockwiseKey()) ||
+			state.Mouse.GetPosition().x > 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[1]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(0, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyValue(mIC->GetClockwiseKey()))
+		else if (state.Keyboard.GetKeyValue(mIC->GetClockwiseKey()) ||
+			     state.Mouse.GetPosition().x < 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[2]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyValue(mIC->GetForwardKey()))
+		else if (state.Keyboard.GetKeyValue(mIC->GetForwardKey()) ||
+				 state.Mouse.GetScrollWheel().y > 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[3]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyValue(mIC->GetBackwardKey()))
+		else if (state.Keyboard.GetKeyValue(mIC->GetBackwardKey()) ||
+				 state.Mouse.GetScrollWheel().y < 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[4]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);

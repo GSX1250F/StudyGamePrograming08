@@ -90,9 +90,14 @@ void Game::ProcessInput()
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_QUIT)
+		switch (event.type)
 		{
-			mIsRunning = false;
+			case SDL_QUIT:
+				mIsRunning = false;
+				break;
+			case SDL_MOUSEWHEEL:
+				mInputSystem->ProcessEvent(event);
+				break;
 		}
 	}
 	
@@ -186,6 +191,7 @@ void Game::LoadData()
 {
 	//プレイヤーの宇宙船を作成
 	mShip = new Ship(this);
+	mInputSystem->SetRelativeMouseMode(true);
 	
 	// 小惑星を最初に複数生成
 	int initialNumAsteroids = 0;		//初期値

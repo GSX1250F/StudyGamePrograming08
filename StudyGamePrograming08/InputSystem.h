@@ -35,21 +35,18 @@ public:
 	friend class InputSystem;
 
 	// マウスの位置
-	const Vector2& GetPosition() const { return mCurrMousePos; }
+	const Vector2& GetPosition() const { return mMousePos; }
 	// スクロールホイールの位置
 	const Vector2& GetScrollWheel() const { return mScrollWheel; }
 	// 相対マウスモードかどうかを取得
 	bool IsRelative() const { return mIsRelative; }
-	// マウスの相対モードを設定(true:オン, false:オフ)
-	void SetRelativeMouseMode(bool value);
 
 	// マウスボタン状態
 	bool GetButtonValue(int button) const;
 	ButtonState GetButtonState(int button) const;
 private:
 	// マウス位置を保存
-	Vector2 mCurrMousePos;
-	Vector2 mPrevMousePos;
+	Vector2 mMousePos;
 	// スクロールホイールの位置を保存
 	Vector2 mScrollWheel;
 	// ボタンの状態を保存
@@ -113,7 +110,9 @@ public:
 
 	const InputState& GetState() const { return mState; }
 
-	
+	// マウスの相対モードを設定(true:オン, false:オフ)
+	void SetRelativeMouseMode(bool value);
+
 private:
 	InputState mState;
 	// アナログスティックデッドゾーン設定（１次元）

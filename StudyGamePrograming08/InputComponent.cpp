@@ -37,10 +37,24 @@ void InputComponent::ProcessInput(const InputState& state)
 		// rot = -mMaxRotSpeed;       //’PƒˆÚ“®‚Ìê‡
 		rot = mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
 	}
+	else if (state.Mouse.GetScrollWheel().y > 0)
+	{
+		fwd = mMaxForwardForce * 8;
+	}
+	else if (state.Mouse.GetScrollWheel().y < 0)
+	{
+		fwd = -mMaxForwardForce * 8;
+	}
+	else if (state.Mouse.GetPosition().x > 0)
+	{
+		rot = -mMaxRotForce;
+	}
+	else if (state.Mouse.GetPosition().x < 0)
+	{
+		rot = mMaxRotForce;
+	}
 
-	if (state.Mouse.GetScrollWheel())
 	
-		
 	
 	// ’PƒˆÚ“®‚Ìê‡
 	// SetVelocity(fwd * mOwner->GetForward());
