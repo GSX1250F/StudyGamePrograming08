@@ -53,6 +53,12 @@ void InputComponent::ProcessInput(const InputState& state)
 	{
 		rot = mMaxRotForce;
 	}
+	else if (state.Controller.GetIsConnected())
+	{
+		fwd = mMaxForwardForce * state.Controller.GetLeftStick().y;
+		rot = - mMaxRotForce * state.Controller.GetRightStick().x;
+	}
+
 
 	
 	

@@ -102,7 +102,9 @@ void Ship::ActorInput(const InputState& state)
 			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
 		}
 		else if (((state.Keyboard.GetKeyState(SDL_SCANCODE_SPACE) == EPressed) ||
-				 state.Mouse.GetButtonState(SDL_BUTTON_LEFT) == EPressed)
+				 state.Mouse.GetButtonState(SDL_BUTTON_LEFT) == EPressed ||
+				 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_A) == EPressed ||
+			state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_X) == EPressed)
 				&& mLaserCooldown <= 0.0f)
 		{
 			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
