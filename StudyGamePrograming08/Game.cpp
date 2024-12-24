@@ -194,7 +194,7 @@ void Game::LoadData()
 	mInputSystem->SetRelativeMouseMode(true);
 	
 	// ¬˜f¯‚ğÅ‰‚É•¡”¶¬
-	int initialNumAsteroids = 0;		//‰Šú’l
+	int initialNumAsteroids = 20;		//‰Šú’l
 	for (int i = 0; i < initialNumAsteroids; i++)
 	{
 		AddAsteroid();
