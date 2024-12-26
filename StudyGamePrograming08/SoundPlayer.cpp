@@ -127,7 +127,7 @@ void SoundPlayer::Play()
     mMusicControls.clear();
 }
 
-void SoundPlayer::AddChunk(const std::string& filename)
+void SoundPlayer::AddSound(const std::string& filename)
 {
     // Ç∑Ç≈Ç…ÉçÅ[ÉhçœÇ›Ç»ÇÁÅAâΩÇ‡ÇµÇ»Ç¢
     auto iter = mChunks.find(filename);
