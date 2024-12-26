@@ -4,11 +4,25 @@
 
 bool KeyboardState::GetKeyValue(SDL_Scancode keyCode) const
 {
-	return mCurrState[keyCode] == 1;
+	if (mCurrState[keyCode] == 1) 
+	{
+		return true; 
+	}
+	else 
+	{
+		return false; 
+	}
+	//return mCurrState[keyCode] == 1;
 }
 
 ButtonState KeyboardState::GetKeyState(SDL_Scancode keyCode) const
 {
+	// prev		curr
+	// 0		0		-> ENone
+	// 0		1		-> EPressed
+	// 1		0		-> EReleased
+	// 1		1		-> EHeld		
+
 	if (mPrevState[keyCode] == 0)
 	{
 		if (mCurrState[keyCode] == 0)
@@ -31,12 +45,36 @@ ButtonState KeyboardState::GetKeyState(SDL_Scancode keyCode) const
 			return EHeld;
 		}
 	}
+}
 
+void InputSystem::SetRelativeMouseMode(bool value)
+{
+	SDL_bool set;
+	if (value)
+	{
+		set = SDL_TRUE;
+	}
+	else
+	{
+		set = SDL_FALSE;
+	}
+	SDL_SetRelativeMouseMode(set);
+
+	mState.Mouse.mIsRelative = value;
 }
 
 bool MouseState::GetButtonValue(int button) const
 {
-	return (SDL_BUTTON(button) & mCurrButtons);
+	if (SDL_BUTTON(button) & mCurrButtons)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	
+	//return (SDL_BUTTON(button) & mCurrButtons);
 }
 
 ButtonState MouseState::GetButtonState(int button) const
@@ -106,7 +144,8 @@ bool InputSystem::Initialize()
 	// マウス
 	mState.Mouse.mCurrButtons = 0;
 	mState.Mouse.mPrevButtons = 0;
-
+	mState.Mouse.mIsRelative = false;
+	
 	// コントローラが接続されていたらそれを取得
 	mController = SDL_GameControllerOpen(0);
 	mState.Controller.mIsConnected = (mController != nullptr);	// コントローラ状態を初期化
@@ -124,12 +163,9 @@ void InputSystem::PrepareForUpdate()
 {
 	// 現在の状態を１つ前の状態にコピーする。
 	// キーボード
-	memcpy(mState.Keyboard.mPrevState,
-	       mState.Keyboard.mCurrState,
-		   SDL_NUM_SCANCODES);
+	memcpy(mState.Keyboard.mPrevState, mState.Keyboard.mCurrState, SDL_NUM_SCANCODES);
 	// マウス
 	mState.Mouse.mPrevButtons = mState.Mouse.mCurrButtons;
-	mState.Mouse.mIsRelative = false;
 	// マウスホイールイベントはホイールが動いたフレームだけでトリガーされるので、クリアしておく
 	mState.Mouse.mScrollWheel = Vector2::Zero;
 
@@ -198,13 +234,7 @@ void InputSystem::ProcessEvent(SDL_Event& event)
 
 }
 
-void InputSystem::SetRelativeMouseMode(bool value)
-{
-	SDL_bool set = value ? SDL_TRUE : SDL_FALSE;
-	SDL_SetRelativeMouseMode(set);
 
-	mState.Mouse.mIsRelative = value;
-}
 
 float InputSystem::Filter1D(int input)
 {

@@ -15,6 +15,7 @@ public:
 	void RemoveActor(class Actor* actor);
 
 	class Renderer* GetRenderer() { return mRenderer; }
+	class InputSystem* GetInputSystem() { return mInputSystem; }
 
 	void SetRunning(bool isrunning) { mIsRunning = isrunning; }
 
@@ -37,10 +38,11 @@ private:
 	std::vector<class Actor*> mPendingActors;
 
 	class Renderer* mRenderer;
+	class InputSystem* mInputSystem;
 	Uint32 mTicksCount;
 	bool mIsRunning;
 	bool mUpdatingActors;
-	class InputSystem* mInputSystem;
+	
 
 	//Game-specific	
 	class Maze* mMaze;

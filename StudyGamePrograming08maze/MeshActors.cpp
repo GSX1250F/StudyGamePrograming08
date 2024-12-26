@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "Actor.h"
 #include "Maze.h"
+#include "InputSystem.h"
 
 MeshActors::MeshActors(Game* game) :Actor(game){}
 
@@ -34,28 +35,30 @@ Brave::Brave(Game* game)
 	game->GetRenderer()->AddSpotLight(sl);
 }
 
-void Brave::ActorInput(const SDL_Event& event) {
+void Brave::ActorInput(const InputState& state) {
 	if (GetGame()->GetMaze()->GetGameStart()) {
 		float forwardSpeed = 0.0f;
 		float angularSpeed = 0.0f;
-		if (event.type == SDL_KEYDOWN) {
-			if (event.key.keysym.sym == SDLK_UP)
-			{
-				forwardSpeed = speed;
-			}
-			else if (event.key.keysym.sym == SDLK_DOWN)
-			{
-				forwardSpeed = -speed;
-			}
-			else if (event.key.keysym.sym == SDLK_LEFT)
-			{
-				angularSpeed = Math::Pi;
-			}
-			else if (event.key.keysym.sym == SDLK_RIGHT)
-			{
-				angularSpeed = -Math::Pi;
-			}
+		if (state.Keyboard.GetKeyState(SDL_SCANCODE_UP) == EPressed ||
+			state.Keyboard.GetKeyState(SDL_SCANCODE_UP) == EHeld)
+		{
+			forwardSpeed = speed;
 		}
+		else if (state.Keyboard.GetKeyState(SDL_SCANCODE_DOWN) == EPressed ||
+			state.Keyboard.GetKeyState(SDL_SCANCODE_DOWN) == EHeld)
+		{
+			forwardSpeed = -speed;
+		}
+		else if (state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == EPressed ||
+			state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == EHeld)
+		{
+			angularSpeed = Math::Pi;
+		}
+		else if (state.Keyboard.GetKeyState(SDL_SCANCODE_RIGHT) == EPressed ||
+			state.Keyboard.GetKeyState(SDL_SCANCODE_RIGHT) == EHeld)
+		{
+			angularSpeed = -Math::Pi;
+		}		
 		mc->SetVelocity(forwardSpeed * GetForward());
 		mc->SetRotSpeed(angularSpeed * GetUpward());
 	}

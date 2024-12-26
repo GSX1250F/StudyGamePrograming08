@@ -7,7 +7,7 @@ class Maze : public Actor
 {
 public:
 	Maze(class Game* game, int mapWidth, int mapHeight);
-	void ActorInput(const SDL_Event& event) override;
+	void ActorInput(const InputState& state) override;
 	void UpdateActor(float deltaTime) override;
 
 	int GetGameStart() { return gameStart; }

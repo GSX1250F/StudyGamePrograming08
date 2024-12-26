@@ -13,7 +13,7 @@ class Brave : public Actor
 public:
 	Brave(Game* game);
 	void UpdateActor(float deltaTime) override;
-	void ActorInput(const SDL_Event& event) override;
+	void ActorInput(const InputState& state) override;
 
 	//class SpriteComponent* GetSprite() { return sc; }
 	class CircleComponent* GetCircle() { return cc; }

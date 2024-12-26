@@ -45,7 +45,7 @@ public:
 	bool GetButtonValue(int button) const;
 	ButtonState GetButtonState(int button) const;
 private:
-	// 現在のマウス位置を保存
+	// マウス位置を保存
 	Vector2 mMousePos;
 	// スクロールホイールの位置を保存
 	Vector2 mScrollWheel;

@@ -2,6 +2,7 @@
 #include "MazeCreator.h"
 #include "Game.h"
 #include "Renderer.h"
+#include "InputSystem.h"
 #include "CircleComponent.h"
 #include "SpriteComponent.h"
 #include "MeshComponent.h"
@@ -66,15 +67,11 @@ Maze::Maze(Game* game, int mapWidth, int mapHeight)
 	game->GetRenderer()->SetAmbientLight(Vector3(0.01f, 0.01f, 0.01f));
 }
 
-void Maze::ActorInput(const SDL_Event& event)
+void Maze::ActorInput(const InputState& state)
 {
-	if (event.type == SDL_KEYUP)
+	if (state.Keyboard.GetKeyState(SDL_SCANCODE_R) == EPressed)
 	{
-		// ƒL[‚ª—£‚³‚ê‚½‚Æ‚«
-		if (event.key.keysym.sym == SDLK_r)
-		{
-			resetStart = true;
-		}
+		resetStart = true;
 	}
 }
 

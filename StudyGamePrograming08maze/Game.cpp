@@ -16,6 +16,7 @@ Game::Game()
 	: mRenderer(nullptr)
 	, mIsRunning(true)
 	, mUpdatingActors(false)
+	, mInputSystem(nullptr)
 	, mTicksCount(0)
 	, mWindowWidth(1600)
 	, mWindowHeight(900)
@@ -39,15 +40,17 @@ bool Game::Initialize()
 		return false;
 	}
 
-	Random::Init();		//乱数設定の初期化
-
-	// InputSystemを生成・初期化
+	// インプットシステム生成
 	mInputSystem = new InputSystem();
 	if (!mInputSystem->Initialize())
 	{
 		SDL_Log("Input Systemの初期化に失敗しました。");
+		delete mInputSystem;
+		mInputSystem = nullptr;
 		return false;
 	}
+
+	Random::Init();		//乱数設定の初期化
 
 	LoadData();
 
@@ -73,25 +76,30 @@ void Game::ProcessInput()
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_QUIT)
+		switch (event.type)
 		{
+		case SDL_QUIT:
 			mIsRunning = false;
+			break;
+		case SDL_MOUSEWHEEL:
+			mInputSystem->ProcessEvent(event);
+			break;
 		}
-		if (event.type == SDL_KEYDOWN)
-		{
-			if (event.key.keysym.sym == SDLK_ESCAPE)
-			{
-				mIsRunning = false;
-			}
-		}
-
-		mUpdatingActors = true;
-		for (auto actor : mActors)
-		{
-			actor->ProcessInput(event);
-		}
-		mUpdatingActors = false;
 	}
+
+	mInputSystem->Update();
+	const InputState& state = mInputSystem->GetState();
+	if (state.Keyboard.GetKeyState(SDL_SCANCODE_ESCAPE) == EReleased)
+	{
+		mIsRunning = false;
+	}
+
+	mUpdatingActors = true;
+	for (auto actor : mActors)
+	{
+		actor->ProcessInput(state);
+	}
+	mUpdatingActors = false;
 }
 
 void Game::UpdateGame()
@@ -171,6 +179,10 @@ void Game::Shutdown()
 	if (mRenderer)
 	{
 		mRenderer->Shutdown();
+	}
+	if (mInputSystem)
+	{
+		mInputSystem->Shutdown();
 	}
 	SDL_Quit();
 }
