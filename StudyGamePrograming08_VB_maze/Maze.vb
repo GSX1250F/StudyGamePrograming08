@@ -43,9 +43,16 @@ Public Class Maze
             For j As Integer = 0 To mMapHeight - 1
                 Dim plane = New Plane(game)
                 plane.SetPosition(New Vector3(GetTilePos(i, j).X, GetTilePos(i, j).Y, -mTileSize * 0.5))
+                plane = New Plane(game)
+                plane.SetPosition(New Vector3(GetTilePos(i, j).X, GetTilePos(i, j).Y, mTileSize * 0.5))
+                Dim q = Quaternion.FromAxisAngle(Vector3.UnitX, Math.PI)
+                plane.SetRotation(q)
             Next
         Next
 
+        ' 光源
+        ' 環境光	
+        game.GetRenderer.SetAmbientLight(New Vector3(0.01, 0.01, 0.01))
     End Sub
     Public Overrides Sub ActorInput(ByVal keyState As KeyboardState)
         If (keyState.IsKeyReleased(Keys.R)) Then resetStart = True

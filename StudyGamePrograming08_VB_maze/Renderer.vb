@@ -11,7 +11,21 @@ Public Structure DirectionalLight
     Dim mDiffuseColor As Vector3    '拡散反射色
     Dim mSpecColor As Vector3       '鏡面反射色
 End Structure
-
+Public Structure PointLight
+    Dim mPosition As Vector3        '光源の位置
+    Dim mDiffuseColor As Vector3    '拡散反射色
+    Dim mSpecColor As Vector3       '鏡面反射色
+    Dim mAttenuation As Single      '減衰係数
+End Structure
+Public Structure SpotLight
+    Dim mPosition As Vector3        '点光源の位置
+    Dim mDirection As Vector3       '光の方向
+    Dim mDiffuseColor As Vector3    '拡散反射色
+    Dim mSpecColor As Vector3       '鏡面反射色
+    Dim mAttenuation As Single      '減衰係数
+    Dim mCornAngle As Single        '照射角度
+    Dim mFalloff As Single          '照射角度外減衰指数
+End Structure
 
 Public Class Renderer
     Implements IDisposable      '明示的にクラスを開放するために必要
@@ -75,8 +89,12 @@ Public Class Renderer
         mVertexInfo.Dispose()
         mSpriteShader.Unload()
         mSpriteShader.Dispose()
-        mMeshShader.Unload()
-        mMeshShader.Dispose()
+        'mMeshShader.Unload()
+        'mMeshShader.Dispose()
+        For Each sh In mShaders
+            sh.Key.Unload()
+            sh.Key.Dispose()
+        Next
         Me.Dispose()
     End Sub
     Public Sub Draw()
@@ -86,15 +104,24 @@ Public Class Renderer
         '深度有効化、アルファブレンディング無効化
         GL.Enable(EnableCap.DepthTest)
         GL.Disable(EnableCap.Blend)
-        'メッシュを描画
-        mMeshShader.SetActive()
-        mMeshShader.SetMatrixUniform("uViewProj", mView * mProj)
 
-        '光源のUniform変数を更新
-        SetLightUniforms(mMeshShader)
+        'シェーダー毎に描画
+        For Each sh In mShaders
+            'メッシュを描画
+            'mMeshShader.SetActive()
+            'mMeshShader.SetMatrixUniform("uViewProj", mView * mProj)
+            sh.Key.SetActive()
+            sh.Key.SetMatrixUniform("uViewProj", mView * mProj)
+            '光源のUniform変数を更新
+            'SetLightUniforms(mMeshShader)
+            SetLightUniforms(sh.Key)
 
-        For Each mc In mMeshComps
-            mc.Draw(mMeshShader)
+            For Each mc In mMeshComps
+                Dim shaderName As String = mc.GetMesh.GetShaderName
+                If shaderName = sh.Value Then
+                    mc.Draw(sh.Key)
+                End If
+            Next
         Next
 
         '深度無効化、アルファブレンディング有効化
@@ -105,8 +132,6 @@ Public Class Renderer
         'スプライトを描画
         mSpriteShader.SetActive()
         mVertexInfo.SetActive()
-
-
         For Each sprite In mSprites
             If sprite.GetVisible() = True Then
                 sprite.Draw(mSpriteShader)
@@ -199,11 +224,38 @@ Public Class Renderer
     Public Sub SetAmbientLight(ByRef ambient As Vector3)
         mAmbientLight = ambient
     End Sub
-    Public Function GetDirectionalLight() As DirectionalLight
-        Return mDirLight
+    'Public Function GetDirectionalLight() As DirectionalLight
+    '    Return mDirLight
+    'End Function
+    'Public Sub SetDirectionalLight(ByRef dir As DirectionalLight)
+    '    mDirLight = dir
+    'End Sub
+    Public Function GetDirectionalLights() As List(Of DirectionalLight)
+        Return mDirLights
     End Function
-    Public Sub SetDirectionalLight(ByRef dir As DirectionalLight)
-        mDirLight = dir
+    Public Sub AddDirectionalLight(ByVal dl As DirectionalLight)
+        mDirLights.Add(dl)
+    End Sub
+    Public Sub SetDirectionalLights(ByVal dl As List(Of DirectionalLight))
+        mDirLights = dl
+    End Sub
+    Public Function GetPointLights() As List(Of PointLight)
+        Return mPointLights
+    End Function
+    Public Sub AddPointLight(ByVal pl As PointLight)
+        mPointLights.Add(pl)
+    End Sub
+    Public Sub SetPointLights(ByVal pl As List(Of PointLight))
+        mPointLights = pl
+    End Sub
+    Public Function GetSpotLights() As List(Of SpotLight)
+        Return mSpotLights
+    End Function
+    Public Sub AddSpotLight(ByVal sl As SpotLight)
+        mSpotLights.Add(sl)
+    End Sub
+    Public Sub SetSpotLights(ByVal sl As List(Of SpotLight))
+        mSpotLights = sl
     End Sub
 
     'private
@@ -237,18 +289,42 @@ Public Class Renderer
         mSpriteShader.SetMatrixUniform("uViewProj", mView * mProj)
 
         'メッシュ用シェーダーを生成
-        mMeshShader = New Shader()
-        If (mMeshShader.Load("Shaders/MeshShader.vert", "Shaders/MeshShader.frag") <> True) Then
-            Return False
-        End If
-        mMeshShader.SetActive()
         'メッシュの描画には、透視射影を行う。
         Dim cameraPos As Vector3 = Vector3.Zero
         Dim cameraTarget As Vector3 = Vector3.UnitX
         Dim cameraUp As Vector3 = Vector3.UnitZ
         mView = Matrix4.LookAt(cameraPos, cameraTarget, cameraUp)
         mProj = Matrix4.CreatePerspectiveFieldOfView(70.0 / 180.0 * Math.PI, mScreenWidth / mScreenHeight, 0.01, 10000.0)
+        'BasicShader
+        Dim mMeshShader = New Shader()
+        If (mMeshShader.Load("Shaders/BasicMesh.vert", "Shaders/BasicMesh.frag") <> True) Then
+            Return False
+        End If
+        mMeshShader.SetActive()
         mMeshShader.SetMatrixUniform("uViewProj", mView * mProj)
+        mShaders.Add(mMeshShader, "BasicMesh")
+        'LambertShader
+        mMeshShader = New Shader()
+        If (mMeshShader.Load("Shaders/LambertMesh.vert", "Shaders/LambertMesh.frag") <> True) Then
+            Return False
+        End If
+        mMeshShader.SetActive()
+        mMeshShader.SetMatrixUniform("uViewProj", mView * mProj)
+        mShaders.Add(mMeshShader, "LambertMesh")
+        'PhongShader
+        mMeshShader = New Shader()
+        If (mMeshShader.Load("Shaders/PhongMesh.vert", "Shaders/PhongMesh.frag") <> True) Then
+            Return False
+        End If
+        mMeshShader.SetActive()
+        mMeshShader.SetMatrixUniform("uViewProj", mView * mProj)
+        mShaders.Add(mMeshShader, "PhongMesh")
+
+        'mMeshShader = New Shader()
+        'If (mMeshShader.Load("Shaders/MeshShader.vert", "Shaders/MeshShader.frag") <> True) Then
+        '    Return False
+        'End If
+        'mMeshShader.SetActive()
 
         Return True
     End Function
@@ -261,9 +337,46 @@ Public Class Renderer
         '環境光
         shader.SetVectorUniform("uAmbientLight", mAmbientLight)
         '平行光源
-        shader.SetVectorUniform("uDirLight.mDirection", mDirLight.mDirection)
-        shader.SetVectorUniform("uDirLight.mDiffuseColor", mDirLight.mDiffuseColor)
-        shader.SetVectorUniform("uDirLight.mSpecColor", mDirLight.mSpecColor)
+        'shader.SetVectorUniform("uDirLight.mDirection", mDirLight.mDirection)
+        'shader.SetVectorUniform("uDirLight.mDiffuseColor", mDirLight.mDiffuseColor)
+        'shader.SetVectorUniform("uDirLight.mSpecColor", mDirLight.mSpecColor)
+        Dim str As String
+        For i As Integer = 0 To mDirLights.Count() - 1
+            str = "uDirLights[" + i.ToString + "].mDirection"
+            shader.SetVectorUniform(str, mDirLights(i).mDirection)
+            str = "uDirLights[" + i.ToString + "].mDiffuseColor"
+            shader.SetVectorUniform(str, mDirLights(i).mDiffuseColor)
+            str = "uDirLights[" + i.ToString + "].mSpecColor"
+            shader.SetVectorUniform(str, mDirLights(i).mSpecColor)
+        Next
+        '点光源
+        For i As Integer = 0 To mPointLights.Count() - 1
+            str = "uPointLights[" + i.ToString + "].mPosition"
+            shader.SetVectorUniform(str, mPointLights(i).mPosition)
+            str = "uPointLights[" + i.ToString + "].mDiffuseColor"
+            shader.SetVectorUniform(str, mPointLights(i).mDiffuseColor)
+            str = "uPointLights[" + i.ToString + "].mSpecColor"
+            shader.SetVectorUniform(str, mPointLights(i).mSpecColor)
+            str = "uPointLights[" + i.ToString + "].mAttenuation"
+            shader.SetFloatUniform(str, mPointLights(i).mAttenuation)
+        Next
+        'スポットライト
+        For i As Integer = 0 To mSpotLights.Count() - 1
+            str = "uSpotLights[" + i.ToString + "].mPosition"
+            shader.SetVectorUniform(str, mSpotLights(i).mPosition)
+            str = "uSpotLights[" + i.ToString + "].mDirection"
+            shader.SetVectorUniform(str, mSpotLights(i).mDirection)
+            str = "uSpotLights[" + i.ToString + "].mDiffuseColor"
+            shader.SetVectorUniform(str, mSpotLights(i).mDiffuseColor)
+            str = "uSpotLights[" + i.ToString + "].mSpecColor"
+            shader.SetVectorUniform(str, mSpotLights(i).mSpecColor)
+            str = "uSpotLights[" + i.ToString + "].mAttenuation"
+            shader.SetFloatUniform(str, mSpotLights(i).mAttenuation)
+            str = "uSpotLights[" + i.ToString + "].mCornAngle"
+            shader.SetFloatUniform(str, mSpotLights(i).mCornAngle)
+            str = "uSpotLights[" + i.ToString + "].mFalloff"
+            shader.SetFloatUniform(str, mSpotLights(i).mFalloff)
+        Next
     End Sub
 
     Private disposedValue As Boolean
@@ -272,13 +385,17 @@ Public Class Renderer
     Private mScreenHeight As Integer
     Private mTextures As New Dictionary(Of String, Texture)
     Private mMeshes As New Dictionary(Of String, Mesh)
+    Private mShaders As New Dictionary(Of Shader, String)
     Private mSprites As New List(Of SpriteComponent)
     Private mMeshComps As New List(Of MeshComponent)
     Private mVertexInfo As VertexInfo
     Private mSpriteShader As Shader
-    Private mMeshShader As Shader
+    'Private mMeshShader As Shader
     Private mView As Matrix4
     Private mProj As Matrix4
     Private mAmbientLight As Vector3
-    Private mDirLight As DirectionalLight
+    'Private mDirLight As DirectionalLight
+    Private mDirLights As New List(Of DirectionalLight)
+    Private mPointLights As New List(Of PointLight)
+    Private mSpotLights As New List(Of SpotLight)
 End Class

@@ -47,6 +47,9 @@ Public Class MeshComponent
     Public Overridable Sub SetMesh(ByRef mesh As Mesh)
         mMesh = mesh
     End Sub
+    Public Overridable Function GetMesh() As Mesh
+        Return mMesh
+    End Function
     Public Sub SetTextureIndex(ByVal index As Integer)
         mTextureIndex = index
     End Sub

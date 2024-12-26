@@ -11,6 +11,11 @@ Imports OpenTK.Windowing.GraphicsLibraryFramework
 
 Public Class Game
     Inherits GameWindow
+#If Win64 Then
+    Private Declare PtrSafe Function mciSendString Lib "winmm.dll" Alias "mciSendStringA" (ByVal lpstrCommand As String, ByVal lpstrReturnString As String,     ByVal uReturnLength As Long, ByVal hwndCallback As Long) As Long
+#Else
+    Private Declare Function mciSendString Lib "winmm" Alias "mciSendStringA" (ByVal lpstrCommand As String, ByVal lpstrReturnString As String, ByVal uReturnLength As Long, ByVal hwndCallback As Long) As Long
+#End If
 
     'public
     Public Sub New(width As Integer, height As Integer, title As String)
@@ -20,22 +25,25 @@ Public Class Game
         mWindowWidth = width
         mWindowHeight = height
         mRenderer = Nothing
+        mSoundPlayer = Nothing
         mIsRunning = True
         mTicksCount = 0
         mUpdatingActors = False
     End Sub
     Public Function Initialize() As Boolean
-        'ストップウォッチ開始
-        Ticks = New Stopwatch()
-        Ticks.Start()
-        mTicksCount = Ticks.ElapsedMilliseconds
-
         'レンダラー作成
         mRenderer = New Renderer(Me)
         If (mRenderer.Initialize(mWindowWidth, mWindowHeight)) = False Then
             mRenderer.Shutdown()
             Return False
         End If
+        'サウンドプレイヤ作成
+        mSoundPlayer = New SoundPlayer(Me)
+
+        'ストップウォッチ開始
+        Ticks = New Stopwatch()
+        Ticks.Start()
+        mTicksCount = Ticks.ElapsedMilliseconds
 
         LoadData()
 
@@ -47,12 +55,18 @@ Public Class Game
         If mRenderer IsNot Nothing Then
             mRenderer.Shutdown()
         End If
+        If mSoundPlayer IsNot Nothing Then
+            mSoundPlayer.Shutdown()
+        End If
         Ticks.Stop()
         Me.Close()
     End Sub
 
     Public Function GetRenderer() As Renderer
         Return mRenderer
+    End Function
+    Public Function GetSoundPlayer() As SoundPlayer
+        Return mSoundPlayer
     End Function
 
     Public Sub SetRunning(ByVal value As Boolean)
@@ -83,12 +97,6 @@ Public Class Game
 
     Public mWindowWidth As Integer
     Public mWindowHeight As Integer
-
-    'Game Specific
-    Public Function GetMaze() As Maze
-        Return mMaze
-    End Function
-
 
 
     'private
@@ -148,11 +156,24 @@ Public Class Game
     End Sub
     Private Sub GenerateOutput()
         mRenderer.Draw()
+        mSoundPlayer.Play()
     End Sub
 
     Private Sub LoadData()
-        'mMaze = New Maze(Me, 51, 29)        '迷路クラス
-        mMaze = New Maze(Me, 7, 7)        'テスト用
+        mShip = New Ship(Me)    'プレイヤーの宇宙船を作成
+
+        '小惑星を複数生成
+        Dim initialNumAsteroids = 20        '初期値
+        For i As Integer = 0 To initialNumAsteroids - 1
+            AddAsteroid()
+        Next
+
+        Dim astCtrl As New AsteroidControl(Me)
+
+        '背景を作成
+        Dim bg As New BackGround(Me)
+
+        Dim clrPict As New ClearPict(Me)
     End Sub
 
     Private Sub UnloadData()
@@ -162,19 +183,40 @@ Public Class Game
         If mRenderer IsNot Nothing Then
             mRenderer.UnloadData()
         End If
+        If mSoundPlayer IsNot Nothing Then
+            mSoundPlayer.UnloadData()
+        End If
     End Sub
 
     Private mRenderer As Renderer
     Private Ticks As Stopwatch
     Private mTicksCount As Integer
     Private mIsRunning As Boolean
+    Private mSoundPlayer As SoundPlayer     'サウンドプレイヤ
     Private mUpdatingActors As Boolean      'アクター更新中
     Private mActors As New List(Of Actor)   'すべてのアクター
     Private mPendingActors As New List(Of Actor)    'すべての待ちアクター
 
-    'Game-specific
-    Private mMaze As Maze
+    'Game Specific
+    Public Function GetShip() As Ship
+        Return mShip
+    End Function
+    Public Function GetAsteroids() As List(Of Asteroid)
+        Return mAsteroids
+    End Function
+    Public Sub AddAsteroid()
+        Dim ast As New Asteroid(Me)
+        mAsteroids.Add(ast)
+    End Sub
 
+    Public Sub RemoveAsteroid(ByRef ast As Asteroid)
+        Dim iter As Integer = mAsteroids.IndexOf(ast)       'Listの中になかったら-1が返される
+        If iter >= 0 Then
+            mAsteroids.RemoveAt(iter)
+        End If
+    End Sub
+    Private mShip As Ship
+    Private mAsteroids As New List(Of Asteroid)
 
 
     'OpenTK original function

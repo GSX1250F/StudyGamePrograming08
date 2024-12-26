@@ -8,17 +8,27 @@
 
   <ItemGroup>
     <None Remove="Assets\ClearPict.png" />
+    <None Remove="Assets\CubeBasic - コピー.gpmesh" />
     <None Remove="Assets\CubeBasic.gpmesh" />
     <None Remove="Assets\Default.png" />
     <None Remove="Assets\Floor.png" />
+    <None Remove="Assets\Plane - コピー.gpmesh" />
     <None Remove="Assets\Plane.gpmesh" />
     <None Remove="Assets\Plane.png" />
+    <None Remove="Assets\Treasure - コピー.gpmesh" />
     <None Remove="Assets\Treasure.gpmesh" />
     <None Remove="Assets\Treasure.png" />
+    <None Remove="Assets\Wall - コピー.gpmesh" />
     <None Remove="Assets\Wall.gpmesh" />
     <None Remove="Assets\wall.png" />
+    <None Remove="Shaders\BasicMesh.frag" />
+    <None Remove="Shaders\BasicMesh.vert" />
+    <None Remove="Shaders\LambertMesh.frag" />
+    <None Remove="Shaders\LambertMesh.vert" />
     <None Remove="Shaders\MeshShader.frag" />
     <None Remove="Shaders\MeshShader.vert" />
+    <None Remove="Shaders\PhongMesh.frag" />
+    <None Remove="Shaders\PhongMesh.vert" />
     <None Remove="Shaders\shader.frag" />
     <None Remove="Shaders\shader.vert" />
     <None Remove="Shaders\SpriteShader.frag" />
@@ -27,6 +37,9 @@
 
   <ItemGroup>
     <Content Include="Assets\ClearPict.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\CubeBasic - コピー.gpmesh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\CubeBasic.gpmesh">
@@ -38,10 +51,16 @@
     <Content Include="Assets\Floor.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Plane - コピー.gpmesh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Plane.gpmesh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Plane.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Treasure - コピー.gpmesh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Treasure.gpmesh">
@@ -50,10 +69,25 @@
     <Content Include="Assets\Treasure.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Wall - コピー.gpmesh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Wall.gpmesh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\wall.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\BasicMesh.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\BasicMesh.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\LambertMesh.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\LambertMesh.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\MeshShader.frag">
@@ -62,10 +96,10 @@
     <Content Include="Shaders\MeshShader.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Shaders\shader.frag">
+    <Content Include="Shaders\PhongMesh.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Shaders\shader.vert">
+    <Content Include="Shaders\PhongMesh.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\SpriteShader.frag">
