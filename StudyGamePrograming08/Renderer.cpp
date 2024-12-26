@@ -86,6 +86,11 @@ bool Renderer::Initialize(float screenWidth, float screenHeight)
 
 void Renderer::UnloadData()
 {
+	for (auto i : mTextures)
+	{
+		i.second->Unload();
+		delete i.second;
+	}
 	mTextures.clear();
 }
 

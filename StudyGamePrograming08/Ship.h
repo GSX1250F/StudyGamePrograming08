@@ -21,7 +21,7 @@ private:
 	Vector3 mCrashPos;		//Õ“Ë‚µ‚½‚Æ‚«‚ÌˆÊ’u
 	Quaternion mCrashRot;			//Õ“Ë‚µ‚½‚Æ‚«‚ÌŒü‚«
 	class CircleComponent* mCircle; 
-	class SomeSpriteComponent* mSSC;
-	class InputComponent* mIC;
-	std::vector<std::string> mChunkFiles;
+	class SomeSpriteComponent* mSpriteComps;
+	class InputComponent* mInputComp;
+	class SomeSoundComponent* mSoundComps;
 };

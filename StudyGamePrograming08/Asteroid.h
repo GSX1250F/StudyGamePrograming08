@@ -13,7 +13,8 @@ public:
 	void UpdateActor(float deltaTime) override;
 
 private:
+	class SoundComponent* mSoundComp;
 	class CircleComponent* mCircle;		//衝突チェックのためのアクセスポインタ。他のオブジェクトから参照するため。
 	float mAsteroidCooldown;		//増殖までの待機時間
-	std::string mChunkFile;
+
 };

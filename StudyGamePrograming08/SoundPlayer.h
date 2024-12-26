@@ -21,15 +21,14 @@ public:
 	void AddSound(class SoundComponent* sound);
 	void RemoveSound(class SoundComponent* sound);
 
-	Mix_Chunk* GetChunk(const std::string& fileName);
-	Mix_Music* GetMusic(const std::string& fileName);
+	class Mix_Chunk* GetChunk(const std::string& fileName);
 
 private:
 	// 効果音のマップ
-	std::unordered_map<std::string, Mix_Chunk*> mChunks;
+	std::unordered_map<std::string, class Mix_Chunk*> mChunks;
 
 	// サウンドコンポーネントの配列
-	std::vector<class ChunkComponent*> mSounds;
+	std::vector<class SoundComponent*> mSounds;
 
 	// Game
 	class Game* mGame;
