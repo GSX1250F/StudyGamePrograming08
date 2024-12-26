@@ -31,19 +31,20 @@ Public Class Game
         mUpdatingActors = False
     End Sub
     Public Function Initialize() As Boolean
+        'ストップウォッチ開始
+        Ticks = New Stopwatch()
+        Ticks.Start()
+        mTicksCount = Ticks.ElapsedMilliseconds
+
         'レンダラー作成
         mRenderer = New Renderer(Me)
         If (mRenderer.Initialize(mWindowWidth, mWindowHeight)) = False Then
             mRenderer.Shutdown()
             Return False
         End If
+
         'サウンドプレイヤ作成
         mSoundPlayer = New SoundPlayer(Me)
-
-        'ストップウォッチ開始
-        Ticks = New Stopwatch()
-        Ticks.Start()
-        mTicksCount = Ticks.ElapsedMilliseconds
 
         LoadData()
 
@@ -101,8 +102,9 @@ Public Class Game
 
     'private
     Private Sub ProcessInput()
-        Dim keyState As KeyboardState = KeyboardState
-        If (keyState.IsKeyDown(Keys.Escape)) Then
+
+        Dim state As InputSystem
+        If (state.Keyboard.IsKeyDown(Keys.Escape)) Then
             mIsRunning = False
         End If
         mUpdatingActors = True

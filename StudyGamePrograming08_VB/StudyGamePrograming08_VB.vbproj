@@ -7,6 +7,96 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Asteroid.png" />
+    <None Remove="Assets\beam.mp3" />
+    <None Remove="Assets\beam.wav" />
+    <None Remove="Assets\ClearPict.png" />
+    <None Remove="Assets\destroy.mp3" />
+    <None Remove="Assets\destroy.wav" />
+    <None Remove="Assets\explosion.mp3" />
+    <None Remove="Assets\explosion.wav" />
+    <None Remove="Assets\Farback01.png" />
+    <None Remove="Assets\Farback02.png" />
+    <None Remove="Assets\Laser.png" />
+    <None Remove="Assets\Ship01.png" />
+    <None Remove="Assets\Ship02.png" />
+    <None Remove="Assets\Ship03.png" />
+    <None Remove="Assets\Ship04.png" />
+    <None Remove="Assets\Ship05.png" />
+    <None Remove="Assets\Stars.png" />
+    <None Remove="Assets\thruster.mp3" />
+    <None Remove="Assets\thruster.wav" />
+    <None Remove="Shaders\shader.frag" />
+    <None Remove="Shaders\shader.vert" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Asteroid.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\beam.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\beam.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\ClearPict.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\destroy.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\destroy.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\explosion.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\explosion.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Farback01.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Farback02.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Laser.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Ship01.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Ship02.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Ship03.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Ship04.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Ship05.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Stars.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\thruster.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\thruster.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\shader.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\shader.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenTK" Version="4.9.3" />
     <PackageReference Include="StbImageSharp" Version="2.30.15" />
