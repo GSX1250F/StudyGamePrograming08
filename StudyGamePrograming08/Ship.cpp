@@ -70,7 +70,7 @@ void Ship::Init()
 	mCrash = false;
 }
 
-void Ship::ActorInput(const uint8_t* keyState)
+void Ship::ActorInput(const struct InputState& state)
 {
 	if (mCrash == false) 
 	{

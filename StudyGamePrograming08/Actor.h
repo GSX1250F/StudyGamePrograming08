@@ -17,9 +17,9 @@ public:
 	virtual ~Actor();
 
 	// ゲームから呼び出されるProcess Input(オーバーライド不可)
-	void ProcessInput(const uint8_t* keyState);
+	void ProcessInput(const struct InputState& state);
 	// アクター独自の入力処理(オーバーライド可能)
-	virtual void ActorInput(const uint8_t* keyState);
+	virtual void ActorInput(const struct InputState& state);
 
 	// ゲームから呼び出される更新関数(オーバーライド不可)
 	void Update(float deltaTime);
@@ -51,12 +51,15 @@ public:
 	void SetPosition(const Vector3& pos) { mPosition = pos; mRecomputeWorldTransform = true; }
 	// 回転
 	const Quaternion& GetRotation() const { return mRotation; }
-	void SetRotation(const Quaternion& rotation) { mRotation = rotation; mRecomputeWorldTransform = true;}
+	void SetRotation(const Quaternion& rotation) { mRotation = rotation; mRecomputeWorldTransform = true; }
 	// 向きの単位ベクトル
 	Vector3 GetForward() const { return Vector3::Transform(Vector3::UnitX, mRotation); }
-	Vector3 GetStrafe() const { return Vector3::Transform(Vector3::UnitY, mRotation); }
+	Vector3 GetRightward() const { return Vector3::Transform(Vector3::UnitY, mRotation); }
 	Vector3 GetUpward() const { return Vector3::Transform(Vector3::UnitZ, mRotation); }
+
+
 	
+
 private:
 	class Game* mGame;
 	std::vector<class Component*> mComponents;
@@ -70,5 +73,4 @@ private:
 	// ワールド座標系
 	Vector3 mPosition;		//画面上の位置
 	Quaternion mRotation;	//回転（軸と角度）
-
 };

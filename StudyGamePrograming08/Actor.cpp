@@ -1,16 +1,17 @@
 #include "Actor.h"
 #include "Game.h"
 #include "Component.h"
+#include "InputSystem.h"
 #include <algorithm>
 
 Actor::Actor(Game* game)
 	:mState(EActive)
-	,mPosition(Vector3::Zero)
-	,mScale(1.0f)
-	,mRotation(Quaternion::Identity)
-	,mRadius(0.0f)
-	,mGame(game)
-	,mRecomputeWorldTransform(true)
+	, mPosition(Vector3::Zero)
+	, mScale(1.0f)
+	, mRotation(Quaternion::Identity)
+	, mRadius(0.0f)
+	, mGame(game)
+	, mRecomputeWorldTransform(true)
 {
 	mGame->AddActor(this);
 }
@@ -25,20 +26,20 @@ Actor::~Actor()
 	}
 }
 
-void Actor::ProcessInput(const uint8_t* keyState)
+void Actor::ProcessInput(const InputState& state)
 {
 	if (mState == EActive)
 	{
 		for (auto comp : mComponents)
 		{
-			comp->ProcessInput(keyState);
+			comp->ProcessInput(state);
 		}
 
-		ActorInput(keyState);
+		ActorInput(state);
 	}
 }
 
-void Actor::ActorInput(const uint8_t* keyState)
+void Actor::ActorInput(const InputState& state)
 {}
 
 void Actor::Update(float deltaTime)
@@ -46,7 +47,7 @@ void Actor::Update(float deltaTime)
 	if (mState == EActive || mState == EPaused)
 	{
 		ComputeWorldTransform();
-		UpdateComponents(deltaTime); 
+		UpdateComponents(deltaTime);
 		UpdateActor(deltaTime);
 		ComputeWorldTransform();
 	}
@@ -68,7 +69,7 @@ void Actor::AddComponent(Component* component)
 {
 	int myOrder = component->GetUpdateOrder();
 	auto iter = mComponents.begin();
-	for (;iter != mComponents.end();++iter)
+	for (; iter != mComponents.end(); ++iter)
 	{
 		if (myOrder < (*iter)->GetUpdateOrder())
 		{
@@ -96,7 +97,7 @@ void Actor::ComputeWorldTransform()
 		// スケーリング→回転→平行移動
 		mWorldTransform = Matrix4::CreateScale(mScale);
 		mWorldTransform *= Matrix4::CreateFromQuaternion(mRotation);
-		mWorldTransform *= Matrix4::CreateTranslation(Vector3(mPosition));
+		mWorldTransform *= Matrix4::CreateTranslation(mPosition);
 		for (auto comp : mComponents)
 		{
 			comp->OnUpdateWorldTransform();

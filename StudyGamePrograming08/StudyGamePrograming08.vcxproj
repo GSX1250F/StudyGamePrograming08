@@ -158,7 +158,7 @@ xcopy "..\..\external\GLEW\lib\$(PlatformTarget)\*.dll" "$(OutDir)" /i/s/y
     <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="CircleComponent.cpp" />
     <ClCompile Include="ClearPict.cpp" />
-    <ClCompile Include="Componert.cpp" />
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="InputSystem.cpp" />
