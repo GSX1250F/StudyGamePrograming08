@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include "Math.h"
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -18,18 +17,36 @@ public:
 
 	void Play();
 
-	void AddSound(class SoundComponent* sound);
-	void RemoveSound(class SoundComponent* sound);
+	void AddChunk(const std::string& filename);
+	void AddMusic(const std::string& filename);
 
-	class Mix_Chunk* GetChunk(const std::string& fileName);
+	void SetChunkControl(const int& channel,const std::string& filename,const std::string& control,const int& repeat);
+	void SetMusicControl(const std::string& filename,const std::string& control,const int& repeat);
 
 private:
+	struct ChunkControl
+	{
+		int Channel;		// 0～15, -1は空いているところを使う。
+		Mix_Chunk* Chunk;
+		std::string Control;	// play,pause,halt,resume,replay
+		int Repeat;			// 0:1回だけ。-1:無限ループ
+	};
+	struct MusicControl
+	{
+		Mix_Music* Music;
+		std::string Control;	// play,pause,halt,resume,replay
+		int Repeat;			// 0:1回だけ。-1:無限ループ
+	};
+
 	// 効果音のマップ
-	std::unordered_map<std::string, class Mix_Chunk*> mChunks;
+	std::unordered_map<std::string, Mix_Chunk*> mChunks;
+	
+	// 音楽のマップ
+	std::unordered_map<std::string, Mix_Music*> mMusics;
 
-	// サウンドコンポーネントの配列
-	std::vector<class SoundComponent*> mSounds;
+	// 再生待ち効果音の配列
+	std::vector<ChunkControl> mChunkControls;
 
-	// Game
-	class Game* mGame;
+	// 再生待ち音楽の配列
+	std::vector<MusicControl> mMusicControls;
 };

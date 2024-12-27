@@ -6,7 +6,6 @@
 #include "Random.h"
 #include "CircleComponent.h"
 #include "SoundPlayer.h"
-#include "SoundComponent.h"
 
 Asteroid::Asteroid(Game* game) : Actor(game)
 {
@@ -36,14 +35,14 @@ Asteroid::Asteroid(Game* game) : Actor(game)
 	//CircleComponent作成
 	mCircle = new CircleComponent(this);
 
-	//サウンドコンポーネント作成、効果音作成
-	mSoundComp = new SoundComponent(this);
-	mSoundComp->SetChunk(game->GetSoundPlayer()->GetChunk("Assets/destroy.mp3"));
+	//効果音作成
+	mChunkFile = "Assets/destroy.mp3";
+	game->GetSoundPlayer()->AddChunk(mChunkFile);
 }
 
 Asteroid::~Asteroid()
 {
-	mSoundComp->SetChunkControl(-1,"play",0);
+	GetGame()->GetSoundPlayer()->SetChunkControl(-1,mChunkFile,"replay",0);
 	GetGame()->RemoveAsteroid(this);
 }
 

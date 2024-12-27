@@ -6,7 +6,6 @@
 #include "Actor.h"
 #include "Renderer.h"
 #include "SoundPlayer.h"
-#include "InputSystem.h"
 #include "SpriteComponent.h"
 #include "Ship.h"
 #include "Asteroid.h"
@@ -22,6 +21,7 @@ Game::Game()
 	,mSoundPlayer(nullptr)
 	,mIsRunning(true)
 	,mUpdatingActors(false)
+	,mTicksCount(0)
 	,mWindowWidth(1024)
 	,mWindowHeight(768)
 {}
@@ -29,7 +29,7 @@ Game::Game()
 bool Game::Initialize()
 {
 	// SDL初期化
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
 		SDL_Log("SDLを初期化できません: %s", SDL_GetError());
 		return false;
@@ -52,23 +52,10 @@ bool Game::Initialize()
 		mSoundPlayer = nullptr;
 		return false;
 	}
-
-	// インプットシステム作成
-	mInputSystem = new InputSystem;
-	if (!mInputSystem->Initialize())
-	{
-		SDL_Log("入力システムの初期化に失敗しました");
-		delete mInputSystem;
-		mInputSystem = nullptr;
-		return false;
-	}
-
 		
 	Random::Init();		//乱数設定の初期化?
 
 	LoadData();
-
-	mTicksCount = SDL_GetTicks();	//TicksCount初期化
 
 	return true;
 }
@@ -85,36 +72,28 @@ void Game::RunLoop()
 
 void Game::ProcessInput()
 {
-	mInputSystem->PrepareForUpdate();
-
 	SDL_Event event;
+	// キューにイベントがあれば繰り返す
 	while (SDL_PollEvent(&event))
 	{
-		switch (event.type)
+		if (event.type == SDL_QUIT)
 		{
-			case SDL_QUIT:
-				mIsRunning = false;
-				break;
-			case SDL_MOUSEWHEEL:
-				mInputSystem->ProcessEvent(event);
-				break;
+			mIsRunning = false;
 		}
-	}
-	
-	mInputSystem->Update();
-	const InputState& state = mInputSystem->GetState();
-	if (state.Keyboard.GetKeyState(SDL_SCANCODE_ESCAPE) == EReleased)
-	{
-		mIsRunning = false;
-	}
+		const Uint8* keyState = SDL_GetKeyboardState(NULL);
+		if (keyState[SDL_SCANCODE_ESCAPE])
+		{
+			mIsRunning = false;
+		}
 
-	mUpdatingActors = true;
-	for (auto actor : mActors)
-	{
-		actor->ProcessInput(state);
-	}
-	mUpdatingActors = false;
-	
+		mUpdatingActors = true;
+		for (auto actor : mActors)
+		{
+			actor->ProcessInput(keyState);
+		}
+		mUpdatingActors = false;
+
+	}	
 }
 
 void Game::UpdateGame()
@@ -180,10 +159,6 @@ void Game::Shutdown()
 	{
 		mSoundPlayer->Shutdown();
 	}
-	if (mInputSystem)
-	{
-		mInputSystem->Shutdown();
-	}
 	SDL_Quit();
 }
 
@@ -191,7 +166,6 @@ void Game::LoadData()
 {
 	//プレイヤーの宇宙船を作成
 	mShip = new Ship(this);
-	mInputSystem->SetRelativeMouseMode(true);
 	
 	// 小惑星を最初に複数生成
 	int initialNumAsteroids = 20;		//初期値

@@ -1,7 +1,6 @@
 #include "Actor.h"
 #include "Game.h"
 #include "Component.h"
-#include "InputSystem.h"
 #include <algorithm>
 
 Actor::Actor(Game* game)
@@ -26,20 +25,20 @@ Actor::~Actor()
 	}
 }
 
-void Actor::ProcessInput(const InputState& state)
+void Actor::ProcessInput(const uint8_t* keyState)
 {
 	if (mState == EActive)
 	{
 		for (auto comp : mComponents)
 		{
-			comp->ProcessInput(state);
+			comp->ProcessInput(keyState);
 		}
 
-		ActorInput(state);
+		ActorInput(keyState);
 	}
 }
 
-void Actor::ActorInput(const InputState& state)
+void Actor::ActorInput(const uint8_t* keyState)
 {}
 
 void Actor::Update(float deltaTime)

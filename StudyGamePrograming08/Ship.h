@@ -8,7 +8,7 @@ class Ship : public Actor
 public:
 	Ship(Game* game);
 	
-	void ActorInput(const InputState& state) override;
+	void ActorInput(const uint8_t* keyState) override;
 	void UpdateActor(float deltaTime) override;
 
 	void Init();
@@ -21,7 +21,7 @@ private:
 	Vector3 mCrashPos;		//Õ“Ë‚µ‚½‚Æ‚«‚ÌˆÊ’u
 	Quaternion mCrashRot;			//Õ“Ë‚µ‚½‚Æ‚«‚ÌŒü‚«
 	class CircleComponent* mCircle; 
-	class SomeSpriteComponent* mSpriteComps;
-	class InputComponent* mInputComp;
-	class SomeSoundComponent* mSoundComps;
+	class SomeSpriteComponent* mSSC;
+	class InputComponent* mIC;
+	std::vector<std::string> mChunkFiles;
 };

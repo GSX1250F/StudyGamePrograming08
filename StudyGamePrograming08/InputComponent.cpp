@@ -1,6 +1,5 @@
 #include "InputComponent.h"
 #include "Actor.h"
-#include "InputSystem.h"
 
 
 InputComponent::InputComponent(Actor* owner, int updateOrder) 
@@ -11,63 +10,38 @@ InputComponent::InputComponent(Actor* owner, int updateOrder)
 	,mMaxRotForce(0.0f)
 {}
 
-void InputComponent::ProcessInput(const InputState& state)
+void InputComponent::ProcessInput(const uint8_t* keyState)
 {
 	float fwd = 0.0f;
 	float rot = 0.0f;
 
 	//古典物理学でMoveComponentのための計算
-	if (state.Keyboard.GetKeyValue(mFwdKey))
+	if (keyState[mFwdKey])
 	{
 		// fwd = mMaxForwardVelocity;	//単純移動の場合
 		fwd = mMaxForwardForce;
 	}
-	else if (state.Keyboard.GetKeyValue(mBwdKey))
+	if (keyState[mBwdKey])
 	{
 		// fwd = -mMaxForwardVelocity;       //単純移動の場合
 		fwd = -mMaxForwardForce;
 	}
-	else if (state.Keyboard.GetKeyValue(mCwsKey))
+	if (keyState[mCwsKey])
 	{
 		// rot = mMaxRotSpeed;       //単純移動の場合
 		rot = -mMaxRotForce;		//角度の＋方向はCCW
 	}
-	else if (state.Keyboard.GetKeyValue(mCCwsKey))
+	if (keyState[mCCwsKey])
 	{
 		// rot = -mMaxRotSpeed;       //単純移動の場合
 		rot = mMaxRotForce;		//角度の＋方向はCCW
 	}
-	else if (state.Mouse.GetScrollWheel().y > 0)
-	{
-		fwd = mMaxForwardForce * 8;
-	}
-	else if (state.Mouse.GetScrollWheel().y < 0)
-	{
-		fwd = -mMaxForwardForce * 8;
-	}
-	else if (state.Mouse.GetPosition().x > 0)
-	{
-		rot = -mMaxRotForce;
-	}
-	else if (state.Mouse.GetPosition().x < 0)
-	{
-		rot = mMaxRotForce;
-	}
-	else if (state.Controller.GetIsConnected())
-	{
-		fwd = mMaxForwardForce * state.Controller.GetLeftStick().y;
-		rot = - mMaxRotForce * state.Controller.GetRightStick().x;
-	}
-
-
-	
 	
 	// 単純移動の場合
 	// SetVelocity(fwd * mOwner->GetForward());
 	// SetRotSpeed(rot);
 	
 	// ニュートン力学を使う場合
-	SetForce(fwd * mOwner->GetForward()); 
+	SetForce(fwd * mOwner -> GetForward());
 	SetRotForce(rot * Vector3::UnitZ);
-	
 }

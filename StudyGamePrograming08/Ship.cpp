@@ -8,48 +8,47 @@
 #include "Random.h"
 #include "CircleComponent.h"
 #include "SoundPlayer.h"
-#include "SomeSoundComponent.h"
-#include "InputSystem.h"
 
 Ship::Ship(Game* game):Actor(game)
 {
 	//SomeSpriteComponent生成
-	mSpriteComps = new SomeSpriteComponent(this,30);
-	mSpriteComps->TextureFiles = {
+	mSSC = new SomeSpriteComponent(this,30);
+	mSSC->TextureFiles = {
 			"Assets/Ship01.png",
 			"Assets/Ship02.png",
 			"Assets/Ship03.png",
 			"Assets/Ship04.png",
 			"Assets/Ship05.png" };
 	
-	mSpriteComps->SetSomeTextures(mSpriteComps->TextureFiles);
+	mSSC->SetSomeTextures(mSSC->TextureFiles);
 	
 	//InputComponent生成
-	mInputComp = new InputComponent(this);	
-	//mInputComp->SetMaxForwardVelocity(200.0f);
-	//mInputComp->SetMaxRotSpeed(5.0f);
-	mInputComp->SetMaxForwardForce(300.0f);
-	mInputComp->SetMaxRotForce(150.0f);
-	mInputComp->SetMoveResist(20.0f);
-	mInputComp->SetRotResist(15.0f);
-	mInputComp->SetMass(1.0f);
-	mInputComp->SetForwardKey(SDL_SCANCODE_UP);
-	mInputComp->SetBackwardKey(SDL_SCANCODE_DOWN);
-	mInputComp->SetClockwiseKey(SDL_SCANCODE_RIGHT);
-	mInputComp->SetCounterClockwiseKey(SDL_SCANCODE_LEFT);
-	
+	mIC = new InputComponent(this);	
+	//mIC->SetMaxForwardVelocity(200.0f);
+	//mIC->SetMaxRotSpeed(5.0f);
+	mIC->SetMaxForwardForce(300.0f);
+	mIC->SetMaxRotForce(150.0f);
+	mIC->SetMoveResist(20.0f);
+	mIC->SetRotResist(15.0f);
+	mIC->SetMass(1.0f);
+	mIC->SetForwardKey(SDL_SCANCODE_UP);
+	mIC->SetBackwardKey(SDL_SCANCODE_DOWN);
+	mIC->SetClockwiseKey(SDL_SCANCODE_RIGHT);
+	mIC->SetCounterClockwiseKey(SDL_SCANCODE_LEFT);
 
 	//CircleComponent生成
 	mCircle = new CircleComponent(this);
 
-	//SomeSoundComponent生成
-	mSoundComps = new SomeSoundComponent(this);
-	mSoundComps->ChunkFiles = {
+	//効果音生成
+	mChunkFiles = {
 		"Assets/thruster.mp3",
 		"Assets/beam.mp3",
-		"Assets/explosion.mp3" 
+		"Assets/explosion.mp3"
 	};
-	mSoundComps->SetSomeChunks(mSoundComps->ChunkFiles);
+	for (auto file : mChunkFiles)
+	{
+		game->GetSoundPlayer()->AddChunk(file);
+	}
 
 	Init();
 }
@@ -60,11 +59,10 @@ void Ship::Init()
 	SetPosition(Vector3::Zero);
 	//ランダムな向きで初期化
 	SetRotation(Quaternion(-1.0f * Vector3::UnitZ, Random::GetFloatRange(0.0f, Math::TwoPi)));
-	mInputComp->SetVelocity(Vector3::Zero);
-	mInputComp->SetRotSpeed(Vector3::Zero);
+	mIC->SetVelocity(Vector3::Zero);
+	mIC->SetRotSpeed(Vector3::Zero);
 	SetState(EActive);
-	mSpriteComps->SelectTexture(mSpriteComps->TextureFiles[0]);
-	mSpriteComps->SetVisible(true);
+	mSSC->SetVisible(true);
 
 	mLaserCooldown = 0.0f;
 	mCrashCooldown = 0.0f;
@@ -72,49 +70,36 @@ void Ship::Init()
 	mCrash = false;
 }
 
-void Ship::ActorInput(const InputState& state)
+void Ship::ActorInput(const uint8_t* keyState)
 {
 	if (mCrash == false) 
 	{
-		if (state.Keyboard.GetKeyValue(mInputComp->GetCounterClockwiseKey()) ||
-			state.Mouse.GetPosition().x > 0 ||
-			state.Controller.GetRightStick().x < 0)
+		if (keyState[mIC->GetCounterClockwiseKey()])
 		{
-			mSpriteComps->SelectTexture(mSpriteComps->TextureFiles[1]);
-			mSoundComps->SelectChunk(mSoundComps->ChunkFiles[0]);
-			mSoundComps->SetChunkControl(0, "play", 0);
+			mSSC->SelectTexture(mSSC->TextureFiles[1]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(0,mChunkFiles[0],"play",0);
 		}
-		else if (state.Keyboard.GetKeyValue(mInputComp->GetClockwiseKey()) ||
-			     state.Mouse.GetPosition().x < 0 ||
-				 state.Controller.GetRightStick().x > 0)
+		else if (keyState[mIC->GetClockwiseKey()])
 		{
-			mSpriteComps->SelectTexture(mSpriteComps->TextureFiles[2]);
-			mSoundComps->SelectChunk(mSoundComps->ChunkFiles[0]);
-			mSoundComps->SetChunkControl(1, "play", 0);
+			mSSC->SelectTexture(mSSC->TextureFiles[2]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyValue(mInputComp->GetForwardKey()) ||
-				 state.Mouse.GetScrollWheel().y > 0 ||
-				 state.Controller.GetLeftStick().y > 0)
+		else if (keyState[mIC->GetForwardKey()])
 		{
-			mSpriteComps->SelectTexture(mSpriteComps->TextureFiles[3]);
-			mSoundComps->SelectChunk(mSoundComps->ChunkFiles[0]);
-			mSoundComps->SetChunkControl(2, "play", 0);
+			mSSC->SelectTexture(mSSC->TextureFiles[3]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyValue(mInputComp->GetBackwardKey()) ||
-				 state.Mouse.GetScrollWheel().y < 0 ||
-			state.Controller.GetLeftStick().y < 0)
+		else if (keyState[mIC->GetBackwardKey()])
 		{
-			mSpriteComps->SelectTexture(mSpriteComps->TextureFiles[4]);
-			mSoundComps->SelectChunk(mSoundComps->ChunkFiles[0]);
-			mSoundComps->SetChunkControl(3, "play", 0);
+			mSSC->SelectTexture(mSSC->TextureFiles[4]);
+			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
 		}
-		else if (((state.Keyboard.GetKeyState(SDL_SCANCODE_SPACE) == EPressed) ||
-				 state.Mouse.GetButtonState(SDL_BUTTON_LEFT) == EPressed ||
-				 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_A) == EPressed ||
-				 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_X) == EPressed ||
-				 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_LEFTSHOULDER) == EPressed ||
-				 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) == EPressed)
-				&& mLaserCooldown <= 0.0f)
+		else
+		{
+			mSSC->SelectTexture(mSSC->TextureFiles[0]);
+		}
+		
+		if (keyState[SDL_SCANCODE_SPACE] && mLaserCooldown <= 0.0f)
 		{
 			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
 			Laser* laser = new Laser(GetGame());
@@ -123,13 +108,8 @@ void Ship::ActorInput(const InputState& state)
 			laser->Shot();
 			// レーザー冷却期間リセット
 			mLaserCooldown = 0.7f;
-			mSoundComps->SelectChunk(mSoundComps->ChunkFiles[1]);
-			mSoundComps->SetChunkControl(4, "play", 0);
-		}
-		else
-		{
-			mSpriteComps->SelectTexture(mSpriteComps->TextureFiles[0]);
-		}
+			GetGame()->GetSoundPlayer()->SetChunkControl(4, mChunkFiles[1], "replay", 0);
+		}		
 	}	
 }
 
@@ -162,9 +142,7 @@ void Ship::UpdateActor(float deltaTime)
 				mCrash = true;
 				mCrashCooldown = 4.0f;
 				mCrashingTime = 2.0f;
-
-				mSoundComps->SelectChunk(mSoundComps->ChunkFiles[2]);
-				mSoundComps->SetChunkControl(5, "play", 0);
+				GetGame()->GetSoundPlayer()->SetChunkControl(5, mChunkFiles[2], "replay", 0);
 				break;
 			}
 		}
@@ -185,7 +163,7 @@ void Ship::UpdateActor(float deltaTime)
 			{
 				//衝突演出後、リスポーンするまで表示停止
 				SetState(EPaused);
-				mSpriteComps->SetVisible(false);
+				mSSC->SetVisible(false);
 			}
 			else
 			{
