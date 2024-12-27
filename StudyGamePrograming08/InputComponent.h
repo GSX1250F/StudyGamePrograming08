@@ -3,6 +3,14 @@
 #include "InputSystem.h"
 #include <SDL.h>
 
+enum Direction
+{
+	Forward,
+	Backward,
+	Clockwise,
+	CounterClockwise
+};
+
 class InputComponent : public MoveComponent
 {
 public:
@@ -17,15 +25,9 @@ public:
 	void SetMaxRotSpeed(float value) { mMaxRotSpeed = value; }
 	void SetMaxForwardForce(float value) { mMaxForwardForce = value; }
 	void SetMaxRotForce(float value) { mMaxRotForce = value; }
-	
-	void SetForwardKey(SDL_Scancode key) { mFwdKey = key; }
-	void SetBackwardKey(SDL_Scancode key) { mBwdKey = key; }
-	void SetClockwiseKey(SDL_Scancode key) { mCwsKey = key; }
-	void SetCounterClockwiseKey(SDL_Scancode key) { mCCwsKey = key; }
-	SDL_Scancode GetForwardKey() { return mFwdKey; }
-	SDL_Scancode GetBackwardKey() { return mBwdKey; }
-	SDL_Scancode GetClockwiseKey() { return mCwsKey; }
-	SDL_Scancode GetCounterClockwiseKey() { return mCCwsKey; }
+		
+	float GetForwardRatio(const struct InputState& state);
+	float GetRotRatio(const struct InputState& state);
 
 private:
 	// 前進・回転方向の力の最大値
@@ -33,8 +35,4 @@ private:
 	float mMaxRotForce;
 	float mMaxForwardVelocity;
 	float mMaxRotSpeed;
-	SDL_Scancode mFwdKey;
-	SDL_Scancode mBwdKey;
-	SDL_Scancode mCwsKey;
-	SDL_Scancode mCCwsKey;
 };

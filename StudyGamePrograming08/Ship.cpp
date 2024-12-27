@@ -31,10 +31,6 @@ Ship::Ship(Game* game):Actor(game)
 	mIC->SetMoveResist(20.0f);
 	mIC->SetRotResist(15.0f);
 	mIC->SetMass(1.0f);
-	mIC->SetForwardKey(SDL_SCANCODE_UP);
-	mIC->SetBackwardKey(SDL_SCANCODE_DOWN);
-	mIC->SetClockwiseKey(SDL_SCANCODE_RIGHT);
-	mIC->SetCounterClockwiseKey(SDL_SCANCODE_LEFT);
 
 	//CircleComponent生成
 	mCircle = new CircleComponent(this);
@@ -74,26 +70,22 @@ void Ship::ActorInput(const struct InputState& state)
 {
 	if (mCrash == false) 
 	{
-		if (state.Keyboard.GetKeyState(mIC->GetCounterClockwiseKey()) == EPressed ||
-			state.Keyboard.GetKeyState(mIC->GetCounterClockwiseKey()) == EHeld)
+		if (mIC->GetRotRatio(state) > 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[1]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(0,mChunkFiles[0],"play",0);
 		}
-		else if (state.Keyboard.GetKeyState(mIC->GetClockwiseKey()) == EPressed ||
-			state.Keyboard.GetKeyState(mIC->GetClockwiseKey()) == EHeld)
+		else if (mIC->GetRotRatio(state) < 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[2]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyState(mIC->GetForwardKey()) == EPressed ||
-			state.Keyboard.GetKeyState(mIC->GetForwardKey()) == EHeld)
+		else if (mIC->GetForwardRatio(state) > 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[3]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(2, mChunkFiles[0], "play", 0);
 		}
-		else if (state.Keyboard.GetKeyState(mIC->GetBackwardKey()) == EPressed ||
-			state.Keyboard.GetKeyState(mIC->GetBackwardKey()) == EHeld)
+		else if (mIC->GetForwardRatio(state) < 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[4]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(3, mChunkFiles[0], "play", 0);
@@ -103,7 +95,14 @@ void Ship::ActorInput(const struct InputState& state)
 			mSSC->SelectTexture(mSSC->TextureFiles[0]);
 		}
 		
-		if (state.Keyboard.GetKeyState(SDL_SCANCODE_SPACE) == EPressed && mLaserCooldown <= 0.0f)
+		if ((state.Keyboard.GetKeyState(SDL_SCANCODE_SPACE) == EPressed ||
+			 state.Mouse.GetButtonState(SDL_BUTTON_LEFT) == EPressed ||
+			 state.Mouse.GetButtonState(SDL_BUTTON_RIGHT) == EPressed ||
+			 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_X) == EPressed ||
+			 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_A) == EPressed ||
+			 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_LEFTSHOULDER) == EPressed ||
+			 state.Controller.GetButtonState(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) == EPressed)
+			 && mLaserCooldown <= 0.0f)
 		{
 			// レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
 			Laser* laser = new Laser(GetGame());
