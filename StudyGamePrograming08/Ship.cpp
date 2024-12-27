@@ -70,12 +70,12 @@ void Ship::ActorInput(const struct InputState& state)
 {
 	if (mCrash == false) 
 	{
-		if (mIC->GetRotRatio(state) > 0)
+		if (mIC->GetRotRatio(state) < 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[1]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(0,mChunkFiles[0],"play",0);
 		}
-		else if (mIC->GetRotRatio(state) < 0)
+		else if (mIC->GetRotRatio(state) > 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[2]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);

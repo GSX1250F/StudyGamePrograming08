@@ -43,7 +43,7 @@ float InputComponent::GetForwardRatio(const struct InputState& state)
 		return state.Mouse.GetScrollWheel().y * 5.0f;
 	}
 	else if (!Math::NearZero(state.Controller.GetLeftStick().y)) {
-		return state.Controller.GetLeftStick().y * 5.0f;
+		return state.Controller.GetLeftStick().y * 1.0f;
 	}
 }
 
@@ -61,9 +61,9 @@ float InputComponent::GetRotRatio(const struct InputState& state)
 	}
 	else if (!Math::NearZero(state.Mouse.GetPosition().x))
 	{
-		return - state.Mouse.GetPosition().x * 5.0f;
+		return state.Mouse.GetPosition().x * 0.1f;
 	}
 	else if (!Math::NearZero(state.Controller.GetRightStick().x)) {
-		return - state.Controller.GetRightStick().x * 5.0f;
+		return - state.Controller.GetRightStick().x * 1.0f;
 	}
 }
