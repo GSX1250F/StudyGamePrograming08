@@ -43,7 +43,7 @@ Asteroid::Asteroid(Game* game) : Actor(game)
 
 Asteroid::~Asteroid()
 {
-	mSoundComp->SetChunkControl(-1,"play",0);
+	mSoundComp->SetChunkInQueue();
 	GetGame()->RemoveAsteroid(this);
 }
 

@@ -82,7 +82,7 @@ void Ship::ActorInput(const InputState& state)
 		{
 			mSpriteComps->SelectTexture(mSpriteComps->TextureFiles[1]);
 			mSoundComps->SelectChunk(mSoundComps->ChunkFiles[0]);
-			mSoundComps->SetChunkControl(0, "play", 0);
+			mSoundComps->SetChunkInQueue(0, play, 0);
 		}
 		else if (state.Keyboard.GetKeyValue(mInputComp->GetClockwiseKey()) ||
 			     state.Mouse.GetPosition().x < 0 ||
@@ -90,7 +90,7 @@ void Ship::ActorInput(const InputState& state)
 		{
 			mSpriteComps->SelectTexture(mSpriteComps->TextureFiles[2]);
 			mSoundComps->SelectChunk(mSoundComps->ChunkFiles[0]);
-			mSoundComps->SetChunkControl(1, "play", 0);
+			mSoundComps->SetChunkInQueue(1, play, 0);
 		}
 		else if (state.Keyboard.GetKeyValue(mInputComp->GetForwardKey()) ||
 				 state.Mouse.GetScrollWheel().y > 0 ||
@@ -98,7 +98,7 @@ void Ship::ActorInput(const InputState& state)
 		{
 			mSpriteComps->SelectTexture(mSpriteComps->TextureFiles[3]);
 			mSoundComps->SelectChunk(mSoundComps->ChunkFiles[0]);
-			mSoundComps->SetChunkControl(2, "play", 0);
+			mSoundComps->SetChunkInQueue(2, play, 0);
 		}
 		else if (state.Keyboard.GetKeyValue(mInputComp->GetBackwardKey()) ||
 				 state.Mouse.GetScrollWheel().y < 0 ||
@@ -106,7 +106,7 @@ void Ship::ActorInput(const InputState& state)
 		{
 			mSpriteComps->SelectTexture(mSpriteComps->TextureFiles[4]);
 			mSoundComps->SelectChunk(mSoundComps->ChunkFiles[0]);
-			mSoundComps->SetChunkControl(3, "play", 0);
+			mSoundComps->SetChunkInQueue(3, play, 0);
 		}
 		else if (((state.Keyboard.GetKeyState(SDL_SCANCODE_SPACE) == EPressed) ||
 				 state.Mouse.GetButtonState(SDL_BUTTON_LEFT) == EPressed ||
@@ -124,7 +124,7 @@ void Ship::ActorInput(const InputState& state)
 			// レーザー冷却期間リセット
 			mLaserCooldown = 0.7f;
 			mSoundComps->SelectChunk(mSoundComps->ChunkFiles[1]);
-			mSoundComps->SetChunkControl(4, "play", 0);
+			mSoundComps->SetChunkInQueue(4, play, 0);
 		}
 		else
 		{
@@ -164,7 +164,7 @@ void Ship::UpdateActor(float deltaTime)
 				mCrashingTime = 2.0f;
 
 				mSoundComps->SelectChunk(mSoundComps->ChunkFiles[2]);
-				mSoundComps->SetChunkControl(5, "play", 0);
+				mSoundComps->SetChunkInQueue(5, play, 0);
 				break;
 			}
 		}
