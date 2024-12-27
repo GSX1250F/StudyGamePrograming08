@@ -10,28 +10,32 @@ InputComponent::InputComponent(Actor* owner, int updateOrder)
 	,mMaxRotForce(0.0f)
 {}
 
-void InputComponent::ProcessInput(const uint8_t* keyState)
+void InputComponent::ProcessInput(const struct InputState& state)
 {
 	float fwd = 0.0f;
 	float rot = 0.0f;
 
 	//ŒÃ“T•¨—Šw‚ÅMoveComponent‚Ì‚½‚ß‚ÌŒvZ
-	if (keyState[mFwdKey])
+	if (state.Keyboard.GetKeyState(mFwdKey) == EPressed ||
+		state.Keyboard.GetKeyState(mFwdKey) == EHeld)
 	{
 		// fwd = mMaxForwardVelocity;	//’PƒˆÚ“®‚Ìê‡
 		fwd = mMaxForwardForce;
 	}
-	if (keyState[mBwdKey])
+	if (state.Keyboard.GetKeyState(mBwdKey) == EPressed ||
+		state.Keyboard.GetKeyState(mBwdKey) == EHeld)
 	{
 		// fwd = -mMaxForwardVelocity;       //’PƒˆÚ“®‚Ìê‡
 		fwd = -mMaxForwardForce;
 	}
-	if (keyState[mCwsKey])
+	if (state.Keyboard.GetKeyState(mCwsKey) == EPressed ||
+		state.Keyboard.GetKeyState(mCwsKey) == EHeld)
 	{
 		// rot = mMaxRotSpeed;       //’PƒˆÚ“®‚Ìê‡
 		rot = -mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW
 	}
-	if (keyState[mCCwsKey])
+	if (state.Keyboard.GetKeyState(mCCwsKey) == EPressed ||
+		state.Keyboard.GetKeyState(mCCwsKey) == EHeld)
 	{
 		// rot = -mMaxRotSpeed;       //’PƒˆÚ“®‚Ìê‡
 		rot = mMaxRotForce;		//Šp“x‚Ì{•ûŒü‚ÍCCW

@@ -16,6 +16,7 @@ public:
 
 	class Renderer* GetRenderer() { return mRenderer; }
 	class SoundPlayer* GetSoundPlayer() { return mSoundPlayer; }
+	class InputSystem* GetInputSystem() { return mInputSystem; }
 
 	void SetRunning(bool isrunning) { mIsRunning = isrunning; }
 
@@ -41,6 +42,7 @@ private:
 
 	class Renderer* mRenderer;
 	class SoundPlayer* mSoundPlayer;
+	class InputSystem* mInputSystem;
 	Uint32 mTicksCount;
 	bool mIsRunning;
 	bool mUpdatingActors;

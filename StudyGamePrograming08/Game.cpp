@@ -13,12 +13,14 @@
 #include "BackGround.h"
 #include "ClearPict.h"
 #include "Random.h"
+#include "InputSystem.h"
 #include <thread>
 #include <chrono>
 
 Game::Game()
 	:mRenderer(nullptr)
 	,mSoundPlayer(nullptr)
+	,mInputSystem(nullptr)
 	,mIsRunning(true)
 	,mUpdatingActors(false)
 	,mTicksCount(0)
@@ -52,10 +54,21 @@ bool Game::Initialize()
 		mSoundPlayer = nullptr;
 		return false;
 	}
+	// インプットシステム生成
+	mInputSystem = new InputSystem();
+	if (!mInputSystem->Initialize())
+	{
+		SDL_Log("Input Systemの初期化に失敗しました。");
+		delete mInputSystem;
+		mInputSystem = nullptr;
+		return false;
+	}
 		
 	Random::Init();		//乱数設定の初期化?
 
 	LoadData();
+
+	mTicksCount = SDL_GetTicks();
 
 	return true;
 }
@@ -72,28 +85,35 @@ void Game::RunLoop()
 
 void Game::ProcessInput()
 {
+	mInputSystem->PrepareForUpdate();
+
 	SDL_Event event;
-	// キューにイベントがあれば繰り返す
 	while (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_QUIT)
+		switch (event.type)
 		{
+		case SDL_QUIT:
 			mIsRunning = false;
+			break;
+		case SDL_MOUSEWHEEL:
+			mInputSystem->ProcessEvent(event);
+			break;
 		}
-		const Uint8* keyState = SDL_GetKeyboardState(NULL);
-		if (keyState[SDL_SCANCODE_ESCAPE])
-		{
-			mIsRunning = false;
-		}
+	}
 
-		mUpdatingActors = true;
-		for (auto actor : mActors)
-		{
-			actor->ProcessInput(keyState);
-		}
-		mUpdatingActors = false;
+	mInputSystem->Update();
+	const InputState& state = mInputSystem->GetState();
+	if (state.Keyboard.GetKeyState(SDL_SCANCODE_ESCAPE) == EReleased)
+	{
+		mIsRunning = false;
+	}
 
-	}	
+	mUpdatingActors = true;
+	for (auto actor : mActors)
+	{
+		actor->ProcessInput(state);
+	}
+	mUpdatingActors = false;
 }
 
 void Game::UpdateGame()
