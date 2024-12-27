@@ -1,34 +1,22 @@
-﻿Imports OpenTK.Mathematics
+﻿Imports System.Runtime.CompilerServices
 Imports OpenTK.Windowing.GraphicsLibraryFramework
+Imports OpenTK
+Imports OpenTK.Windowing.Common
 
-Structure InputState
+Public Structure InputState
     Dim Keyboard As KeyboardState
     Dim Mouse As MouseState
-    Dim Controller As JoystickState
 End Structure
 
-Class InputSystem
-    'Public:
-    Public Sub Update()
-
+Public Class InputSystem
+    Sub New()
     End Sub
-
+    Public Sub SetState(ByRef inputState As InputState)
+        mState = inputState
+    End Sub
     Public Function GetState() As InputState
         Return mState
     End Function
 
-    Public Sub SetRelativeMouseMode(ByVal value As Boolean)
-        If (value) Then
-
-        End If
-    End Sub
-
-    'Private
     Private mState As InputState
-    Private Function Filter1D(ByVal input As Integer) As Double
-
-    End Function
-    Private Function Filter2D(ByVal inputX As Integer, ByVal inputY As Integer) As Vector2
-
-    End Function
 End Class

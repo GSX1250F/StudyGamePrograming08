@@ -36,10 +36,6 @@ Public Class Ship
         mIC.SetMoveResist(30.0)
         mIC.SetRotResist(15.0)
         mIC.SetMass(1.0)
-        mIC.SetForwardKey(Keys.Up)
-        mIC.SetBackwardKey(Keys.Down)
-        mIC.SetClockwiseKey(Keys.Right)
-        mIC.SetCounterClockwiseKey(Keys.Left)
 
         mCircle = New CircleComponent(Me, 10)
 
@@ -112,25 +108,28 @@ Public Class Ship
         End If
     End Sub
 
-    Public Overrides Sub ActorInput(ByVal keyState As KeyboardState)
+    Public Overrides Sub ActorInput(ByRef inputState As InputState)
         If mCrash = False Then
-            If keyState.IsKeyDown(mIC.GetCounterClockwiseKey()) = True Then
+            If mIC.GetRotRatio(inputState) > 0 Then
                 mSSC.SelectTexture(mSSC.TextureFiles(1))
                 GetGame().GetSoundPlayer().SetChunkControl(mChunkFiles(0), "play")
-            ElseIf keyState.IsKeyDown(mIC.GetClockwiseKey()) = True Then
+            ElseIf mIC.GetRotRatio(inputState) < 0 Then
                 mSSC.SelectTexture(mSSC.TextureFiles(2))
                 GetGame().GetSoundPlayer().SetChunkControl(mChunkFiles(0), "play")
-            ElseIf keyState.IsKeyDown(mIC.GetForwardKey()) = True Then
+            ElseIf mIC.GetForwardRatio(inputState) > 0 Then
                 mSSC.SelectTexture(mSSC.TextureFiles(3))
                 GetGame().GetSoundPlayer().SetChunkControl(mChunkFiles(0), "play")
-            ElseIf keyState.IsKeyDown(mIC.GetBackwardKey()) = True Then
+            ElseIf mIC.GetForwardRatio(inputState) < 0 Then
                 mSSC.SelectTexture(mSSC.TextureFiles(4))
                 GetGame().GetSoundPlayer().SetChunkControl(mChunkFiles(0), "play")
             Else
                 mSSC.SelectTexture(mSSC.TextureFiles(0))
             End If
 
-            If (keyState.IsKeyDown(Keys.Space) = True) And (mLaserCooldown <= 0.0) Then
+            If ((inputState.Keyboard.IsKeyPressed(Keys.Space)) Or
+                 inputState.Mouse.IsButtonPressed(MouseButton.Left) Or
+                 inputState.Mouse.IsButtonPressed(MouseButton.Right)) And
+                 (mLaserCooldown <= 0.0) Then
                 ' レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
                 Dim laser As New Laser(GetGame())
                 laser.SetPosition(GetPosition() + GetRadius() * GetForward())

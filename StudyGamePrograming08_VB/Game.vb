@@ -5,6 +5,7 @@ Imports OpenTK.Graphics
 Imports OpenTK.Graphics.OpenGL
 Imports OpenTK.Mathematics
 Imports OpenTK.Windowing.Common
+Imports OpenTK.Windowing.Common.Input
 Imports OpenTK.Windowing.Desktop
 Imports OpenTK.Windowing.GraphicsLibraryFramework
 
@@ -29,6 +30,7 @@ Public Class Game
         mIsRunning = True
         mTicksCount = 0
         mUpdatingActors = False
+
     End Sub
     Public Function Initialize() As Boolean
         'ストップウォッチ開始
@@ -42,6 +44,9 @@ Public Class Game
             mRenderer.Shutdown()
             Return False
         End If
+
+        'インプットシステム作成
+        mInputSystem = New InputSystem()
 
         'サウンドプレイヤ作成
         mSoundPlayer = New SoundPlayer(Me)
@@ -102,14 +107,16 @@ Public Class Game
 
     'private
     Private Sub ProcessInput()
-
-        Dim state As InputSystem
-        If (state.Keyboard.IsKeyDown(Keys.Escape)) Then
+        Dim inputState As InputState
+        inputState.Keyboard = KeyboardState
+        inputState.Mouse = MouseState
+        mInputSystem.SetState(inputState)
+        If inputState.Keyboard.IsKeyReleased(Keys.Escape) Then
             mIsRunning = False
         End If
         mUpdatingActors = True
         For Each actor In mActors
-            actor.ProcessInput(keyState)
+            actor.ProcessInput(inputState)
         Next
         mUpdatingActors = False
     End Sub
@@ -176,6 +183,9 @@ Public Class Game
         Dim bg As New BackGround(Me)
 
         Dim clrPict As New ClearPict(Me)
+
+        MyBase.CursorState = CursorState.Grabbed
+
     End Sub
 
     Private Sub UnloadData()
@@ -191,6 +201,7 @@ Public Class Game
     End Sub
 
     Private mRenderer As Renderer
+    Private mInputSystem As InputSystem
     Private Ticks As Stopwatch
     Private mTicksCount As Integer
     Private mIsRunning As Boolean

@@ -3,14 +3,6 @@
 #include "InputSystem.h"
 #include <SDL.h>
 
-enum Direction
-{
-	Forward,
-	Backward,
-	Clockwise,
-	CounterClockwise
-};
-
 class InputComponent : public MoveComponent
 {
 public:
