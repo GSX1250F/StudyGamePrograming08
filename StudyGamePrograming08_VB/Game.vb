@@ -8,6 +8,7 @@ Imports OpenTK.Windowing.Common
 Imports OpenTK.Windowing.Common.Input
 Imports OpenTK.Windowing.Desktop
 Imports OpenTK.Windowing.GraphicsLibraryFramework
+Imports OpenTK.Input
 
 
 Public Class Game
@@ -110,6 +111,7 @@ Public Class Game
         Dim inputState As InputState
         inputState.Keyboard = KeyboardState
         inputState.Mouse = MouseState
+        inputState.Controller = JoystickStates
         mInputSystem.SetState(inputState)
         If inputState.Keyboard.IsKeyReleased(Keys.Escape) Then
             mIsRunning = False
@@ -120,6 +122,8 @@ Public Class Game
         Next
         mUpdatingActors = False
     End Sub
+    Private oldgstate As GamepadState
+
     Private Sub UpdateGame()
         ' フレームレート調整（62.5fps)
         If (Ticks.ElapsedMilliseconds - mTicksCount < 16) Then
