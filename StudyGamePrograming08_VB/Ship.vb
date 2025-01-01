@@ -40,8 +40,8 @@ Public Class Ship
         mIC.SetForwardKey(Keys.Down, -1.0)
         mIC.SetRotationKey(Keys.Left, 1.0)
         mIC.SetRotationKey(Keys.Right, -1.0)
-        mIC.SetForwardScroll(New Vector2(0.0, 1.0), 4.0)
-        mIC.SetRotationMouse(New Vector2(1.0, 0.0), -0.05)
+        mIC.SetForwardMouseScroll(New Vector2(0.0, 1.0), 4.0)
+        mIC.SetRotationMousePos(New Vector2(1.0, 0.0), -0.05)
 
         mCircle = New CircleComponent(Me, 10)
 
@@ -116,10 +116,10 @@ Public Class Ship
 
     Public Overrides Sub ActorInput(ByRef inputState As InputState)
         If mCrash = False Then
-            If mIC.GetRotRatio(inputState) > 0 Then
+            If mIC.GetRotationRatio(inputState) > 0 Then
                 mSSC.SelectTexture(mSSC.TextureFiles(1))
                 GetGame().GetSoundPlayer().SetChunkControl(mChunkFiles(0), "play")
-            ElseIf mIC.GetRotRatio(inputState) < 0 Then
+            ElseIf mIC.GetRotationRatio(inputState) < 0 Then
                 mSSC.SelectTexture(mSSC.TextureFiles(2))
                 GetGame().GetSoundPlayer().SetChunkControl(mChunkFiles(0), "play")
             ElseIf mIC.GetForwardRatio(inputState) > 0 Then

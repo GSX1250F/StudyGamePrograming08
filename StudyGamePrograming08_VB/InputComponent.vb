@@ -18,7 +18,7 @@ Public Class InputComponent
 		Dim fwd As Double = 0.0
 		Dim rot As Double = 0.0
 		fwd = mMaxForwardForce * GetForwardRatio(inputState)
-		rot = mMaxRotForce * GetRotRatio(inputState)
+		rot = mMaxRotForce * GetRotationRatio(inputState)
 
 		'ニュートン力学を使う場合
 		SetMoveForce(fwd * mOwner.GetForward())
@@ -45,12 +45,18 @@ Public Class InputComponent
 				ratio = mForwardKey(keys.Key)
 			End If
 		Next
-		For Each keys In mForwardMouse
+		For Each keys In mForwardMouseButton
+			If (inputState.Mouse.IsButtonDown(keys.Key) Or
+				inputState.Mouse.IsButtonPressed(keys.Key)) Then
+				ratio = mForwardKey(keys.Key)
+			End If
+		Next
+		For Each keys In mForwardMousePos
 			If Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value <> 0.0 Then
 				ratio = Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value
 			End If
 		Next
-		For Each keys In mForwardScroll
+		For Each keys In mForwardMouseScroll
 			If Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value <> 0.0 Then
 				ratio = Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value
 			End If
@@ -58,7 +64,7 @@ Public Class InputComponent
 		Return ratio
 	End Function
 
-	Public Function GetRotRatio(ByRef inputState As InputState) As Double
+	Public Function GetRotationRatio(ByRef inputState As InputState) As Double
 		Dim ratio As Double = 0.0
 		For Each keys In mRotationKey
 			If (inputState.Keyboard.IsKeyDown(keys.Key) Or
@@ -66,12 +72,18 @@ Public Class InputComponent
 				ratio = keys.Value
 			End If
 		Next
-		For Each keys In mRotationMouse
+		For Each keys In mRotationMouseButton
+			If (inputState.Mouse.IsButtonDown(keys.Key) Or
+				inputState.Mouse.IsButtonPressed(keys.Key)) Then
+				ratio = keys.Value
+			End If
+		Next
+		For Each keys In mRotationMousePos
 			If Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value <> 0.0 Then
 				ratio = Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value
 			End If
 		Next
-		For Each keys In mRotationScroll
+		For Each keys In mRotationMouseScroll
 			If Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value <> 0.0 Then
 				ratio = Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value
 			End If
@@ -85,17 +97,24 @@ Public Class InputComponent
 	Public Sub SetRotationKey(ByVal key As Keys, ByVal ratio As Double)
 		mRotationKey.Add(key, ratio)
 	End Sub
-	Public Sub SetForwardMouse(ByVal v As Vector2, ByVal ratio As Double)
-		mForwardMouse.Add(v, ratio)
+	Public Sub SetForwardMouseButton(ByVal button As MouseButton, ByVal ratio As Double)
+		mForwardMouseButton.Add(button, ratio)
 	End Sub
-	Public Sub SetRotationMouse(ByVal v As Vector2, ByVal ratio As Double)
-		mRotationMouse.Add(v, ratio)
+	Public Sub SetRotationMouseButton(ByVal button As MouseButton, ByVal ratio As Double)
+		mRotationMouseButton.Add(button, ratio)
 	End Sub
-	Public Sub SetForwardScroll(ByVal v As Vector2, ByVal ratio As Double)
-		mForwardScroll.Add(v, ratio)
+
+	Public Sub SetForwardMousePos(ByVal v As Vector2, ByVal ratio As Double)
+		mForwardMousePos.Add(v, ratio)
 	End Sub
-	Public Sub SetRotationScroll(ByVal v As Vector2, ByVal ratio As Double)
-		mRotationScroll.Add(v, ratio)
+	Public Sub SetRotationMousePos(ByVal v As Vector2, ByVal ratio As Double)
+		mRotationMousePos.Add(v, ratio)
+	End Sub
+	Public Sub SetForwardMouseScroll(ByVal v As Vector2, ByVal ratio As Double)
+		mForwardMouseScroll.Add(v, ratio)
+	End Sub
+	Public Sub SetRotationMouseScroll(ByVal v As Vector2, ByVal ratio As Double)
+		mRotationMouseScroll.Add(v, ratio)
 	End Sub
 
 
@@ -107,8 +126,10 @@ Public Class InputComponent
 	Private mMaxRotSpeed As Double
 	Private mForwardKey As New Dictionary(Of Keys, Double)
 	Private mRotationKey As New Dictionary(Of Keys, Double)
-	Private mForwardMouse As New Dictionary(Of Vector2, Double)
-	Private mRotationMouse As New Dictionary(Of Vector2, Double)
-	Private mForwardScroll As New Dictionary(Of Vector2, Double)
-	Private mRotationScroll As New Dictionary(Of Vector2, Double)
+	Private mForwardMouseButton As New Dictionary(Of MouseButton, Double)
+	Private mRotationMouseButton As New Dictionary(Of MouseButton, Double)
+	Private mForwardMousePos As New Dictionary(Of Vector2, Double)
+	Private mRotationMousePos As New Dictionary(Of Vector2, Double)
+	Private mForwardMouseScroll As New Dictionary(Of Vector2, Double)
+	Private mRotationMouseScroll As New Dictionary(Of Vector2, Double)
 End Class
