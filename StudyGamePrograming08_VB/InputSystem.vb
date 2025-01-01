@@ -1,11 +1,5 @@
-﻿Imports System.Runtime.CompilerServices
-Imports OpenTK.Windowing.GraphicsLibraryFramework
-Imports OpenTK
+﻿Imports OpenTK.Windowing.GraphicsLibraryFramework
 Imports OpenTK.Windowing.Common
-Imports OpenTK.Windowing.Desktop
-Imports OpenTK.Input
-Imports OpenTK.Mathematics
-Imports System.Windows.Markup
 
 Public Structure InputState
     Dim Keyboard As KeyboardState
@@ -27,7 +21,7 @@ Public Class InputSystem
     Public Function GetState() As InputState
         Return mState
     End Function
-    Public Sub SetRelativeMouseMode(ByVal value As Boolean)
+    Public Sub SetMouseCursorGrabbed(ByVal value As Boolean)
         If value Then
             mGame.CursorState = CursorState.Grabbed
         Else

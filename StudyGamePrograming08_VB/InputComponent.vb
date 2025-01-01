@@ -1,5 +1,6 @@
 ﻿Imports OpenTK.Windowing.GraphicsLibraryFramework
 Imports OpenTK.Input
+Imports OpenTK.Mathematics
 
 
 Public Class InputComponent
@@ -37,32 +38,66 @@ Public Class InputComponent
 	End Sub
 
 	Public Function GetForwardRatio(ByRef inputState As InputState) As Double
-		If (inputState.Keyboard.IsKeyDown(Keys.Up) Or
-			inputState.Keyboard.IsKeyPressed(Keys.Up)) Then
-			Return 1.0
-		ElseIf (inputState.Keyboard.IsKeyDown(Keys.Down) Or
-				inputState.Keyboard.IsKeyPressed(Keys.Down)) Then
-			Return -1.0
-		ElseIf (inputState.Mouse.ScrollDelta.Y <> 0.0) Then
-			Return inputState.Mouse.ScrollDelta.Y * 5.0
-		Else
-			Return 0.0
-		End If
+		Dim ratio As Double = 0.0
+		For Each keys In mForwardKey
+			If (inputState.Keyboard.IsKeyDown(keys.Key) Or
+				inputState.Keyboard.IsKeyPressed(keys.Key)) Then
+				ratio = mForwardKey(keys.Key)
+			End If
+		Next
+		For Each keys In mForwardMouse
+			If Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value <> 0.0 Then
+				ratio = Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value
+			End If
+		Next
+		For Each keys In mForwardScroll
+			If Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value <> 0.0 Then
+				ratio = Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value
+			End If
+		Next
+		Return ratio
 	End Function
 
 	Public Function GetRotRatio(ByRef inputState As InputState) As Double
-		If (inputState.Keyboard.IsKeyDown(Keys.Left) Or
-			inputState.Keyboard.IsKeyPressed(Keys.Left)) Then
-			Return 1.0
-		ElseIf (inputState.Keyboard.IsKeyDown(Keys.RIGHT) Or
-				inputState.Keyboard.IsKeyPressed(Keys.Right)) Then
-			Return -1.0
-		ElseIf (inputState.Mouse.Delta.X <> 0.0) Then
-			Return -inputState.Mouse.Delta.X * 0.05
-		Else
-			Return 0.0
-		End If
+		Dim ratio As Double = 0.0
+		For Each keys In mRotationKey
+			If (inputState.Keyboard.IsKeyDown(keys.Key) Or
+				inputState.Keyboard.IsKeyPressed(keys.Key)) Then
+				ratio = keys.Value
+			End If
+		Next
+		For Each keys In mRotationMouse
+			If Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value <> 0.0 Then
+				ratio = Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value
+			End If
+		Next
+		For Each keys In mRotationScroll
+			If Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value <> 0.0 Then
+				ratio = Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value
+			End If
+		Next
+		Return ratio
 	End Function
+
+	Public Sub SetForwardKey(ByVal key As Keys, ByVal ratio As Double)
+		mForwardKey.Add(key, ratio)
+	End Sub
+	Public Sub SetRotationKey(ByVal key As Keys, ByVal ratio As Double)
+		mRotationKey.Add(key, ratio)
+	End Sub
+	Public Sub SetForwardMouse(ByVal v As Vector2, ByVal ratio As Double)
+		mForwardMouse.Add(v, ratio)
+	End Sub
+	Public Sub SetRotationMouse(ByVal v As Vector2, ByVal ratio As Double)
+		mRotationMouse.Add(v, ratio)
+	End Sub
+	Public Sub SetForwardScroll(ByVal v As Vector2, ByVal ratio As Double)
+		mForwardScroll.Add(v, ratio)
+	End Sub
+	Public Sub SetRotationScroll(ByVal v As Vector2, ByVal ratio As Double)
+		mRotationScroll.Add(v, ratio)
+	End Sub
+
 
 	'private:
 	' 前進・回転方向の力の最大値
@@ -70,5 +105,10 @@ Public Class InputComponent
 	Private mMaxRotForce As Double
 	Private mMaxForwardVelocity As Double
 	Private mMaxRotSpeed As Double
-
+	Private mForwardKey As New Dictionary(Of Keys, Double)
+	Private mRotationKey As New Dictionary(Of Keys, Double)
+	Private mForwardMouse As New Dictionary(Of Vector2, Double)
+	Private mRotationMouse As New Dictionary(Of Vector2, Double)
+	Private mForwardScroll As New Dictionary(Of Vector2, Double)
+	Private mRotationScroll As New Dictionary(Of Vector2, Double)
 End Class

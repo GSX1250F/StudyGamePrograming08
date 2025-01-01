@@ -5,10 +5,8 @@ Imports OpenTK.Graphics
 Imports OpenTK.Graphics.OpenGL
 Imports OpenTK.Mathematics
 Imports OpenTK.Windowing.Common
-Imports OpenTK.Windowing.Common.Input
 Imports OpenTK.Windowing.Desktop
 Imports OpenTK.Windowing.GraphicsLibraryFramework
-Imports OpenTK.Input
 
 
 Public Class Game
@@ -73,6 +71,9 @@ Public Class Game
     End Function
     Public Function GetSoundPlayer() As SoundPlayer
         Return mSoundPlayer
+    End Function
+    Public Function GetInputSystem() As InputSystem
+        Return mInputSystem
     End Function
 
     Public Sub SetRunning(ByVal value As Boolean)
@@ -183,7 +184,7 @@ Public Class Game
 
         Dim clrPict As New ClearPict(Me)
 
-        mInputSystem.SetRelativeMouseMode(True)
+        mInputSystem.SetMouseCursorGrabbed(True)
     End Sub
 
     Private Sub UnloadData()

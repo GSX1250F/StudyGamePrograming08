@@ -36,6 +36,12 @@ Public Class Ship
         mIC.SetMoveResist(30.0)
         mIC.SetRotResist(15.0)
         mIC.SetMass(1.0)
+        mIC.SetForwardKey(Keys.Up, 1.0)
+        mIC.SetForwardKey(Keys.Down, -1.0)
+        mIC.SetRotationKey(Keys.Left, 1.0)
+        mIC.SetRotationKey(Keys.Right, -1.0)
+        mIC.SetForwardScroll(New Vector2(0.0, 1.0), 4.0)
+        mIC.SetRotationMouse(New Vector2(1.0, 0.0), -0.05)
 
         mCircle = New CircleComponent(Me, 10)
 
