@@ -31,7 +31,6 @@ Public Class Game
         mIsRunning = True
         mTicksCount = 0
         mUpdatingActors = False
-
     End Sub
     Public Function Initialize() As Boolean
         'ストップウォッチ開始
@@ -47,7 +46,7 @@ Public Class Game
         End If
 
         'インプットシステム作成
-        mInputSystem = New InputSystem()
+        mInputSystem = New InputSystem(Me)
 
         'サウンドプレイヤ作成
         mSoundPlayer = New SoundPlayer(Me)
@@ -108,21 +107,17 @@ Public Class Game
 
     'private
     Private Sub ProcessInput()
-        Dim inputState As InputState
-        inputState.Keyboard = KeyboardState
-        inputState.Mouse = MouseState
-        inputState.Controller = JoystickStates
-        mInputSystem.SetState(inputState)
-        If inputState.Keyboard.IsKeyReleased(Keys.Escape) Then
+        mInputSystem.Update()
+        Dim state As InputState = mInputSystem.GetState()
+        If state.Keyboard.IsKeyReleased(Keys.Escape) Then
             mIsRunning = False
         End If
         mUpdatingActors = True
         For Each actor In mActors
-            actor.ProcessInput(inputState)
+            actor.ProcessInput(state)
         Next
         mUpdatingActors = False
     End Sub
-    Private oldgstate As GamepadState
 
     Private Sub UpdateGame()
         ' フレームレート調整（62.5fps)
@@ -176,7 +171,7 @@ Public Class Game
         mShip = New Ship(Me)    'プレイヤーの宇宙船を作成
 
         '小惑星を複数生成
-        Dim initialNumAsteroids = 20        '初期値
+        Dim initialNumAsteroids = 1        '初期値
         For i As Integer = 0 To initialNumAsteroids - 1
             AddAsteroid()
         Next
@@ -188,8 +183,7 @@ Public Class Game
 
         Dim clrPict As New ClearPict(Me)
 
-        MyBase.CursorState = CursorState.Grabbed
-
+        mInputSystem.SetRelativeMouseMode(True)
     End Sub
 
     Private Sub UnloadData()
