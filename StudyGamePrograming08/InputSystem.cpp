@@ -135,6 +135,7 @@ ButtonState ControllerState::GetButtonState(SDL_GameControllerButton button) con
 	}
 }
 
+
 bool InputSystem::Initialize()
 {
 	// キーボード

@@ -8,8 +8,8 @@ enum ButtonState
 {
 	ENone,
 	EPressed,
-	EReleased,
-	EHeld
+	EHeld,
+	EReleased
 };
 
 // キーボード入力のヘルパークラス
