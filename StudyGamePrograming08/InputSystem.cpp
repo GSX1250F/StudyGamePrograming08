@@ -106,7 +106,14 @@ ButtonState MouseState::GetButtonState(int button) const
 
 bool ControllerState::GetButtonValue(SDL_GameControllerButton button) const
 {
-	return mCurrButtons[button] == 1;
+	if (mCurrButtons[button] == 1)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 ButtonState ControllerState::GetButtonState(SDL_GameControllerButton button) const
