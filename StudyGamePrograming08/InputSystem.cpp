@@ -47,22 +47,6 @@ ButtonState KeyboardState::GetKeyState(SDL_Scancode keyCode) const
 	}
 }
 
-void InputSystem::SetRelativeMouseMode(bool value)
-{
-	SDL_bool set;
-	if (value)
-	{
-		set = SDL_TRUE;
-	}
-	else
-	{
-		set = SDL_FALSE;
-	}
-	SDL_SetRelativeMouseMode(set);
-
-	mState.Mouse.mIsRelative = value;
-}
-
 bool MouseState::GetButtonValue(int button) const
 {
 	if (SDL_BUTTON(button) & mCurrButtons)
@@ -156,7 +140,15 @@ bool InputSystem::Initialize()
 	
 	// コントローラが接続されていたらそれを取得
 	mController = SDL_GameControllerOpen(0);
-	mState.Controller.mIsConnected = (mController != nullptr);	// コントローラ状態を初期化
+	if (mController != nullptr)
+	{
+		mState.Controller.mIsConnected = true;
+	}
+	else
+	{
+		mState.Controller.mIsConnected = false;
+	}
+	//mState.Controller.mIsConnected = (mController != nullptr);	// コントローラ状態を初期化
 	memset(mState.Controller.mCurrButtons, 0, SDL_CONTROLLER_BUTTON_MAX);
 	memset(mState.Controller.mPrevButtons, 0, SDL_CONTROLLER_BUTTON_MAX);
 
@@ -164,8 +156,7 @@ bool InputSystem::Initialize()
 }
 
 void InputSystem::Shutdown()
-{
-}
+{}
 
 void InputSystem::PrepareForUpdate()
 {
@@ -242,7 +233,21 @@ void InputSystem::ProcessEvent(SDL_Event& event)
 
 }
 
+void InputSystem::SetRelativeMouseMode(bool value)
+{
+	SDL_bool set;
+	if (value)
+	{
+		set = SDL_TRUE;
+	}
+	else
+	{
+		set = SDL_FALSE;
+	}
+	SDL_SetRelativeMouseMode(set);
 
+	mState.Mouse.mIsRelative = value;
+}
 
 float InputSystem::Filter1D(int input)
 {

@@ -39,7 +39,7 @@ public:
 	// スクロールホイールの位置
 	const Vector2& GetScrollWheel() const { return mScrollWheel; }
 	// 相対マウスモードかどうかを取得
-	bool IsRelative() const { return mIsRelative; }
+	bool GetIsRelative() const { return mIsRelative; }
 
 	// マウスボタン状態
 	bool GetButtonValue(int button) const;
