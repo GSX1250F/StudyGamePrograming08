@@ -19,7 +19,7 @@ void InputComponent::ProcessInput(const struct InputState& state)
 
 	//ŒÃ“T•¨—Šw‚ÅMoveComponent‚Ì‚½‚ß‚ÌŒvŽZ
 		fwd = mMaxForwardForce * GetForwardRatio(state);
-		rot = -mMaxRotForce * GetRotRatio(state);		//Šp“x‚Ì{•ûŒü‚ÍCCW
+		rot = -mMaxRotForce * GetRotationRatio(state);		//Šp“x‚Ì{•ûŒü‚ÍCCW
 	
 	// ƒjƒ…[ƒgƒ“—ÍŠw‚ðŽg‚¤ê‡
 	SetForce(fwd * mOwner -> GetForward());
