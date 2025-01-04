@@ -2,18 +2,7 @@
 
 Public Class MoveComponent
     Inherits Component
-
-    '単純移動パラメータ
-    Private mVelocity As Vector2     '並進移動速度
-    Private mRotSpeed As Double      '回転速度
-
-    'ニュートン力学パラメータ
-    Private mMass As Double      '質量
-    Private mMoveForce As Vector2        '重心にかかる力
-    Private mRotForce As Double          '回転方向の力F　 トルク=RotForce * Radius = Imoment * RotAccel
-    Private mMoveResist As Double        '重心速度抵抗率(%)
-    Private mRotResist As Double     '回転速度抵抗率(%)
-
+    'public:
     Sub New(ByRef owner As Actor, ByVal updateOrder As Integer)
         MyBase.New(owner, updateOrder)
         mVelocity = Vector2.Zero
@@ -32,23 +21,32 @@ Public Class MoveComponent
         SetVelocity(mVelocity + GetMoveAccel() * deltaTime)     'v = v0 + at
         SetRotSpeed(mRotSpeed + GetRotAccel() * deltaTime)     'ω = ωo + bt
     End Sub
-
-    Public Sub SetVelocity(ByVal v)
-        mVelocity = v
-    End Sub
-    Public Sub SetRotSpeed(ByVal v As Double)
-        mRotSpeed = v
-    End Sub
-    Public Sub SetMoveForce(ByVal v As Vector2)
-        mMoveForce = v
-    End Sub
-    Public Sub SetRotForce(ByVal v As Double)
-        mRotForce = v
-    End Sub
     Public Sub SetMass(ByVal v As Double)
         mMass = v
     End Sub
-    Public Function GetMoveAccel() As Vector2
+    Public Function GetImoment() As Double
+        ' 慣性モーメント計算　※※2次元においては、一様密度の円板とする。 I=0.5*質量*半径^2
+        Return 0.5 * mMass * mOwner.GetRadius() * mOwner.GetRadius()
+    End Function
+    Public Sub SetMoveResist(ByVal v As Double)
+        mMoveResist = v
+    End Sub
+    Public Sub SetRotResist(ByVal v As Double)
+        mRotResist = v
+    End Sub
+    Public Sub SetVelocity(ByVal v As Vector3)
+        mVelocity = v
+    End Sub
+    Public Function GetVelocity() As Vector3
+        Return mVelocity
+    End Function
+    Public Sub SetRotSpeed(ByVal v As Vector3)
+        mRotSpeed = v
+    End Sub
+    Public Function GetRotSpeed() As Vector3
+        Return mRotSpeed
+    End Function
+    Public Function GetAccel() As Vector3
         If mMass = 0 Then
             Return Vector2.Zero
         Else
@@ -58,10 +56,29 @@ Public Class MoveComponent
             Return accel
         End If
     End Function
-    Public Function GetImoment() As Double
-        ' 慣性モーメント計算　※※2次元においては、一様密度の円板とする。 I=0.5*質量*半径^2
-        Return 0.5 * mMass * mOwner.GetRadius() * mOwner.GetRadius()
-    End Function
+    '単純移動パラメータ
+    Private mVelocity As Vector2     '並進移動速度
+    Private mRotSpeed As Double      '回転速度
+
+    'ニュートン力学パラメータ
+    Private mMass As Double      '質量
+    Private mMoveForce As Vector2        '重心にかかる力
+    Private mRotForce As Double          '回転方向の力F　 トルク=RotForce * Radius = Imoment * RotAccel
+    Private mMoveResist As Double        '重心速度抵抗率(%)
+    Private mRotResist As Double     '回転速度抵抗率(%)
+
+
+
+
+    Public Sub SetMoveForce(ByVal v As Vector2)
+        mMoveForce = v
+    End Sub
+    Public Sub SetRotForce(ByVal v As Double)
+        mRotForce = v
+    End Sub
+
+
+
     Public Function GetTorque() As Double
         'トルク計算　トルク=回転方向の力 * 半径
         Return mRotForce * mOwner.GetRadius()
@@ -77,10 +94,5 @@ Public Class MoveComponent
             Return accel
         End If
     End Function
-    Public Sub SetMoveResist(ByVal v As Double)
-        mMoveResist = v
-    End Sub
-    Public Sub SetRotResist(ByVal v As Double)
-        mRotResist = v
-    End Sub
+
 End Class

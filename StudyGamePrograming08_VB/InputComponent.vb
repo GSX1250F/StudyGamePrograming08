@@ -2,6 +2,54 @@
 Imports OpenTK.Input
 Imports OpenTK.Mathematics
 
+Enum Direction
+	Forward
+	Backward
+	Clockwise
+	CounterClockwise
+End Enum
+
+Enum InputDevice
+	Mouse_L_Button
+	Mouse_R_Button
+	Mouse_MoveUp
+	Mouse_MoveDown
+	Mouse_MoveLeft
+	Mouse_MoveRight
+	Mouse_ScrollUp
+	Mouse_ScrollDown
+	Controller_Dpad_Up
+	Controller_Dpad_Down
+	Controller_Dpad_Left
+	Controller_Dpad_Right
+	Controller_X_Button
+	Controller_Y_Button
+	Controller_A_Button
+	Controller_B_Button
+	Controller_L_Button
+	Controller_R_Button
+	Controller_L_Trigger
+	Controller_R_Trigger
+	Controller_L_Stick_TiltUp
+	Controller_L_Stick_TiltDown
+	Controller_L_Stick_TiltLeft
+	Controller_L_Stick_TiltRight
+	Controller_R_Stick_TiltUp
+	Controller_R_Stick_TiltDown
+	Controller_R_Stick_TiltLeft
+	Controller_R_Stick_TiltRight
+End Enum
+
+Structure KeyConfig
+	Dim dir As Direction
+	Dim input As Keys
+End Structure
+
+Structure InputDeviceConfig
+	Dim dir As Direction
+	Dim input As InputDevice
+	Dim ratio As Double
+End Structure
 
 Public Class InputComponent
 	Inherits MoveComponent
@@ -18,11 +66,11 @@ Public Class InputComponent
 		Dim fwd As Double = 0.0
 		Dim rot As Double = 0.0
 		fwd = mMaxForwardForce * GetForwardRatio(inputState)
-		rot = mMaxRotForce * GetRotationRatio(inputState)
+		rot = -mMaxRotForce * GetRotationRatio(inputState)
 
 		'ニュートン力学を使う場合
 		SetMoveForce(fwd * mOwner.GetForward())
-		SetRotForce(rot)
+		SetRotForce(rot * Vector3.UnitZ)
 	End Sub
 	Public Sub SetMaxForwardVelocity(ByVal value As Double)
 		mMaxForwardVelocity = value
