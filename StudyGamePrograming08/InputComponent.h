@@ -70,22 +70,21 @@ public:
 	void SetMaxRotSpeed(float value) { mMaxRotSpeed = value; }
 	void SetMaxForwardForce(float value) { mMaxForwardForce = value; }
 	void SetMaxRotForce(float value) { mMaxRotForce = value; }
-		
-	float GetForwardRatio(const struct InputState& state);
-	float GetRotationRatio(const struct InputState& state);
 
 	void SetKeyConfig(Direction dir, SDL_Scancode input);
 	void SetInputDeviceConfig(Direction dir, InputDevice input, float ratio);
-
-	float CalcRatio(InputDeviceConfig& config, const struct InputState& state);
 	
+	float GetForwardRatio(const struct InputState& state);
+	float GetRotationRatio(const struct InputState& state);
+	float CalcRatio(InputDeviceConfig& config, const struct InputState& state);
+
 private:
 	// 前進・回転方向の力の最大値
 	float mMaxForwardForce;
 	float mMaxRotForce;
 	float mMaxForwardVelocity;
 	float mMaxRotSpeed;
-
+	
 	std::vector<KeyConfig> mKeyConfigs;
 	std::vector<InputDeviceConfig> mInputDeviceConfigs;
 };

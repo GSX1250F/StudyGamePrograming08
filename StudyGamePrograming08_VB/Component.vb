@@ -36,7 +36,7 @@ Public Class Component
 
     End Sub
 
-    Public Overridable Sub ProcessInput(ByVal keyState As KeyboardState)
+    Public Overridable Sub ProcessInput(ByRef inputState As InputState)
 
     End Sub
 

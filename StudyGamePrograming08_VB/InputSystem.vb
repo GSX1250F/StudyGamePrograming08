@@ -12,6 +12,7 @@ Public Class InputSystem
     Sub New(ByRef game As Game)
         mGame = game
         mGame.CursorState = CursorState.Normal
+        mMouseCursorIsGrabbed = False
     End Sub
     Public Sub Update()
         mState.Keyboard = mGame.KeyboardState
@@ -24,11 +25,17 @@ Public Class InputSystem
     Public Sub SetMouseCursorGrabbed(ByVal value As Boolean)
         If value Then
             mGame.CursorState = CursorState.Grabbed
+            mMouseCursorIsGrabbed = True
         Else
             mGame.CursorState = CursorState.Normal
+            mMouseCursorIsGrabbed = False
         End If
     End Sub
+    Public Function GetMouseCursorIsGrabbed() As Boolean
+        Return mMouseCursorIsGrabbed
+    End Function
     'private:
     Private mState As InputState
     Private mGame As Game
+    Private mMouseCursorIsGrabbed As Boolean
 End Class

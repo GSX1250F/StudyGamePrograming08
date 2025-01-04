@@ -44,15 +44,15 @@ Public Class Actor
         MyBase.Finalize()
         Dispose(False)
     End Sub
-    Public Sub ProcessInput(ByVal keyState As KeyboardState)
+    Public Sub ProcessInput(ByRef inputState As InputState)
         If mState = State.EActive Then
             For Each comp In mComponents
-                comp.ProcessInput(keyState)
+                comp.ProcessInput(inputState)
             Next
         End If
-        ActorInput(keyState)
+        ActorInput(inputState)
     End Sub
-    Public Overridable Sub ActorInput(ByVal keyState As KeyboardState)
+    Public Overridable Sub ActorInput(ByRef inputState As InputState)
     End Sub
     Public Sub Update(ByVal deltaTime As Double)
         If mState = State.EActive Or mState = State.EPaused Then

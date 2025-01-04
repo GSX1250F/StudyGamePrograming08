@@ -1,15 +1,16 @@
 ﻿Imports OpenTK.Windowing.GraphicsLibraryFramework
 Imports OpenTK.Input
 Imports OpenTK.Mathematics
-
-Enum Direction
+Imports OpenTK.Graphics.OpenGL.GL
+Imports OpenTK.Windowing.Common
+Imports OpenTK.Windowing.Common.Input
+Public Enum Direction
 	Forward
 	Backward
 	Clockwise
 	CounterClockwise
 End Enum
-
-Enum InputDevice
+Public Enum InputDevice
 	Mouse_L_Button
 	Mouse_R_Button
 	Mouse_MoveUp
@@ -39,13 +40,12 @@ Enum InputDevice
 	Controller_R_Stick_TiltLeft
 	Controller_R_Stick_TiltRight
 End Enum
-
-Structure KeyConfig
+Public Structure KeyConfig
 	Dim dir As Direction
 	Dim input As Keys
 End Structure
 
-Structure InputDeviceConfig
+Public Structure InputDeviceConfig
 	Dim dir As Direction
 	Dim input As InputDevice
 	Dim ratio As Double
@@ -69,7 +69,7 @@ Public Class InputComponent
 		rot = -mMaxRotForce * GetRotationRatio(inputState)
 
 		'ニュートン力学を使う場合
-		SetMoveForce(fwd * mOwner.GetForward())
+		SetForce(fwd * mOwner.GetForward())
 		SetRotForce(rot * Vector3.UnitZ)
 	End Sub
 	Public Sub SetMaxForwardVelocity(ByVal value As Double)
@@ -84,87 +84,123 @@ Public Class InputComponent
 	Public Sub SetMaxRotForce(ByVal value As Double)
 		mMaxRotForce = value
 	End Sub
-
 	Public Function GetForwardRatio(ByRef inputState As InputState) As Double
 		Dim ratio As Double = 0.0
-		For Each keys In mForwardKey
-			If (inputState.Keyboard.IsKeyDown(keys.Key) Or
-				inputState.Keyboard.IsKeyPressed(keys.Key)) Then
-				ratio = mForwardKey(keys.Key)
+		'キーボード
+		For Each keyConfig In mKeyConfigs
+			If (inputState.Keyboard.IsKeyDown(keyConfig.input)) Then
+				Select Case keyConfig.dir
+					Case Direction.Forward
+						ratio += 1.0
+					Case Direction.Backward
+						ratio -= 1.0
+				End Select
 			End If
 		Next
-		For Each keys In mForwardMouseButton
-			If (inputState.Mouse.IsButtonDown(keys.Key) Or
-				inputState.Mouse.IsButtonPressed(keys.Key)) Then
-				ratio = mForwardKey(keys.Key)
-			End If
-		Next
-		For Each keys In mForwardMousePos
-			If Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value <> 0.0 Then
-				ratio = Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value
-			End If
-		Next
-		For Each keys In mForwardMouseScroll
-			If Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value <> 0.0 Then
-				ratio = Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value
-			End If
+		'マウスとコントローラ
+		For Each config In mInputDeviceConfigs
+			Select Case config.dir
+				Case Direction.Forward
+					ratio += CalcRatio(config, inputState)
+				Case Direction.Backward
+					ratio -= CalcRatio(config, inputState)
+			End Select
 		Next
 		Return ratio
 	End Function
-
 	Public Function GetRotationRatio(ByRef inputState As InputState) As Double
 		Dim ratio As Double = 0.0
-		For Each keys In mRotationKey
-			If (inputState.Keyboard.IsKeyDown(keys.Key) Or
-				inputState.Keyboard.IsKeyPressed(keys.Key)) Then
-				ratio = keys.Value
+		'キーボード
+		For Each keyConfig In mKeyConfigs
+			If (inputState.Keyboard.IsKeyDown(keyConfig.input)) Then
+				Select Case keyConfig.dir
+					Case Direction.Clockwise
+						ratio += 1.0
+					Case Direction.CounterClockwise
+						ratio -= 1.0
+				End Select
 			End If
 		Next
-		For Each keys In mRotationMouseButton
-			If (inputState.Mouse.IsButtonDown(keys.Key) Or
-				inputState.Mouse.IsButtonPressed(keys.Key)) Then
-				ratio = keys.Value
-			End If
-		Next
-		For Each keys In mRotationMousePos
-			If Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value <> 0.0 Then
-				ratio = Vector2.Dot(inputState.Mouse.Delta, keys.Key) * keys.Value
-			End If
-		Next
-		For Each keys In mRotationMouseScroll
-			If Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value <> 0.0 Then
-				ratio = Vector2.Dot(inputState.Mouse.ScrollDelta, keys.Key) * keys.Value
-			End If
+		'マウスとコントローラ
+		For Each config In mInputDeviceConfigs
+			Select Case config.dir
+				Case Direction.Clockwise
+					ratio += CalcRatio(config, inputState)
+				Case Direction.CounterClockwise
+					ratio -= CalcRatio(config, inputState)
+			End Select
 		Next
 		Return ratio
 	End Function
+	Public Sub SetKeyConfig(ByVal dir As Direction, ByVal input As Keys)
+		Dim config As KeyConfig
+		config.dir = dir
+		config.input = input
+		mKeyConfigs.Add(config)
+	End Sub
+	Public Sub SetInputDeviceConfig(ByVal dir As Direction, ByVal input As Keys, ByVal ratio As Double)
+		Dim config As InputDeviceConfig
+		config.dir = dir
+		config.input = input
+		config.ratio = ratio
+		mInputDeviceConfigs.Add(config)
+	End Sub
+	Public Function CalcRatio(ByRef config As InputDeviceConfig, ByRef inputState As InputState)
+		Dim ratio As Double = 0.0
+		Select Case config.input
+			Case InputDevice.Mouse_L_Button
+				ratio = inputState.Mouse.IsButtonDown(MouseButton.Left) * config.ratio
+			Case InputDevice.Mouse_R_Button
+				ratio = inputState.Mouse.IsButtonDown(MouseButton.Right) * config.ratio
+			Case InputDevice.Mouse_MoveUp
+				'相対モードのみ
+				If (mOwner.GetGame.GetInputSystem.GetMouseCursorIsGrabbed) Then
+					ratio = inputState.Mouse.Delta.Y * config.ratio
+				End If
+			Case InputDevice.Mouse_MoveDown
+				If (mOwner.GetGame.GetInputSystem.GetMouseCursorIsGrabbed) Then
+					ratio = -inputState.Mouse.Delta.Y * config.ratio
+				End If
+			Case InputDevice.Mouse_MoveLeft
+				If (mOwner.GetGame.GetInputSystem.GetMouseCursorIsGrabbed) Then
+					ratio = -inputState.Mouse.Delta.X * config.ratio
+				End If
+			Case InputDevice.Mouse_MoveRight
+				If (mOwner.GetGame.GetInputSystem.GetMouseCursorIsGrabbed) Then
+					ratio = inputState.Mouse.Delta.X * config.ratio
+				End If
+			Case InputDevice.Mouse_ScrollUp
+				ratio = inputState.Mouse.ScrollDelta.Y * config.ratio
+			Case InputDevice.Mouse_ScrollDown
+				ratio = -inputState.Mouse.ScrollDelta.Y * config.ratio
+			Case InputDevice.Controller_Dpad_Up
+			Case InputDevice.Controller_Dpad_Down
+			Case InputDevice.Controller_Dpad_Left
+			Case InputDevice.Controller_Dpad_Right
+			Case InputDevice.Controller_X_Button
+			Case InputDevice.Controller_Y_Button
+			Case InputDevice.Controller_A_Button
+			Case InputDevice.Controller_B_Button
+			Case InputDevice.Controller_L_Button
+			Case InputDevice.Controller_R_Button
+			Case InputDevice.Controller_L_Trigger
+			Case InputDevice.Controller_R_Trigger
+			Case InputDevice.Controller_L_Stick_TiltUp
+			Case InputDevice.Controller_L_Stick_TiltDown
+			Case InputDevice.Controller_L_Stick_TiltLeft
+			Case InputDevice.Controller_L_Stick_TiltRight
+			Case InputDevice.Controller_R_Stick_TiltUp
+			Case InputDevice.Controller_R_Stick_TiltDown
+			Case InputDevice.Controller_R_Stick_TiltLeft
+			Case InputDevice.Controller_R_Stick_TiltRight
+		End Select
 
-	Public Sub SetForwardKey(ByVal key As Keys, ByVal ratio As Double)
-		mForwardKey.Add(key, ratio)
-	End Sub
-	Public Sub SetRotationKey(ByVal key As Keys, ByVal ratio As Double)
-		mRotationKey.Add(key, ratio)
-	End Sub
-	Public Sub SetForwardMouseButton(ByVal button As MouseButton, ByVal ratio As Double)
-		mForwardMouseButton.Add(button, ratio)
-	End Sub
-	Public Sub SetRotationMouseButton(ByVal button As MouseButton, ByVal ratio As Double)
-		mRotationMouseButton.Add(button, ratio)
-	End Sub
+		If ratio < 0.001 Or ratio < 0 Then
+			ratio = 0.0
+		End If
 
-	Public Sub SetForwardMousePos(ByVal v As Vector2, ByVal ratio As Double)
-		mForwardMousePos.Add(v, ratio)
-	End Sub
-	Public Sub SetRotationMousePos(ByVal v As Vector2, ByVal ratio As Double)
-		mRotationMousePos.Add(v, ratio)
-	End Sub
-	Public Sub SetForwardMouseScroll(ByVal v As Vector2, ByVal ratio As Double)
-		mForwardMouseScroll.Add(v, ratio)
-	End Sub
-	Public Sub SetRotationMouseScroll(ByVal v As Vector2, ByVal ratio As Double)
-		mRotationMouseScroll.Add(v, ratio)
-	End Sub
-
+		Return ratio
+	End Function
 
 	'private:
 	' 前進・回転方向の力の最大値
@@ -172,12 +208,6 @@ Public Class InputComponent
 	Private mMaxRotForce As Double
 	Private mMaxForwardVelocity As Double
 	Private mMaxRotSpeed As Double
-	Private mForwardKey As New Dictionary(Of Keys, Double)
-	Private mRotationKey As New Dictionary(Of Keys, Double)
-	Private mForwardMouseButton As New Dictionary(Of MouseButton, Double)
-	Private mRotationMouseButton As New Dictionary(Of MouseButton, Double)
-	Private mForwardMousePos As New Dictionary(Of Vector2, Double)
-	Private mRotationMousePos As New Dictionary(Of Vector2, Double)
-	Private mForwardMouseScroll As New Dictionary(Of Vector2, Double)
-	Private mRotationMouseScroll As New Dictionary(Of Vector2, Double)
+	Private mKeyConfigs As New List(Of KeyConfig)
+	Private mInputDeviceConfigs As New List(Of InputDeviceConfig)
 End Class

@@ -34,6 +34,10 @@ Public Class MoveComponent
     Public Sub SetMass(ByVal v As Double)
         mMass = v
     End Sub
+    Public Function GetImoment() As Double
+        ' 慣性モーメント計算　※※2次元においては、一様密度の円板とする。 I=0.5*質量*半径^2
+        Return 0.5 * mMass * mOwner.GetRadius() * mOwner.GetRadius()
+    End Function
     Public Sub SetMoveResist(ByVal v As Double)
         mResist = v
     End Sub
@@ -59,8 +63,6 @@ Public Class MoveComponent
         Return mRotSpeed
     End Function
     Public Function GetAccel() As Vector3
-
-
         If mMass > 0.001 Then
             Dim accel As Vector3 = mForce * (1 / mMass)    '重心加速度の計算　F=ma  a=F*(1/m)
             accel -= mVelocity * mResist * 0.01 * (1 / mMass)
@@ -79,10 +81,6 @@ Public Class MoveComponent
         Else
             Return Vector3.Zero
         End If
-    End Function
-    Public Function GetImoment() As Double
-        ' 慣性モーメント計算　※※2次元においては、一様密度の円板とする。 I=0.5*質量*半径^2
-        Return 0.5 * mMass * mOwner.GetRadius() * mOwner.GetRadius()
     End Function
     Public Function GetTorque() As Vector3
         'トルク計算　トルク=回転方向の力 * 半径
