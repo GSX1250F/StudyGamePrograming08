@@ -31,6 +31,22 @@ Ship::Ship(Game* game):Actor(game)
 	mIC->SetMoveResist(20.0f);
 	mIC->SetRotResist(15.0f);
 	mIC->SetMass(1.0f);
+	mIC->SetKeyConfig(Forward, SDL_SCANCODE_UP);
+	mIC->SetKeyConfig(Backward, SDL_SCANCODE_DOWN);
+	mIC->SetKeyConfig(Clockwise, SDL_SCANCODE_RIGHT);
+	mIC->SetKeyConfig(CounterClockwise, SDL_SCANCODE_LEFT);
+	mIC->SetInputDeviceConfig(Forward, Mouse_ScrollUp, 4.0f);
+	mIC->SetInputDeviceConfig(Backward, Mouse_ScrollDown, 4.0f);
+	mIC->SetInputDeviceConfig(Clockwise, Mouse_MoveRight, 0.05f);
+	mIC->SetInputDeviceConfig(CounterClockwise, Mouse_MoveLeft, 0.05f);
+	mIC->SetInputDeviceConfig(Forward, Controller_Dpad_Up, 1.0f);
+	mIC->SetInputDeviceConfig(Backward, Controller_Dpad_Down, 1.0f);
+	mIC->SetInputDeviceConfig(Clockwise, Controller_Dpad_Right, 1.0f);
+	mIC->SetInputDeviceConfig(CounterClockwise, Controller_Dpad_Left, 1.0f);
+	mIC->SetInputDeviceConfig(Forward, Controller_L_Stick_TiltUp, 1.0f);
+	mIC->SetInputDeviceConfig(Backward, Controller_L_Stick_TiltDown, 1.0f);
+	mIC->SetInputDeviceConfig(Clockwise, Controller_R_Stick_TiltRight, 1.0f);
+	mIC->SetInputDeviceConfig(CounterClockwise, Controller_R_Stick_TiltLeft, 1.0f);
 
 	//CircleComponent¶¬
 	mCircle = new CircleComponent(this);
@@ -70,12 +86,12 @@ void Ship::ActorInput(const struct InputState& state)
 {
 	if (mCrash == false) 
 	{
-		if (mIC->GetRotRatio(state) < 0)
+		if (mIC->GetRotationRatio(state) < 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[1]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(0,mChunkFiles[0],"play",0);
 		}
-		else if (mIC->GetRotRatio(state) > 0)
+		else if (mIC->GetRotationRatio(state) > 0)
 		{
 			mSSC->SelectTexture(mSSC->TextureFiles[2]);
 			GetGame()->GetSoundPlayer()->SetChunkControl(1, mChunkFiles[0], "play", 0);

@@ -1,7 +1,60 @@
 #pragma once
 #include "MoveComponent.h"
 #include "InputSystem.h"
-#include <SDL.h>
+#include <vector>
+
+enum Direction
+{
+	Forward,
+	Backward,
+	Clockwise,
+	CounterClockwise
+};
+
+enum InputDevice
+{
+	Mouse_L_Button,
+	Mouse_R_Button,
+	Mouse_MoveUp,
+	Mouse_MoveDown,
+	Mouse_MoveLeft,
+	Mouse_MoveRight,
+	Mouse_ScrollUp,
+	Mouse_ScrollDown,
+	Controller_Dpad_Up,
+	Controller_Dpad_Down,
+	Controller_Dpad_Left,
+	Controller_Dpad_Right,
+	Controller_X_Button,
+	Controller_Y_Button,
+	Controller_A_Button,
+	Controller_B_Button,
+	Controller_L_Button,
+	Controller_R_Button,
+	Controller_L_Trigger,
+	Controller_R_Trigger,
+	Controller_L_Stick_TiltUp,
+	Controller_L_Stick_TiltDown,
+	Controller_L_Stick_TiltLeft,
+	Controller_L_Stick_TiltRight,
+	Controller_R_Stick_TiltUp,
+	Controller_R_Stick_TiltDown,
+	Controller_R_Stick_TiltLeft,
+	Controller_R_Stick_TiltRight
+};
+
+struct KeyConfig
+{
+	Direction dir;
+	SDL_Scancode input;
+};
+
+struct InputDeviceConfig
+{
+	Direction dir;
+	InputDevice input;
+	float ratio;
+};
 
 class InputComponent : public MoveComponent
 {
@@ -21,26 +74,18 @@ public:
 	float GetForwardRatio(const struct InputState& state);
 	float GetRotationRatio(const struct InputState& state);
 
-	void SetForwardKey(SDL_Scancode keyCode, float ratio);
-	void SetRotationKey(SDL_Scancode keyCode, float ratio);
-	void SetForwardMouseButton(int button, float ratio);
-	void SetRotationMouseButton(int button, float ratio);
-	void SetForwardMousePos(Vector2 pos, float ratio);
-	void SetRotationMousePos(Vector2 pos, float ratio);
-	void SetForwardMouseScroll(Vector2 pos, float ratio);
-	void SetRotationMouseScroll(Vector2 pos, float ratio);
-	void SetForwardControllerButton(SDL_GameControllerButton button, float ratio);
-	void SetRotationControllerButton(SDL_GameControllerButton button, float ratio);
-	void SetForwardControllerLeftTrigger(float value, float ratio);
-	void SetRotationControllerLeftTrigger(float value, float ratio);
-	void SetForwardControllerRightTrigger(float value, float ratio);
-	void SetRotationControllerRightTrigger(float value, float ratio);
+	void SetKeyConfig(Direction dir, SDL_Scancode input);
+	void SetInputDeviceConfig(Direction dir, InputDevice input, float ratio);
 
-
+	float CalcRatio(InputDeviceConfig& config, const struct InputState& state);
+	
 private:
 	// 前進・回転方向の力の最大値
 	float mMaxForwardForce;
 	float mMaxRotForce;
 	float mMaxForwardVelocity;
 	float mMaxRotSpeed;
+
+	std::vector<KeyConfig> mKeyConfigs;
+	std::vector<InputDeviceConfig> mInputDeviceConfigs;
 };

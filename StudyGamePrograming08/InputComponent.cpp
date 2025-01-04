@@ -28,44 +28,200 @@ void InputComponent::ProcessInput(const struct InputState& state)
 
 float InputComponent::GetForwardRatio(const struct InputState& state)
 {
-	if (state.Keyboard.GetKeyState(SDL_SCANCODE_UP) == EPressed ||
-		state.Keyboard.GetKeyState(SDL_SCANCODE_UP) == EHeld)
+	float ratio = 0.0f;
+	//キーボード
+	for (auto keyConfig : mKeyConfigs)
 	{
-		return 1.0f;
+		if (state.Keyboard.GetKeyValue(keyConfig.input))
+		{
+			switch (keyConfig.dir)
+			{
+				case Forward:
+					ratio += 1.0;
+					break;
+				case Backward:
+					ratio -= 1.0;
+					break;
+			}
+		}
 	}
-	else if (state.Keyboard.GetKeyState(SDL_SCANCODE_DOWN) == EPressed ||
-		state.Keyboard.GetKeyState(SDL_SCANCODE_DOWN) == EHeld)
+	//マウスとコントローラ
+	for (auto config : mInputDeviceConfigs)
 	{
-		return -1.0f;
+		switch (config.dir)
+		{
+			case Forward:
+				ratio += CalcRatio(config, state);
+				break;
+			case Backward:
+				ratio -= CalcRatio(config, state);
+				break;
+		}
 	}
-	else if (!Math::NearZero(state.Mouse.GetScrollWheel().y))
-	{
-		return state.Mouse.GetScrollWheel().y * 5.0f;
-	}
-	else if (!Math::NearZero(state.Controller.GetLeftStick().y)) {
-		return state.Controller.GetLeftStick().y * 1.0f;
-	}
-	else { return 0.0f; }
+
+	return ratio;
 }
 
-float InputComponent::GetRotRatio(const struct InputState& state)
+float InputComponent::GetRotationRatio(const struct InputState& state)
+{	
+	float ratio = 0.0f;
+	//キーボード
+	for (auto keyConfig : mKeyConfigs)
+	{
+		if (state.Keyboard.GetKeyValue(keyConfig.input)) 
+		{
+			switch (keyConfig.dir)
+			{
+				case Clockwise:
+					ratio += 1.0;
+					break;
+				case CounterClockwise:
+					ratio -= 1.0;
+					break;
+			}
+		}
+	}
+	//マウスとコントローラ
+	for (auto config : mInputDeviceConfigs)
+	{
+		switch (config.dir)
+		{
+			case Clockwise:
+				ratio += CalcRatio(config, state);
+				break;
+			case CounterClockwise:
+				ratio -= CalcRatio(config, state);
+				break;
+		}
+	}
+	
+	return ratio;
+}
+
+void InputComponent::SetKeyConfig(Direction dir, SDL_Scancode input)
 {
-	if (state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == EPressed ||
-		state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == EHeld)
+	KeyConfig config;
+	config.dir = dir;
+	config.input = input;
+	mKeyConfigs.push_back(config);
+}
+
+void InputComponent::SetInputDeviceConfig(Direction dir, InputDevice input, float ratio)
+{
+	InputDeviceConfig config;
+	config.dir = dir;
+	config.input = input;
+	config.ratio = ratio;
+	mInputDeviceConfigs.push_back(config);
+}
+
+float InputComponent::CalcRatio(InputDeviceConfig& config, const struct InputState& state)
+{
+	float ratio = 0.0;
+	switch (config.input)
 	{
-		return -1.0f;
+		case Mouse_L_Button:
+			ratio = state.Mouse.GetButtonValue(SDL_BUTTON_LEFT) * config.ratio;
+			break;
+		case Mouse_R_Button:
+			ratio = state.Mouse.GetButtonValue(SDL_BUTTON_RIGHT) * config.ratio;
+			break;
+		case Mouse_MoveUp:
+			//相対モードのみ
+			if (state.Mouse.GetIsRelative())
+			{
+				ratio = state.Mouse.GetPosition().y * config.ratio;
+			}
+			break;
+		case Mouse_MoveDown:
+			if (state.Mouse.GetIsRelative())
+			{
+				ratio = - state.Mouse.GetPosition().y * config.ratio;
+			}
+			break;
+		case Mouse_MoveLeft:
+			if (state.Mouse.GetIsRelative())
+			{
+				ratio = -state.Mouse.GetPosition().x * config.ratio;
+			}
+			break;
+		case Mouse_MoveRight:
+			if (state.Mouse.GetIsRelative())
+			{
+				ratio = state.Mouse.GetPosition().x * config.ratio;
+			}
+			break;
+		case Mouse_ScrollUp:
+			ratio = state.Mouse.GetScrollWheel().y * config.ratio;
+			break;
+		case Mouse_ScrollDown:
+			ratio = - state.Mouse.GetScrollWheel().y * config.ratio;			
+			break;
+		case Controller_Dpad_Up:
+			ratio = state.Controller.GetButtonValue(SDL_CONTROLLER_BUTTON_DPAD_UP) * config.ratio;
+			break;
+		case Controller_Dpad_Down:
+			ratio = state.Controller.GetButtonValue(SDL_CONTROLLER_BUTTON_DPAD_DOWN) * config.ratio;
+			break;
+		case Controller_Dpad_Left:
+			ratio = state.Controller.GetButtonValue(SDL_CONTROLLER_BUTTON_DPAD_LEFT) * config.ratio;
+			break;
+		case Controller_Dpad_Right:
+			ratio = state.Controller.GetButtonValue(SDL_CONTROLLER_BUTTON_DPAD_RIGHT) * config.ratio;
+			break;
+		case Controller_X_Button:
+			ratio = state.Controller.GetButtonValue(SDL_CONTROLLER_BUTTON_X) * config.ratio;
+			break;
+		case Controller_Y_Button:
+			ratio = state.Controller.GetButtonValue(SDL_CONTROLLER_BUTTON_Y) * config.ratio;
+			break;
+		case Controller_A_Button:
+			ratio = state.Controller.GetButtonValue(SDL_CONTROLLER_BUTTON_A) * config.ratio;
+			break;
+		case Controller_B_Button:
+			ratio = state.Controller.GetButtonValue(SDL_CONTROLLER_BUTTON_B) * config.ratio;
+			break;
+		case Controller_L_Button:
+			ratio = state.Controller.GetButtonValue(SDL_CONTROLLER_BUTTON_LEFTSHOULDER) * config.ratio;
+			break;
+		case Controller_R_Button:
+			ratio = state.Controller.GetButtonValue(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) * config.ratio;
+			break;
+		case Controller_L_Trigger:
+			ratio = state.Controller.GetLeftTrigger() * config.ratio;
+			break;
+		case Controller_R_Trigger:
+			ratio = state.Controller.GetRightTrigger() * config.ratio;
+			break;
+		case Controller_L_Stick_TiltUp:
+			ratio = state.Controller.GetLeftStick().y * config.ratio;
+			break;
+		case Controller_L_Stick_TiltDown:
+			ratio = - state.Controller.GetLeftStick().y * config.ratio;
+			break;
+		case Controller_L_Stick_TiltLeft:
+			ratio = - state.Controller.GetLeftStick().x * config.ratio;
+			break;
+		case Controller_L_Stick_TiltRight:
+			ratio = state.Controller.GetLeftStick().x * config.ratio;
+			break;
+		case Controller_R_Stick_TiltUp:
+			ratio = state.Controller.GetRightStick().y * config.ratio;
+			break;
+		case Controller_R_Stick_TiltDown:
+			ratio = -state.Controller.GetRightStick().y * config.ratio;
+			break;
+		case Controller_R_Stick_TiltLeft:
+			ratio = - state.Controller.GetRightStick().x * config.ratio;
+			break;
+		case Controller_R_Stick_TiltRight:
+			ratio = state.Controller.GetRightStick().x * config.ratio;
+			break;
 	}
-	else if (state.Keyboard.GetKeyState(SDL_SCANCODE_RIGHT) == EPressed ||
-		state.Keyboard.GetKeyState(SDL_SCANCODE_RIGHT) == EHeld)
+	if (Math::NearZero(ratio) || ratio < 0)
 	{
-		return 1.0f;
+		ratio = 0.0f;
 	}
-	else if (!Math::NearZero(state.Mouse.GetPosition().x))
-	{
-		return state.Mouse.GetPosition().x * 0.1f;
-	}
-	else if (!Math::NearZero(state.Controller.GetRightStick().x)) {
-		return - state.Controller.GetRightStick().x * 1.0f;
-	}
-	else { return 0.0f; }
+
+	return ratio;
 }

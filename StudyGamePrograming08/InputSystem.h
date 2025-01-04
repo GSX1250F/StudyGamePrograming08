@@ -27,10 +27,14 @@ private:
 	Uint8 mPrevState[SDL_NUM_SCANCODES];	//１つ前のフレームの状態
 };
 
+
+
 // マウス入力のヘルパークラス
 class MouseState
 {
-public:
+public:	
+
+
 	// InputSystemのFriendクラスとすることで容易に更新できる
 	friend class InputSystem;
 
