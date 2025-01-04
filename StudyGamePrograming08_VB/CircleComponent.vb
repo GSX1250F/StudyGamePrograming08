@@ -9,8 +9,7 @@ Public Class CircleComponent
     Public Function GetRadius() As Double
         Return mOwner.GetRadius()
     End Function
-
-    Public Function GetCenter() As Vector2
+    Public Function GetCenter() As Vector3
         Return mOwner.GetPosition()
     End Function
 

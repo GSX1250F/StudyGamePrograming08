@@ -21,8 +21,8 @@ Public Class Asteroid
             randPos.X = RandomNumberGenerator.GetInt32(0, 1000) * 0.001 * GetGame().mWindowWidth - 0.5 * GetGame().mWindowWidth
             randPos.Y = RandomNumberGenerator.GetInt32(0, 1000) * 0.001 * GetGame().mWindowHeight - 0.5 * GetGame().mWindowHeight
         End While
-        SetPosition(randPos)
-        SetRotation(RandomNumberGenerator.GetInt32(0, 1000) * 0.001 * Math.PI * 2)
+        SetPosition(New Vector3(randPos.X, randPos.Y, 0.0))
+        SetRotation(Quaternion.FromAxisAngle(Vector3.UnitZ, RandomNumberGenerator.GetInt32(0, 1000) * 0.001 * Math.PI * 2))
         SetScale(0.1 * RandomNumberGenerator.GetInt32(8, 25))   '拡大率 0.8～2.5
 
         'スプライトコンポーネント作成、テクスチャ設定
@@ -32,7 +32,7 @@ Public Class Asteroid
         'MoveComponent作成
         Dim mc As New MoveComponent(Me, 10)
         mc.SetVelocity(GetForward() * RandomNumberGenerator.GetInt32(5000, 20000) / 100)
-        mc.SetRotSpeed((RandomNumberGenerator.GetInt32(0, 2) * 2 - 1) * (RandomNumberGenerator.GetInt32(0, 1000) * 0.001 * Math.PI / 2))
+        mc.SetRotSpeed(New Vector3(0.0, 0.0, RandomNumberGenerator.GetInt32(0, 2) * 2 - 1) * (RandomNumberGenerator.GetInt32(0, 1000) * 0.001 * Math.PI / 2))
 
         'CircleComponent作成
         mCircle = New CircleComponent(Me, 10)
@@ -56,20 +56,17 @@ Public Class Asteroid
 
     Public Overrides Sub UpdateActor(ByVal detaTime As Double)
         '画面外にでたら反対の位置に移動（ラッピング処理）
-        If (GetPosition().X < GetGame().mWindowWidth * (-0.5) - 1.5 * GetRadius() Or
-            GetPosition().X > GetGame().mWindowWidth * 0.5 + 1.5 * GetRadius()) _
+        If (GetPosition.X < GetGame().mWindowWidth * (-0.5) - 1.5 * GetRadius() Or
+            GetPosition.X > GetGame().mWindowWidth * 0.5 + 1.5 * GetRadius()) _
                Then
-            Dim v As Vector2 = New Vector2(-GetPosition().X, GetPosition().Y)
-            SetPosition(v)
+            SetPosition(New Vector3(-GetPosition.X, GetPosition.Y, GetPosition.Z))
         End If
 
         If (GetPosition().Y < GetGame().mWindowHeight * (-0.5) - 1.5 * GetRadius() Or
             GetPosition().Y > GetGame().mWindowHeight * 0.5 + 1.5 * GetRadius()) _
             Then
-            Dim v As Vector2 = New Vector2(GetPosition().X, -GetPosition().Y)
-            SetPosition(v)
+            SetPosition(New Vector3(GetPosition.X, -GetPosition.Y, GetPosition.Z))
         End If
-
     End Sub
 
     Public Function GetCircle() As CircleComponent
