@@ -16,79 +16,52 @@ enum ButtonState
 class KeyboardState
 {
 public:
-	// InputSystemのFriendクラスとすることで容易に更新できる
-	friend class InputSystem;
-	// キーの真偽値のみを取得
-	bool GetKeyValue(SDL_Scancode keyCode) const;
-	// 現在とその１つ前のフレームから状態を取得
-	ButtonState GetKeyState(SDL_Scancode keyCode) const;
+	friend class InputSystem;	
+	bool GetKeyValue(SDL_Scancode keyCode) const;	// キーの真偽値のみを取得
+	ButtonState GetKeyState(SDL_Scancode keyCode) const;	// 現在とその１つ前のフレームから状態を取得
 private:
-	const Uint8* mCurrState;	//現在の状態
-	Uint8 mPrevState[SDL_NUM_SCANCODES];	//１つ前のフレームの状態
+	const Uint8* mCurrState;
+	Uint8 mPrevState[SDL_NUM_SCANCODES];
 };
-
-
 
 // マウス入力のヘルパークラス
 class MouseState
 {
 public:	
-
-
-	// InputSystemのFriendクラスとすることで容易に更新できる
 	friend class InputSystem;
-
-	// マウスの位置
-	const Vector2& GetPosition() const { return mMousePos; }
-	// スクロールホイールの位置
-	const Vector2& GetScrollWheel() const { return mScrollWheel; }
-	// 相対マウスモードかどうかを取得
-	bool GetIsRelative() const { return mIsRelative; }
-
-	// マウスボタン状態
-	bool GetButtonValue(int button) const;
-	ButtonState GetButtonState(int button) const;
+	const Vector2& GetPosition() const { return mMousePos; }	// マウスの位置
+	const Vector2& GetScrollWheel() const { return mScrollWheel; }	// スクロールホイールの位置
+	bool GetIsRelative() const { return mIsRelative; }	// 相対マウスモードかどうかを取得
+	bool GetButtonValue(int button) const;	// マウスボタン状態
+	ButtonState GetButtonState(int button) const;	// 現在とその１つ前のフレームから状態を取得
 private:
-	// マウス位置を保存
 	Vector2 mMousePos;
-	// スクロールホイールの位置を保存
 	Vector2 mScrollWheel;
-	// ボタンの状態を保存
 	Uint32 mCurrButtons;
-	Uint32 mPrevButtons;
-	// 相対マウスモードか否か
-	bool mIsRelative;
+	Uint32 mPrevButtons;	
+	bool mIsRelative;	// 相対マウスモードか否か
 };
 
 // コントローラ入力のヘルパークラス
 class ControllerState
 {
 public:
-	// InputSystemのFriendクラスとすることで容易に更新できる
 	friend class InputSystem;
-
-	// ボタンの状態
 	bool GetButtonValue(SDL_GameControllerButton button) const;
 	ButtonState GetButtonState(SDL_GameControllerButton button) const;
-	// スティック・トリガーの状態
 	const Vector2& GetLeftStick() const { return mLeftStick; }
 	const Vector2& GetRightStick() const { return mRightStick; }
 	float GetLeftTrigger() const { return mLeftTrigger; }
-	float GetRightTrigger() const { return mRightTrigger; }
-	// 接続されているかどうか
-	bool GetIsConnected() const { return mIsConnected; }
+	float GetRightTrigger() const { return mRightTrigger; }	
+	bool GetIsConnected() const { return mIsConnected; }	// 接続されているかどうか
 private:
-	// 現在と１つ前のボタンの状態を保存
 	Uint8 mCurrButtons[SDL_CONTROLLER_BUTTON_MAX];
 	Uint8 mPrevButtons[SDL_CONTROLLER_BUTTON_MAX];
-	// Left/rightスティック
 	Vector2 mLeftStick;
 	Vector2 mRightStick;
-	// Left/rightトリガー
 	float mLeftTrigger;
 	float mRightTrigger;
-	// 接続されているかどうか
-	bool mIsConnected;
+	bool mIsConnected;	// 接続されているかどうか
 };
 
 // 現在の入力状態を格納するラッパー
