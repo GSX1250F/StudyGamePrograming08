@@ -26,6 +26,7 @@ Public Class Game
         mWindowHeight = height
         mRenderer = Nothing
         mSoundPlayer = Nothing
+        mInputSystem = Nothing
         mIsRunning = True
         mTicksCount = 0
         mUpdatingActors = False
@@ -108,13 +109,13 @@ Public Class Game
     'private
     Private Sub ProcessInput()
         mInputSystem.Update()
-        Dim state As InputState = mInputSystem.GetState()
-        If state.Keyboard.GetKeyState(Keys.Escape) = ButtonState.EReleased Then
+        Dim inputState As InputState = mInputSystem.GetState()
+        If inputState.Keyboard.GetKeyState(Keys.Escape) = ButtonState.EReleased Then
             mIsRunning = False
         End If
         mUpdatingActors = True
         For Each actor In mActors
-            actor.ProcessInput(state)
+            actor.ProcessInput(inputState)
         Next
         mUpdatingActors = False
     End Sub
@@ -199,11 +200,11 @@ Public Class Game
     End Sub
 
     Private mRenderer As Renderer
+    Private mSoundPlayer As SoundPlayer     'サウンドプレイヤ
     Private mInputSystem As InputSystem
     Private Ticks As Stopwatch
     Private mTicksCount As Integer
     Private mIsRunning As Boolean
-    Private mSoundPlayer As SoundPlayer     'サウンドプレイヤ
     Private mUpdatingActors As Boolean      'アクター更新中
     Private mActors As New List(Of Actor)   'すべてのアクター
     Private mPendingActors As New List(Of Actor)    'すべての待ちアクター

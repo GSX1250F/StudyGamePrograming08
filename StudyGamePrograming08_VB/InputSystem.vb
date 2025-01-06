@@ -20,17 +20,17 @@ End Structure
 Public Class KeyboardInputState
     'public:
     Public Function GetKeyValue(ByVal key As Keys) As Boolean
-        Return mCurrState.IsKeyDown(key)
+        Return mState.IsKeyDown(key)
     End Function
     Public Function GetKeyState(ByVal key As Keys) As ButtonState
-        If (mPrevState.IsKeyDown(key) = False) Then
-            If (mCurrState.IsKeyDown(key) = False) Then
+        If (mState.WasKeyDown(key) = False) Then
+            If (mState.IsKeyDown(key) = False) Then
                 Return ButtonState.ENone
             Else
                 Return ButtonState.EPressed
             End If
         Else
-            If (mCurrState.IsKeyDown(key) = False) Then
+            If (mState.IsKeyDown(key) = False) Then
                 Return ButtonState.EReleased
             Else
                 Return ButtonState.EHeld
@@ -39,36 +39,35 @@ Public Class KeyboardInputState
     End Function
 
     'private:
-    Friend mCurrState As KeyboardState
-    Friend mPrevState As KeyboardState
+    Friend mState As KeyboardState
 End Class
 Public Class MouseInputState
     'Public:
     Public Function GetPosition() As Vector2
         If mIsRelative Then
-            Return mCurrState.Delta
+            Return mState.Delta
         Else
-            Return mCurrState.Position
+            Return mState.Position
         End If
     End Function
     Public Function GetScrollWheel() As Vector2
-        Return mCurrState.ScrollDelta
+        Return mState.ScrollDelta
     End Function
     Public Function GetIsRelative() As Boolean
         Return mIsRelative
     End Function
     Public Function GetButtonValue(ByVal button As MouseButton) As Boolean
-        Return mCurrState.IsButtonDown(button)
+        Return mState.IsButtonDown(button)
     End Function
     Public Function GetButtonState(ByVal button As MouseButton) As ButtonState
-        If (mPrevState.IsButtonDown(button) = False) Then
-            If (mCurrState.IsButtonDown(button) = False) Then
+        If (mState.WasButtonDown(button) = False) Then
+            If (mState.IsButtonDown(button) = False) Then
                 Return ButtonState.ENone
             Else
                 Return ButtonState.EPressed
             End If
         Else
-            If (mCurrState.IsButtonDown(button) = False) Then
+            If (mState.IsButtonDown(button) = False) Then
                 Return ButtonState.EReleased
             Else
                 Return ButtonState.EHeld
@@ -77,24 +76,23 @@ Public Class MouseInputState
     End Function
 
     'Private:
-    Friend mCurrState As MouseState
-    Friend mPrevState As MouseState
+    Friend mState As MouseState
     Friend mIsRelative As Boolean
 End Class
 Public Class ControllerInputState
     'Public
     Public Function GetButtonValue(ByVal button As Integer) As Boolean
-        Return mCurrState.IsButtonDown(button)
+        Return mState.IsButtonDown(button)
     End Function
     Public Function GetButtonState(ByVal button As Integer) As ButtonState
-        If (mPrevState.IsButtonDown(button) = False) Then
-            If (mCurrState.IsButtonDown(button) = False) Then
+        If (mState.WasButtonDown(button) = False) Then
+            If (mState.IsButtonDown(button) = False) Then
                 Return ButtonState.ENone
             Else
                 Return ButtonState.EPressed
             End If
         Else
-            If (mCurrState.IsButtonDown(button) = False) Then
+            If (mState.IsButtonDown(button) = False) Then
                 Return ButtonState.EReleased
             Else
                 Return ButtonState.EHeld
@@ -102,14 +100,13 @@ Public Class ControllerInputState
         End If
     End Function
     Public Function GetAxis(ByVal id As Integer) As Double
-        Return mCurrState.GetAxis(id)
+        Return mState.GetAxis(id)
     End Function
     Public Function GetIsConnected() As Boolean
         Return mIsConnected
     End Function
     'Friend:
-    Friend mCurrState As JoystickState
-    Friend mPrevState As JoystickState
+    Friend mState As JoystickState
     Friend mIsConnected As Boolean
 End Class
 
@@ -117,71 +114,60 @@ Public Class InputSystem
     'public:
     Sub New(ByRef game As Game)
         mGame = game
-        mState.Keyboard = mKeyboardState
-        mState.Mouse = mMouseState
-        mState.Controller = mControllerState
+        mKeyboardInputState = New KeyboardInputState
+        mMouseInputState = New MouseInputState
+        mControllerInputState = New ControllerInputState
+        mStates = New InputState
+        mStates.Keyboard = mKeyboardInputState
+        mStates.Mouse = mMouseInputState
+        mStates.Controller = mControllerInputState
         Initialize()
     End Sub
     Public Sub Initialize()
         'キーボード
-        mState.Keyboard.mCurrState = mGame.KeyboardState
-        mState.Keyboard.mPrevState = mState.Keyboard.mCurrState
+        mStates.Keyboard.mState = mGame.KeyboardState
 
         'マウス
-        mState.Mouse.mCurrState = mGame.MouseState
-        mState.Mouse.mPrevState = mState.Mouse.mCurrState
+        mStates.Mouse.mState = mGame.MouseState
         mGame.CursorState = CursorState.Normal
+        mStates.Mouse.mIsRelative = False
 
         'コントローラ
         If mGame.JoystickStates.Count > 0 Then
 
-            mState.Controller.mIsConnected = True
-            mState.Controller.mCurrState = mGame.JoystickStates.First
-            mState.Controller.mPrevState = mState.Controller.mCurrState
+            mStates.Controller.mIsConnected = True
+            mStates.Controller.mState = mGame.JoystickStates.First
         Else
-            mState.Controller.mIsConnected = False
-            mState.Controller.mCurrState = Nothing
-            mState.Controller.mPrevState = Nothing
+            mStates.Controller.mIsConnected = False
+            mStates.Controller.mState = Nothing
         End If
 
     End Sub
 
-    Public Sub PrepareForUpdate()
-        ' 現在の状態を１つ前の状態にコピーする。
-        ' キーボード
-        mState.Keyboard.mPrevState = mState.Keyboard.mCurrState
-
-        ' マウス
-        mState.Mouse.mPrevState = mState.Mouse.mCurrState
-
-        ' コントローラ
-        mState.Controller.mPrevState = mState.Controller.mCurrState
-
-    End Sub
     Public Sub Update()
         'OpenTKから現在状態をコピー
-        mState.Keyboard.mCurrState = mGame.KeyboardState
-        mState.Mouse.mCurrState = mGame.MouseState
-        If (mState.Controller.mIsConnected) Then
+        mStates.Keyboard.mState = mGame.KeyboardState
+        mStates.Mouse.mState = mGame.MouseState
+        If (mStates.Controller.mIsConnected) Then
             'コントローラは１つだけとしておく。
-            mState.Controller.mCurrState = mGame.JoystickStates.First
+            mStates.Controller.mState = mGame.JoystickStates.First
         End If
     End Sub
     Public Function GetState() As InputState
-        Return mState
+        Return mStates
     End Function
     Public Sub SetRelativeMouseMode(ByVal value As Boolean)
         If value Then
             mGame.CursorState = CursorState.Grabbed
-            mState.Mouse.mIsRelative = True
+            mStates.Mouse.mIsRelative = True
         Else
             mGame.CursorState = CursorState.Normal
-            mState.Mouse.mIsRelative = False
+            mStates.Mouse.mIsRelative = False
         End If
     End Sub
 
     'private:
-    Private mState As InputState
+    Private mStates As InputState
     Private mGame As Game
     Private Function Filter1D(ByVal input As Integer) As Double
         Return 0.0
@@ -190,7 +176,7 @@ Public Class InputSystem
         Return Vector2.Zero
     End Function
 
-    Private mKeyboardState As New KeyboardInputState
-    Private mMouseState As New MouseInputState
-    Private mControllerState As New ControllerInputState
+    Private mKeyboardInputState As KeyboardInputState
+    Private mMouseInputState As MouseInputState
+    Private mControllerInputState As ControllerInputState
 End Class

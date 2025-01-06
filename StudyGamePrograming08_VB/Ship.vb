@@ -28,10 +28,10 @@ Public Class Ship
         mIC.SetKeyConfig(Direction.Backward, Keys.Down)
         mIC.SetKeyConfig(Direction.Clockwise, Keys.Right)
         mIC.SetKeyConfig(Direction.CounterClockwise, Keys.Left)
-        mIC.SetInputDeviceConfig(Direction.Forward, InputDevice.Mouse_ScrollUp, 4.0)
-        mIC.SetInputDeviceConfig(Direction.Backward, InputDevice.Mouse_ScrollDown, 4.0)
-        mIC.SetInputDeviceConfig(Direction.Clockwise, InputDevice.Mouse_MoveRight, 0.05)
-        mIC.SetInputDeviceConfig(Direction.CounterClockwise, InputDevice.Mouse_MoveLeft, 0.05)
+        mIC.SetInputDeviceConfig(Direction.Forward, InputDevice.Mouse_ScrollUp, 3.0)
+        mIC.SetInputDeviceConfig(Direction.Backward, InputDevice.Mouse_ScrollDown, 3.0)
+        mIC.SetInputDeviceConfig(Direction.Clockwise, InputDevice.Mouse_MoveRight, 0.03)
+        mIC.SetInputDeviceConfig(Direction.CounterClockwise, InputDevice.Mouse_MoveLeft, 0.03)
         mCircle = New CircleComponent(Me, 10)
 
         '効果音生成
@@ -155,11 +155,4 @@ Public Class Ship
     Private mSSC As SomeSpriteComponent
     Private mIC As InputComponent
     Private mChunkFiles As New List(Of String)
-
-
-
-
-
-
-
 End Class
