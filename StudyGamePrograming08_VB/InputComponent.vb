@@ -40,30 +40,7 @@ Public Enum InputDevice
 	Controller_R_Stick_TiltUp       '-
 	Controller_R_Stick_TiltDown     '+
 End Enum
-Enum ControllerButton
-	A = 0
-	B = 1
-	X = 2
-	Y = 3
-	L1 = 4
-	R1 = 5
-	Dpad_Up = 10
-	Dpad_Down = 12
-	Dpad_Left = 13
-	Dpad_Right = 11
-	Back = 6
-	Start = 7
-	L3 = 8
-	R3 = 9
-End Enum
-Enum ControllerAnalog
-	L_stick_X = 0
-	L_stick_Y = 1
-	R_stick_X = 2
-	R_stick_Y = 3
-	L2_trigger = 4
-	R2_trigger = 5
-End Enum
+
 Public Structure KeyConfig
 	Dim dir As Direction
 	Dim input As Keys
@@ -242,21 +219,21 @@ Public Class InputComponent
 					ratio = config.ratio
 				End If
 			Case InputDevice.Controller_L2_Trigger
-				ratio = (inputState.Controller.GetAxis(ControllerAnalog.L2_trigger) * config.ratio + 1.0) / 2.0
+				ratio = inputState.Controller.GetAxis(ControllerAnalog.L2_trigger) * config.ratio
 			Case InputDevice.Controller_R2_Trigger
-				ratio = (inputState.Controller.GetAxis(ControllerAnalog.R2_trigger) * config.ratio + 1.0) / 2.0
+				ratio = inputState.Controller.GetAxis(ControllerAnalog.R2_trigger) * config.ratio
 			Case InputDevice.Controller_L_Stick_TiltUp
-				ratio = -inputState.Controller.GetAxis(ControllerAnalog.L_stick_Y) * config.ratio
-			Case InputDevice.Controller_L_Stick_TiltDown
 				ratio = inputState.Controller.GetAxis(ControllerAnalog.L_stick_Y) * config.ratio
+			Case InputDevice.Controller_L_Stick_TiltDown
+				ratio = -inputState.Controller.GetAxis(ControllerAnalog.L_stick_Y) * config.ratio
 			Case InputDevice.Controller_L_Stick_TiltLeft
 				ratio = -inputState.Controller.GetAxis(ControllerAnalog.L_stick_X) * config.ratio
 			Case InputDevice.Controller_L_Stick_TiltRight
 				ratio = inputState.Controller.GetAxis(ControllerAnalog.L_stick_X) * config.ratio
 			Case InputDevice.Controller_R_Stick_TiltUp
-				ratio = -inputState.Controller.GetAxis(ControllerAnalog.R_stick_Y) * config.ratio
-			Case InputDevice.Controller_R_Stick_TiltDown
 				ratio = inputState.Controller.GetAxis(ControllerAnalog.R_stick_Y) * config.ratio
+			Case InputDevice.Controller_R_Stick_TiltDown
+				ratio = -inputState.Controller.GetAxis(ControllerAnalog.R_stick_Y) * config.ratio
 			Case InputDevice.Controller_R_Stick_TiltLeft
 				ratio = -inputState.Controller.GetAxis(ControllerAnalog.R_stick_X) * config.ratio
 			Case InputDevice.Controller_R_Stick_TiltRight

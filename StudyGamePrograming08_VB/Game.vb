@@ -108,7 +108,6 @@ Public Class Game
 
     'private
     Private Sub ProcessInput()
-        mInputSystem.Update()
         Dim inputState As InputState = mInputSystem.GetState()
         If inputState.Keyboard.GetKeyState(Keys.Escape) = ButtonState.EReleased Then
             mIsRunning = False

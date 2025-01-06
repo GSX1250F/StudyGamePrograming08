@@ -38,7 +38,6 @@ Public Class KeyboardInputState
         End If
     End Function
 
-    'private:
     Friend mState As KeyboardState
 End Class
 Public Class MouseInputState
@@ -75,32 +74,77 @@ Public Class MouseInputState
         End If
     End Function
 
-    'Private:
     Friend mState As MouseState
     Friend mIsRelative As Boolean
 End Class
+
+Public Enum ControllerButton
+    A = 0
+    B = 1
+    X = 2
+    Y = 3
+    L1 = 4
+    R1 = 5
+    Dpad_Up = 10
+    Dpad_Down = 12
+    Dpad_Left = 13
+    Dpad_Right = 11
+    Back = 6
+    Start = 7
+    L3 = 8
+    R3 = 9
+End Enum
+Public Enum ControllerAnalog
+    L_stick_X = 0
+    L_stick_Y = 1
+    R_stick_X = 2
+    R_stick_Y = 3
+    L2_trigger = 4
+    R2_trigger = 5
+End Enum
+
 Public Class ControllerInputState
     'Public
     Public Function GetButtonValue(ByVal button As Integer) As Boolean
-        Return mState.IsButtonDown(button)
-    End Function
-    Public Function GetButtonState(ByVal button As Integer) As ButtonState
-        If (mState.WasButtonDown(button) = False) Then
-            If (mState.IsButtonDown(button) = False) Then
-                Return ButtonState.ENone
-            Else
-                Return ButtonState.EPressed
-            End If
+        If mIsConnected Then
+            Return mState.IsButtonDown(button)
         Else
-            If (mState.IsButtonDown(button) = False) Then
-                Return ButtonState.EReleased
-            Else
-                Return ButtonState.EHeld
-            End If
+            Return False
         End If
     End Function
-    Public Function GetAxis(ByVal id As Integer) As Double
-        Return mState.GetAxis(id)
+    Public Function GetButtonState(ByVal button As ControllerButton) As ButtonState
+        If mIsConnected Then
+            If (mState.WasButtonDown(button) = False) Then
+                If (mState.IsButtonDown(button) = False) Then
+                    Return ButtonState.ENone
+                Else
+                    Return ButtonState.EPressed
+                End If
+            Else
+                If (mState.IsButtonDown(button) = False) Then
+                    Return ButtonState.EReleased
+                Else
+                    Return ButtonState.EHeld
+                End If
+            End If
+        Else
+            Return ButtonState.ENone
+        End If
+
+    End Function
+    Public Function GetAxis(ByVal id As ControllerAnalog) As Double
+        If mIsConnected Then
+            Select Case id
+                Case ControllerAnalog.L2_trigger, ControllerAnalog.R2_trigger
+                    Return (mState.GetAxis(id) + 1.0) / 2.0
+                Case ControllerAnalog.L_stick_Y, ControllerAnalog.R_stick_Y
+                    Return -mState.GetAxis(id)
+                Case Else
+                    Return mState.GetAxis(id)
+            End Select
+        Else
+            Return 0.0
+        End If
     End Function
     Public Function GetIsConnected() As Boolean
         Return mIsConnected
@@ -117,7 +161,6 @@ Public Class InputSystem
         mKeyboardInputState = New KeyboardInputState
         mMouseInputState = New MouseInputState
         mControllerInputState = New ControllerInputState
-        mStates = New InputState
         mStates.Keyboard = mKeyboardInputState
         mStates.Mouse = mMouseInputState
         mStates.Controller = mControllerInputState
@@ -144,15 +187,6 @@ Public Class InputSystem
 
     End Sub
 
-    Public Sub Update()
-        'OpenTKから現在状態をコピー
-        mStates.Keyboard.mState = mGame.KeyboardState
-        mStates.Mouse.mState = mGame.MouseState
-        If (mStates.Controller.mIsConnected) Then
-            'コントローラは１つだけとしておく。
-            mStates.Controller.mState = mGame.JoystickStates.First
-        End If
-    End Sub
     Public Function GetState() As InputState
         Return mStates
     End Function
@@ -167,15 +201,14 @@ Public Class InputSystem
     End Sub
 
     'private:
-    Private mStates As InputState
-    Private mGame As Game
     Private Function Filter1D(ByVal input As Integer) As Double
         Return 0.0
     End Function
     Private Function Filter2D(ByVal inputX As Integer, ByVal inputY As Integer) As Vector2
         Return Vector2.Zero
     End Function
-
+    Private mStates As InputState
+    Private mGame As Game
     Private mKeyboardInputState As KeyboardInputState
     Private mMouseInputState As MouseInputState
     Private mControllerInputState As ControllerInputState
