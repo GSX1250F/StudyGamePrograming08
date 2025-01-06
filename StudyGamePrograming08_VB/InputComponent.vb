@@ -19,26 +19,50 @@ Public Enum InputDevice
 	Mouse_MoveRight
 	Mouse_ScrollUp
 	Mouse_ScrollDown
+	Controller_A_Button
+	Controller_B_Button
+	Controller_X_Button
+	Controller_Y_Button
+	Controller_L1_Button
+	Controller_R1_Button
 	Controller_Dpad_Up
 	Controller_Dpad_Down
 	Controller_Dpad_Left
 	Controller_Dpad_Right
-	Controller_X_Button
-	Controller_Y_Button
-	Controller_A_Button
-	Controller_B_Button
-	Controller_L_Button
-	Controller_R_Button
-	Controller_L_Trigger
-	Controller_R_Trigger
-	Controller_L_Stick_TiltUp
-	Controller_L_Stick_TiltDown
-	Controller_L_Stick_TiltLeft
-	Controller_L_Stick_TiltRight
-	Controller_R_Stick_TiltUp
-	Controller_R_Stick_TiltDown
-	Controller_R_Stick_TiltLeft
-	Controller_R_Stick_TiltRight
+	Controller_L2_Trigger        '-1～1
+	Controller_R2_Trigger        '-1～1
+	Controller_L_Stick_TiltLeft     '-
+	Controller_L_Stick_TiltRight    '+
+	Controller_L_Stick_TiltUp       '-
+	Controller_L_Stick_TiltDown     '+
+	Controller_R_Stick_TiltLeft     '-
+	Controller_R_Stick_TiltRight    '+
+	Controller_R_Stick_TiltUp       '-
+	Controller_R_Stick_TiltDown     '+
+End Enum
+Enum ControllerButton
+	A = 0
+	B = 1
+	X = 2
+	Y = 3
+	L1 = 4
+	R1 = 5
+	Dpad_Up = 10
+	Dpad_Down = 12
+	Dpad_Left = 13
+	Dpad_Right = 11
+	Back = 6
+	Start = 7
+	L3 = 8
+	R3 = 9
+End Enum
+Enum ControllerAnalog
+	L_stick_X = 0
+	L_stick_Y = 1
+	R_stick_X = 2
+	R_stick_Y = 3
+	L2_trigger = 4
+	R2_trigger = 5
 End Enum
 Public Structure KeyConfig
 	Dim dir As Direction
@@ -149,9 +173,13 @@ Public Class InputComponent
 		Dim ratio As Double = 0.0
 		Select Case config.input
 			Case InputDevice.Mouse_L_Button
-				ratio = inputState.Mouse.GetButtonValue(MouseButton.Left) * config.ratio
+				If inputState.Mouse.GetButtonValue(MouseButton.Left) Then
+					ratio = config.ratio
+				End If
 			Case InputDevice.Mouse_R_Button
-				ratio = inputState.Mouse.GetButtonState(MouseButton.Right) * config.ratio
+				If inputState.Mouse.GetButtonState(MouseButton.Right) Then
+					ratio = config.ratio
+				End If
 			Case InputDevice.Mouse_MoveUp
 				'相対モード
 				If inputState.Mouse.GetIsRelative() Then
@@ -174,29 +202,65 @@ Public Class InputComponent
 			Case InputDevice.Mouse_ScrollDown
 				ratio = -inputState.Mouse.GetScrollWheel.Y * config.ratio
 			Case InputDevice.Controller_Dpad_Up
-				ratio = inputState.Controller.GetButtonValue(JoystickHats.Up) * config.ratio
+				If inputState.Controller.GetButtonValue(ControllerButton.Dpad_Up) Then
+					ratio = config.ratio
+				End If
 			Case InputDevice.Controller_Dpad_Down
-				ratio = inputState.Controller.GetButtonValue(JoystickHats.Down) * config.ratio
+				If inputState.Controller.GetButtonValue(ControllerButton.Dpad_Down) Then
+					ratio = config.ratio
+				End If
 			Case InputDevice.Controller_Dpad_Left
-				ratio = inputState.Controller.GetButtonValue(JoystickHats.Left) * config.ratio
+				If inputState.Controller.GetButtonValue(ControllerButton.Dpad_Left) Then
+					ratio = config.ratio
+				End If
 			Case InputDevice.Controller_Dpad_Right
-				ratio = inputState.Controller.GetButtonValue(JoystickHats.Right) * config.ratio
-			Case InputDevice.Controller_X_Button
-			Case InputDevice.Controller_Y_Button
+				If inputState.Controller.GetButtonValue(ControllerButton.Dpad_Right) Then
+					ratio = config.ratio
+				End If
 			Case InputDevice.Controller_A_Button
+				If inputState.Controller.GetButtonValue(ControllerButton.A) Then
+					ratio = config.ratio
+				End If
 			Case InputDevice.Controller_B_Button
-			Case InputDevice.Controller_L_Button
-			Case InputDevice.Controller_R_Button
-			Case InputDevice.Controller_L_Trigger
-			Case InputDevice.Controller_R_Trigger
+				If inputState.Controller.GetButtonValue(ControllerButton.B) Then
+					ratio = config.ratio
+				End If
+			Case InputDevice.Controller_X_Button
+				If inputState.Controller.GetButtonValue(ControllerButton.X) Then
+					ratio = config.ratio
+				End If
+			Case InputDevice.Controller_Y_Button
+				If inputState.Controller.GetButtonValue(ControllerButton.Y) Then
+					ratio = config.ratio
+				End If
+			Case InputDevice.Controller_L1_Button
+				If inputState.Controller.GetButtonValue(ControllerButton.L1) Then
+					ratio = config.ratio
+				End If
+			Case InputDevice.Controller_R1_Button
+				If inputState.Controller.GetButtonValue(ControllerButton.R1) Then
+					ratio = config.ratio
+				End If
+			Case InputDevice.Controller_L2_Trigger
+				ratio = (inputState.Controller.GetAxis(ControllerAnalog.L2_trigger) * config.ratio + 1.0) / 2.0
+			Case InputDevice.Controller_R2_Trigger
+				ratio = (inputState.Controller.GetAxis(ControllerAnalog.R2_trigger) * config.ratio + 1.0) / 2.0
 			Case InputDevice.Controller_L_Stick_TiltUp
+				ratio = -inputState.Controller.GetAxis(ControllerAnalog.L_stick_Y) * config.ratio
 			Case InputDevice.Controller_L_Stick_TiltDown
+				ratio = inputState.Controller.GetAxis(ControllerAnalog.L_stick_Y) * config.ratio
 			Case InputDevice.Controller_L_Stick_TiltLeft
+				ratio = -inputState.Controller.GetAxis(ControllerAnalog.L_stick_X) * config.ratio
 			Case InputDevice.Controller_L_Stick_TiltRight
+				ratio = inputState.Controller.GetAxis(ControllerAnalog.L_stick_X) * config.ratio
 			Case InputDevice.Controller_R_Stick_TiltUp
+				ratio = -inputState.Controller.GetAxis(ControllerAnalog.R_stick_Y) * config.ratio
 			Case InputDevice.Controller_R_Stick_TiltDown
+				ratio = inputState.Controller.GetAxis(ControllerAnalog.R_stick_Y) * config.ratio
 			Case InputDevice.Controller_R_Stick_TiltLeft
+				ratio = -inputState.Controller.GetAxis(ControllerAnalog.R_stick_X) * config.ratio
 			Case InputDevice.Controller_R_Stick_TiltRight
+				ratio = inputState.Controller.GetAxis(ControllerAnalog.R_stick_X) * config.ratio
 		End Select
 
 		If ratio < 0.001 Or ratio < 0 Then

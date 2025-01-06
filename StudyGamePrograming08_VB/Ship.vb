@@ -32,6 +32,15 @@ Public Class Ship
         mIC.SetInputDeviceConfig(Direction.Backward, InputDevice.Mouse_ScrollDown, 3.0)
         mIC.SetInputDeviceConfig(Direction.Clockwise, InputDevice.Mouse_MoveRight, 0.03)
         mIC.SetInputDeviceConfig(Direction.CounterClockwise, InputDevice.Mouse_MoveLeft, 0.03)
+        mIC.SetInputDeviceConfig(Direction.Forward, InputDevice.Controller_Dpad_Up, 1.0)
+        mIC.SetInputDeviceConfig(Direction.Backward, InputDevice.Controller_Dpad_Down, 1.0)
+        mIC.SetInputDeviceConfig(Direction.Clockwise, InputDevice.Controller_Dpad_Right, 1.0)
+        mIC.SetInputDeviceConfig(Direction.CounterClockwise, InputDevice.Controller_Dpad_Left, 1.0)
+        mIC.SetInputDeviceConfig(Direction.Forward, InputDevice.Controller_L_Stick_TiltUp, 1.0)
+        mIC.SetInputDeviceConfig(Direction.Backward, InputDevice.Controller_L_Stick_TiltDown, 1.0)
+        mIC.SetInputDeviceConfig(Direction.Clockwise, InputDevice.Controller_R_Stick_TiltRight, 1.0)
+        mIC.SetInputDeviceConfig(Direction.CounterClockwise, InputDevice.Controller_R_Stick_TiltLeft, 1.0)
+
         mCircle = New CircleComponent(Me, 10)
 
         '効果音生成
@@ -65,7 +74,11 @@ Public Class Ship
 
             If ((inputState.Keyboard.GetKeyState(Keys.Space) = ButtonState.EPressed Or
                  inputState.Mouse.GetButtonState(MouseButton.Left) = ButtonState.EPressed Or
-                 inputState.Mouse.GetButtonState(MouseButton.Right) = ButtonState.EPressed) And
+                 inputState.Mouse.GetButtonState(MouseButton.Right) = ButtonState.EPressed Or
+                 inputState.Controller.GetButtonState(ControllerButton.X) = ButtonState.EPressed Or
+                 inputState.Controller.GetButtonState(ControllerButton.A) = ButtonState.EPressed Or
+                 inputState.Controller.GetButtonState(ControllerButton.L1) = ButtonState.EPressed Or
+                 inputState.Controller.GetButtonState(ControllerButton.R1) = ButtonState.EPressed) And
                  (mLaserCooldown <= 0.0)) Then
                 ' レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
                 Dim laser As New Laser(GetGame())
@@ -76,6 +89,7 @@ Public Class Ship
                 mLaserCooldown = 0.7
                 GetGame().GetSoundPlayer().SetChunkControl(mChunkFiles(1), "replay")
             End If
+
         End If
     End Sub
     Public Overrides Sub UpdateActor(ByVal deltaTime As Double)
