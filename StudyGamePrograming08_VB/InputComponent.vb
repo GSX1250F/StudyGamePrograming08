@@ -29,16 +29,16 @@ Public Enum InputDevice
 	Controller_Dpad_Down
 	Controller_Dpad_Left
 	Controller_Dpad_Right
-	Controller_L2_Trigger        '-1～1
-	Controller_R2_Trigger        '-1～1
-	Controller_L_Stick_TiltLeft     '-
-	Controller_L_Stick_TiltRight    '+
-	Controller_L_Stick_TiltUp       '-
-	Controller_L_Stick_TiltDown     '+
-	Controller_R_Stick_TiltLeft     '-
-	Controller_R_Stick_TiltRight    '+
-	Controller_R_Stick_TiltUp       '-
-	Controller_R_Stick_TiltDown     '+
+	Controller_L2_Trigger
+	Controller_R2_Trigger
+	Controller_L_Stick_TiltLeft
+	Controller_L_Stick_TiltRight
+	Controller_L_Stick_TiltUp
+	Controller_L_Stick_TiltDown
+	Controller_R_Stick_TiltLeft
+	Controller_R_Stick_TiltRight
+	Controller_R_Stick_TiltUp
+	Controller_R_Stick_TiltDown
 End Enum
 
 Public Structure KeyConfig
