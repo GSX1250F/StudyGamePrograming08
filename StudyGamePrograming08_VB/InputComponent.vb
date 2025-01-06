@@ -88,7 +88,7 @@ Public Class InputComponent
 		Dim ratio As Double = 0.0
 		'キーボード
 		For Each keyConfig In mKeyConfigs
-			If (inputState.Keyboard.IsKeyDown(keyConfig.input)) Then
+			If (inputState.Keyboard.GetKeyValue(keyConfig.input)) Then
 				Select Case keyConfig.dir
 					Case Direction.Forward
 						ratio += 1.0
@@ -112,7 +112,7 @@ Public Class InputComponent
 		Dim ratio As Double = 0.0
 		'キーボード
 		For Each keyConfig In mKeyConfigs
-			If (inputState.Keyboard.IsKeyDown(keyConfig.input)) Then
+			If (inputState.Keyboard.GetKeyValue(keyConfig.input)) Then
 				Select Case keyConfig.dir
 					Case Direction.Clockwise
 						ratio += 1.0
@@ -149,34 +149,38 @@ Public Class InputComponent
 		Dim ratio As Double = 0.0
 		Select Case config.input
 			Case InputDevice.Mouse_L_Button
-				ratio = inputState.Mouse.IsButtonDown(MouseButton.Left) * config.ratio
+				ratio = inputState.Mouse.GetButtonValue(MouseButton.Left) * config.ratio
 			Case InputDevice.Mouse_R_Button
-				ratio = inputState.Mouse.IsButtonDown(MouseButton.Right) * config.ratio
+				ratio = inputState.Mouse.GetButtonState(MouseButton.Right) * config.ratio
 			Case InputDevice.Mouse_MoveUp
-				'相対モードのみ
-				If (mOwner.GetGame.GetInputSystem.GetMouseCursorIsGrabbed) Then
-					ratio = inputState.Mouse.Delta.Y * config.ratio
+				'相対モード
+				If inputState.Mouse.GetIsRelative() Then
+					ratio = inputState.Mouse.GetPosition.Y * config.ratio
 				End If
 			Case InputDevice.Mouse_MoveDown
-				If (mOwner.GetGame.GetInputSystem.GetMouseCursorIsGrabbed) Then
-					ratio = -inputState.Mouse.Delta.Y * config.ratio
+				If inputState.Mouse.GetIsRelative() Then
+					ratio = -inputState.Mouse.GetPosition.Y * config.ratio
 				End If
 			Case InputDevice.Mouse_MoveLeft
-				If (mOwner.GetGame.GetInputSystem.GetMouseCursorIsGrabbed) Then
-					ratio = -inputState.Mouse.Delta.X * config.ratio
+				If inputState.Mouse.GetIsRelative() Then
+					ratio = -inputState.Mouse.GetPosition.X * config.ratio
 				End If
 			Case InputDevice.Mouse_MoveRight
-				If (mOwner.GetGame.GetInputSystem.GetMouseCursorIsGrabbed) Then
-					ratio = inputState.Mouse.Delta.X * config.ratio
+				If inputState.Mouse.GetIsRelative() Then
+					ratio = inputState.Mouse.GetPosition.X * config.ratio
 				End If
 			Case InputDevice.Mouse_ScrollUp
-				ratio = inputState.Mouse.ScrollDelta.Y * config.ratio
+				ratio = inputState.Mouse.GetScrollWheel.Y * config.ratio
 			Case InputDevice.Mouse_ScrollDown
-				ratio = -inputState.Mouse.ScrollDelta.Y * config.ratio
+				ratio = -inputState.Mouse.GetScrollWheel.Y * config.ratio
 			Case InputDevice.Controller_Dpad_Up
+				ratio = inputState.Controller.GetButtonValue(JoystickHats.Up) * config.ratio
 			Case InputDevice.Controller_Dpad_Down
+				ratio = inputState.Controller.GetButtonValue(JoystickHats.Down) * config.ratio
 			Case InputDevice.Controller_Dpad_Left
+				ratio = inputState.Controller.GetButtonValue(JoystickHats.Left) * config.ratio
 			Case InputDevice.Controller_Dpad_Right
+				ratio = inputState.Controller.GetButtonValue(JoystickHats.Right) * config.ratio
 			Case InputDevice.Controller_X_Button
 			Case InputDevice.Controller_Y_Button
 			Case InputDevice.Controller_A_Button

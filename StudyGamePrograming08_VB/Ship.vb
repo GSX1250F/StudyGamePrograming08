@@ -63,10 +63,10 @@ Public Class Ship
                 mSSC.SelectTexture(mSSC.TextureFiles(0))
             End If
 
-            If ((inputState.Keyboard.IsKeyPressed(Keys.Space)) Or
-                 inputState.Mouse.IsButtonPressed(MouseButton.Left) Or
-                 inputState.Mouse.IsButtonPressed(MouseButton.Right)) And
-                 (mLaserCooldown <= 0.0) Then
+            If ((inputState.Keyboard.GetKeyState(Keys.Space) = ButtonState.EPressed Or
+                 inputState.Mouse.GetButtonState(MouseButton.Left) = ButtonState.EPressed Or
+                 inputState.Mouse.GetButtonState(MouseButton.Right) = ButtonState.EPressed) And
+                 (mLaserCooldown <= 0.0)) Then
                 ' レーザーオブジェクトを作成、位置と回転角を宇宙船とあわせる。
                 Dim laser As New Laser(GetGame())
                 laser.SetPosition(GetPosition() + GetRadius() * GetForward())

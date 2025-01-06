@@ -105,12 +105,11 @@ Public Class Game
     Public mWindowWidth As Integer
     Public mWindowHeight As Integer
 
-
     'private
     Private Sub ProcessInput()
         mInputSystem.Update()
         Dim state As InputState = mInputSystem.GetState()
-        If state.Keyboard.IsKeyReleased(Keys.Escape) Then
+        If state.Keyboard.GetKeyState(Keys.Escape) = ButtonState.EReleased Then
             mIsRunning = False
         End If
         mUpdatingActors = True
@@ -184,7 +183,7 @@ Public Class Game
 
         Dim clrPict As New ClearPict(Me)
 
-        mInputSystem.SetMouseCursorGrabbed(True)
+        mInputSystem.SetRelativeMouseMode(True)
     End Sub
 
     Private Sub UnloadData()
