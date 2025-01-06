@@ -85,14 +85,14 @@ Public Enum ControllerButton
     Y = 3
     L1 = 4
     R1 = 5
-    Dpad_Up = 10
-    Dpad_Down = 12
-    Dpad_Left = 13
-    Dpad_Right = 11
     Back = 6
     Start = 7
     L3 = 8
     R3 = 9
+    Dpad_Up = 10
+    Dpad_Right = 11
+    Dpad_Down = 12
+    Dpad_Left = 13
 End Enum
 Public Enum ControllerAnalog
     L_stick_X = 0
@@ -136,9 +136,19 @@ Public Class ControllerInputState
         If mIsConnected Then
             Select Case id
                 Case ControllerAnalog.L2_trigger, ControllerAnalog.R2_trigger
-                    Return (mState.GetAxis(id) + 1.0) / 2.0
-                Case ControllerAnalog.L_stick_Y, ControllerAnalog.R_stick_Y
-                    Return -mState.GetAxis(id)
+                    Return Filter1D((mState.GetAxis(id) + 1.0) / 2.0)
+                Case ControllerAnalog.L_stick_X
+                    Dim v = New Vector2(mState.GetAxis(ControllerAnalog.L_stick_X), mState.GetAxis(ControllerAnalog.L_stick_Y))
+                    Return Filter2D(v).X
+                Case ControllerAnalog.R_stick_X
+                    Dim v = New Vector2(mState.GetAxis(ControllerAnalog.R_stick_X), mState.GetAxis(ControllerAnalog.R_stick_Y))
+                    Return Filter2D(v).X
+                Case ControllerAnalog.L_stick_Y
+                    Dim v = New Vector2(mState.GetAxis(ControllerAnalog.L_stick_X), mState.GetAxis(ControllerAnalog.L_stick_Y))
+                    Return -Filter2D(v).Y
+                Case ControllerAnalog.R_stick_Y
+                    Dim v = New Vector2(mState.GetAxis(ControllerAnalog.R_stick_X), mState.GetAxis(ControllerAnalog.R_stick_Y))
+                    Return -Filter2D(v).Y
                 Case Else
                     Return mState.GetAxis(id)
             End Select
@@ -152,6 +162,46 @@ Public Class ControllerInputState
     'Friend:
     Friend mState As JoystickState
     Friend mIsConnected As Boolean
+    'Private:
+    Private Function Filter1D(ByVal input As Double) As Double
+        ' デッドゾーン未満の値は０％と解釈
+        Static Dim deadZone As Double = 250.0 / 32768.0
+        ' 最大値を超える値は１００％と解釈
+        Static Dim maxValue As Integer = 30000.0 / 32768.0
+        Dim retVal As Double = 0.0
+        ' 入力の絶対値を取る
+        Dim absValue As Double = input
+        If input < 0 Then absValue *= -1.0
+        ' デッドゾーン未満の値は無視
+        If (absValue > deadZone) Then
+            ' デッドゾーンと最大値の間にある値の小数値を計算
+            retVal = (absValue - deadZone) / (maxValue - deadZone)
+            ' 符号を元の値に合わせる
+            If input < 0 Then retVal *= -1.0
+            ' 値を-1.0fから1.0fの間に収める
+            retVal = Math.Clamp(retVal, -1.0, 1.0)
+        End If
+        Return retVal
+    End Function
+    Private Function Filter2D(ByVal input As Vector2) As Vector2
+        Static Dim deadZone As Double = 8000.0 / 32768
+        Static Dim maxValue As Double = 30000.0 / 32768
+        ' 2次元ベクトルを作成
+        Dim v As Vector2 = input
+        Dim length As Double = v.Length
+        ' もし length < deadZoneのとき,入力なしとみなす
+        If (length < deadZone) Then
+            v = Vector2.Zero
+        Else
+            ' デッドゾーンと最大値の同心円間の小数を計算
+            Dim f As Double = (length - deadZone) / (maxValue - deadZone)
+            ' f を 0.0f と 1.0fの間に収める
+            f = Math.Clamp(f, 0.0, 1.0)
+            ' ベクトルを正規化し、小数値にスケーリング
+            v *= f / length
+        End If
+        Return v
+    End Function
 End Class
 
 Public Class InputSystem
@@ -176,8 +226,7 @@ Public Class InputSystem
         mStates.Mouse.mIsRelative = False
 
         'コントローラ
-        If mGame.JoystickStates.Count > 0 Then
-
+        If mGame.JoystickStates.First IsNot Nothing Then
             mStates.Controller.mIsConnected = True
             mStates.Controller.mState = mGame.JoystickStates.First
         Else
@@ -201,12 +250,6 @@ Public Class InputSystem
     End Sub
 
     'private:
-    Private Function Filter1D(ByVal input As Integer) As Double
-        Return 0.0
-    End Function
-    Private Function Filter2D(ByVal inputX As Integer, ByVal inputY As Integer) As Vector2
-        Return Vector2.Zero
-    End Function
     Private mStates As InputState
     Private mGame As Game
     Private mKeyboardInputState As KeyboardInputState
