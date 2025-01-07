@@ -11,7 +11,8 @@ MoveComponent::MoveComponent(Actor* owner, int updateOrder)
 	, mRotForce(Vector3::Zero)
 	, mResist(0.0f)
 	, mRotResist(0.0f)
-{}
+{
+}
 
 MoveComponent::~MoveComponent() {}
 

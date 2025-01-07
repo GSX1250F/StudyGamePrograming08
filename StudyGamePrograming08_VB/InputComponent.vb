@@ -66,10 +66,16 @@ Public Class InputComponent
 	Public Overrides Sub ProcessInput(ByRef inputState As InputState)
 		Dim fwd As Double = 0.0
 		Dim rot As Double = 0.0
-		fwd = mMaxForwardForce * GetForwardRatio(inputState)
-		rot = -mMaxRotForce * GetRotationRatio(inputState)
+
+		''単純移動の場合
+		'fwd = mMaxForwardVelocity * GetForwardRatio(inputState)
+		'rot = -mMaxRotSpeed * GetRotationRatio(inputState)
+		'SetVelocity(fwd * mOwner.GetForward())
+		'SetRotSpeed(rot * Vector3.UnitZ)
 
 		'ニュートン力学を使う場合
+		fwd = mMaxForwardForce * GetForwardRatio(inputState)
+		rot = -mMaxRotForce * GetRotationRatio(inputState)
 		SetForce(fwd * mOwner.GetForward())
 		SetRotForce(rot * Vector3.UnitZ)
 	End Sub

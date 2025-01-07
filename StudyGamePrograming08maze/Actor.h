@@ -57,9 +57,6 @@ public:
 	Vector3 GetRightward() const { return Vector3::Transform(Vector3::UnitY, mRotation); }
 	Vector3 GetUpward() const { return Vector3::Transform(Vector3::UnitZ, mRotation); }
 
-
-	
-
 private:
 	class Game* mGame;
 	std::vector<class Component*> mComponents;

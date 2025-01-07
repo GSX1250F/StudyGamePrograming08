@@ -17,11 +17,16 @@ void InputComponent::ProcessInput(const struct InputState& state)
 	float fwd = 0.0f;
 	float rot = 0.0f;
 
-	//古典物理学でMoveComponentのための計算
-		fwd = mMaxForwardForce * GetForwardRatio(state);
-		rot = -mMaxRotForce * GetRotationRatio(state);		//角度の＋方向はCCW
-	
+	/*
+	// 単純移動の場合
+	fwd = mMaxForwardVelocity * GetForwardRatio(state);
+	rot = -mMaxRotSpeed * GetRotationRatio(state);
+	SetVelocity(fwd * mOwner->GetForward());
+	SetRotSpeed(rot * Vector3::UnitZ);
+	*/
 	// ニュートン力学を使う場合
+	fwd = mMaxForwardForce * GetForwardRatio(state);
+	rot = -mMaxRotForce * GetRotationRatio(state);
 	SetForce(fwd * mOwner -> GetForward());
 	SetRotForce(rot * Vector3::UnitZ);
 }

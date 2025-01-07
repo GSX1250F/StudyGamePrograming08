@@ -4,13 +4,13 @@
 
 bool KeyboardState::GetKeyValue(SDL_Scancode keyCode) const
 {
-	if (mCurrState[keyCode] == 1) 
+	if (mCurrState[keyCode] == 1)
 	{
-		return true; 
+		return true;
 	}
-	else 
+	else
 	{
-		return false; 
+		return false;
 	}
 	//return mCurrState[keyCode] == 1;
 }
@@ -47,22 +47,6 @@ ButtonState KeyboardState::GetKeyState(SDL_Scancode keyCode) const
 	}
 }
 
-void InputSystem::SetRelativeMouseMode(bool value)
-{
-	SDL_bool set;
-	if (value)
-	{
-		set = SDL_TRUE;
-	}
-	else
-	{
-		set = SDL_FALSE;
-	}
-	SDL_SetRelativeMouseMode(set);
-
-	mState.Mouse.mIsRelative = value;
-}
-
 bool MouseState::GetButtonValue(int button) const
 {
 	if (SDL_BUTTON(button) & mCurrButtons)
@@ -73,7 +57,7 @@ bool MouseState::GetButtonValue(int button) const
 	{
 		return false;
 	}
-	
+
 	//return (SDL_BUTTON(button) & mCurrButtons);
 }
 
@@ -106,7 +90,14 @@ ButtonState MouseState::GetButtonState(int button) const
 
 bool ControllerState::GetButtonValue(SDL_GameControllerButton button) const
 {
-	return mCurrButtons[button] == 1;
+	if (mCurrButtons[button] == 1)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 ButtonState ControllerState::GetButtonState(SDL_GameControllerButton button) const
@@ -135,6 +126,7 @@ ButtonState ControllerState::GetButtonState(SDL_GameControllerButton button) con
 	}
 }
 
+
 bool InputSystem::Initialize()
 {
 	// キーボード
@@ -145,10 +137,18 @@ bool InputSystem::Initialize()
 	mState.Mouse.mCurrButtons = 0;
 	mState.Mouse.mPrevButtons = 0;
 	mState.Mouse.mIsRelative = false;
-	
+
 	// コントローラが接続されていたらそれを取得
 	mController = SDL_GameControllerOpen(0);
-	mState.Controller.mIsConnected = (mController != nullptr);	// コントローラ状態を初期化
+	if (mController != nullptr)
+	{
+		mState.Controller.mIsConnected = true;
+	}
+	else
+	{
+		mState.Controller.mIsConnected = false;
+	}
+	//mState.Controller.mIsConnected = (mController != nullptr);	// コントローラ状態を初期化
 	memset(mState.Controller.mCurrButtons, 0, SDL_CONTROLLER_BUTTON_MAX);
 	memset(mState.Controller.mPrevButtons, 0, SDL_CONTROLLER_BUTTON_MAX);
 
@@ -171,8 +171,8 @@ void InputSystem::PrepareForUpdate()
 
 	// コントローラ
 	memcpy(mState.Controller.mPrevButtons,
-		   mState.Controller.mCurrButtons,
-		   SDL_CONTROLLER_BUTTON_MAX);
+		mState.Controller.mCurrButtons,
+		SDL_CONTROLLER_BUTTON_MAX);
 
 }
 
@@ -183,12 +183,12 @@ void InputSystem::Update()
 	if (mState.Mouse.mIsRelative)
 	{
 		// 相対モードのとき
-		mState.Mouse.mCurrButtons =	SDL_GetRelativeMouseState(&x, &y);
+		mState.Mouse.mCurrButtons = SDL_GetRelativeMouseState(&x, &y);
 	}
 	else
 	{
 		// 絶対モードのとき
-		mState.Mouse.mCurrButtons =	SDL_GetMouseState(&x, &y);
+		mState.Mouse.mCurrButtons = SDL_GetMouseState(&x, &y);
 	}
 	mState.Mouse.mMousePos.x = static_cast<float>(x);
 	mState.Mouse.mMousePos.y = static_cast<float>(y);
@@ -198,24 +198,24 @@ void InputSystem::Update()
 	for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++)
 	{
 		mState.Controller.mCurrButtons[i] =
-			SDL_GameControllerGetButton(mController,SDL_GameControllerButton(i));
+			SDL_GameControllerGetButton(mController, SDL_GameControllerButton(i));
 	}
 
 
 	// トリガー
 	mState.Controller.mLeftTrigger =
-		Filter1D(SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_TRIGGERLEFT));
+		Filter1D(SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_TRIGGERLEFT));
 	mState.Controller.mRightTrigger =
-		Filter1D(SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_TRIGGERRIGHT));
+		Filter1D(SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_TRIGGERRIGHT));
 
 
 	// アナログスティック
-	x = SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_LEFTX);
-	y = -SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_LEFTY);
+	x = SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_LEFTX);
+	y = -SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_LEFTY);
 	mState.Controller.mLeftStick = Filter2D(x, y);
 
-	x = SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_RIGHTX);
-	y = -SDL_GameControllerGetAxis(mController,	SDL_CONTROLLER_AXIS_RIGHTY);
+	x = SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_RIGHTX);
+	y = -SDL_GameControllerGetAxis(mController, SDL_CONTROLLER_AXIS_RIGHTY);
 	mState.Controller.mRightStick = Filter2D(x, y);
 }
 
@@ -234,7 +234,21 @@ void InputSystem::ProcessEvent(SDL_Event& event)
 
 }
 
+void InputSystem::SetRelativeMouseMode(bool value)
+{
+	SDL_bool set;
+	if (value)
+	{
+		set = SDL_TRUE;
+	}
+	else
+	{
+		set = SDL_FALSE;
+	}
+	SDL_SetRelativeMouseMode(set);
 
+	mState.Mouse.mIsRelative = value;
+}
 
 float InputSystem::Filter1D(int input)
 {

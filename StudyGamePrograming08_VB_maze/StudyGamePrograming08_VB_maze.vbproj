@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>StudyGamePrograming08_VB_maze</RootNamespace>
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>

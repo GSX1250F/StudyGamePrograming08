@@ -2,7 +2,8 @@
 #include "Actor.h"
 
 CircleComponent::CircleComponent(Actor* owner) : Component(owner)
-{}
+{
+}
 
 float CircleComponent::GetRadius() const
 {
@@ -15,7 +16,7 @@ const Vector3& CircleComponent::GetCenter() const
 }
 
 bool Intersect(const CircleComponent& a, const CircleComponent& b)
-{	
+{
 	// ‚Q‚Â‚ÌCircleComponent‚Ì’†SŠÔ‹——£‚Ì2æ‚ğŒvZ
 	float distSq = (a.GetCenter() - b.GetCenter()).LengthSq();
 

@@ -24,8 +24,8 @@ Ship::Ship(Game* game):Actor(game)
 	
 	//InputComponent¶¬
 	mIC = new InputComponent(this);	
-	//mIC->SetMaxForwardVelocity(200.0f);
-	//mIC->SetMaxRotSpeed(5.0f);
+	mIC->SetMaxForwardVelocity(250.0f);
+	mIC->SetMaxRotSpeed(10.0f);
 	mIC->SetMaxForwardForce(300.0f);
 	mIC->SetMaxRotForce(150.0f);
 	mIC->SetMoveResist(20.0f);
