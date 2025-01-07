@@ -18,14 +18,16 @@ public:
 	//class SpriteComponent* GetSprite() { return sc; }
 	class CircleComponent* GetCircle() { return cc; }
 	float GetSpeed() { return speed; }
-
+	Vector3 GetLookAt() { return mLookAt; }
 
 private:
 	//class SpriteComponent* sc;
 	class CircleComponent* cc;
 	class MoveComponent* mc;
+	class InputComponent* ic;
 
 	float speed;
+	Vector3 mLookAt;
 };
 
 class Plane : public Actor

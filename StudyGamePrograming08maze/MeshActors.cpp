@@ -1,6 +1,6 @@
 #include "MeshActors.h"
 #include "MeshComponent.h"
-#include "MoveComponent.h"
+#include "InputComponent.h"
 #include "CircleComponent.h"
 #include "Game.h"
 #include "Renderer.h"
@@ -18,9 +18,21 @@ Brave::Brave(Game* game)
 	SetRadius(150.0f);
 	//CircleComponent作成
 	cc = new CircleComponent(this);
-
-	//MoveComponent作成
-	mc = new MoveComponent(this);
+	
+	//InputComponent作成
+	ic = new InputComponent(this);
+	ic->SetMaxForwardVelocity(400);
+	ic->SetMaxRotSpeed(4);
+	ic->SetKeyConfig(Forward, SDL_SCANCODE_UP);
+	ic->SetKeyConfig(Backward, SDL_SCANCODE_DOWN);
+	ic->SetKeyConfig(Clockwise, SDL_SCANCODE_RIGHT);
+	ic->SetKeyConfig(CounterClockwise, SDL_SCANCODE_LEFT);
+	ic->SetInputDeviceConfig(Forward, Mouse_ScrollUp, 1.0);
+	ic->SetInputDeviceConfig(Backward, Mouse_ScrollDown, 1.0);
+	ic->SetInputDeviceConfig(Forward, Controller_L_Stick_TiltUp, 1.0);
+	ic->SetInputDeviceConfig(Backward, Controller_L_Stick_TiltDown, 1.0);
+	ic->SetInputDeviceConfig(Clockwise, Controller_L_Stick_TiltRight, 1.0);
+	ic->SetInputDeviceConfig(CounterClockwise, Controller_L_Stick_TiltLeft, 1.0);
 
 	//スポットライト
 	SpotLight sl;
@@ -33,35 +45,18 @@ Brave::Brave(Game* game)
 	sl.mCornAngle = Math::Pi / 100.0f;
 	sl.mFalloff = 10.0f;
 	game->GetRenderer()->AddSpotLight(sl);
+
+	//カメラ方向初期化
+	mLookAt = GetForward();
 }
 
 void Brave::ActorInput(const InputState& state) {
-	if (GetGame()->GetMaze()->GetGameStart()) {
-		float forwardSpeed = 0.0f;
-		float angularSpeed = 0.0f;
-		if (state.Keyboard.GetKeyState(SDL_SCANCODE_UP) == EPressed ||
-			state.Keyboard.GetKeyState(SDL_SCANCODE_UP) == EHeld)
-		{
-			forwardSpeed = speed;
-		}
-		else if (state.Keyboard.GetKeyState(SDL_SCANCODE_DOWN) == EPressed ||
-			state.Keyboard.GetKeyState(SDL_SCANCODE_DOWN) == EHeld)
-		{
-			forwardSpeed = -speed;
-		}
-		else if (state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == EPressed ||
-			state.Keyboard.GetKeyState(SDL_SCANCODE_LEFT) == EHeld)
-		{
-			angularSpeed = Math::Pi;
-		}
-		else if (state.Keyboard.GetKeyState(SDL_SCANCODE_RIGHT) == EPressed ||
-			state.Keyboard.GetKeyState(SDL_SCANCODE_RIGHT) == EHeld)
-		{
-			angularSpeed = -Math::Pi;
-		}		
-		mc->SetVelocity(forwardSpeed * GetForward());
-		mc->SetRotSpeed(angularSpeed * GetUpward());
-	}
+	// マウス移動、コントローラ右スティックでカメラ方向移動（相対）
+	float x = state.Mouse.GetPosition().x + state.Controller.GetRightStick().x;
+	float z = -(state.Mouse.GetPosition().y + state.Controller.GetRightStick().y);
+	float y = Math::Sqrt(1 - x*x - z*z);
+	Vector3 v = Vector3(x, y, z);
+
 }
 
 void Brave::UpdateActor(float deltaTime) {
