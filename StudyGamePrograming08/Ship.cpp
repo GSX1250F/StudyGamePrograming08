@@ -35,10 +35,10 @@ Ship::Ship(Game* game):Actor(game)
 	mIC->SetKeyConfig(Backward, SDL_SCANCODE_DOWN);
 	mIC->SetKeyConfig(Clockwise, SDL_SCANCODE_RIGHT);
 	mIC->SetKeyConfig(CounterClockwise, SDL_SCANCODE_LEFT);
-	mIC->SetInputDeviceConfig(Forward, Mouse_ScrollUp, 4.0f);
-	mIC->SetInputDeviceConfig(Backward, Mouse_ScrollDown, 4.0f);
-	mIC->SetInputDeviceConfig(Clockwise, Mouse_MoveRight, 0.05f);
-	mIC->SetInputDeviceConfig(CounterClockwise, Mouse_MoveLeft, 0.05f);
+	mIC->SetInputDeviceConfig(Forward, Mouse_ScrollUp, 3.0f);
+	mIC->SetInputDeviceConfig(Backward, Mouse_ScrollDown, 3.0f);
+	mIC->SetInputDeviceConfig(Clockwise, Mouse_MoveRight, 0.03f);
+	mIC->SetInputDeviceConfig(CounterClockwise, Mouse_MoveLeft, 0.03f);
 	mIC->SetInputDeviceConfig(Forward, Controller_Dpad_Up, 1.0f);
 	mIC->SetInputDeviceConfig(Backward, Controller_Dpad_Down, 1.0f);
 	mIC->SetInputDeviceConfig(Clockwise, Controller_Dpad_Right, 1.0f);
